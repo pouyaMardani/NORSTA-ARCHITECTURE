@@ -4,7 +4,6 @@ description: >-
   Apply Norsta's brand identity and visual direction consistently across its
   website. Use when designing or updating page layouts, visual components,
   themes, typography, colors, and brand presentation.
-disabled: true
 ---
 
 # Norsta Brand Design

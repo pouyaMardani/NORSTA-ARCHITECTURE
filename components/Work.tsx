@@ -46,9 +46,9 @@ export default function Work() {
           <h2>Recent Projects</h2>
         </div>
         <p className="work-lede">
-          A small selection of built work — studies in
+          A small selection of built work — studies in{" "}
           <br />
-          mass, threshold and light, drawn from the
+          mass, threshold and light, drawn from the{" "}
           <br />
           atelier&rsquo;s ongoing pursuit of quiet form.
           <a href="#work" className="arrow-link" aria-label="Jump to works">

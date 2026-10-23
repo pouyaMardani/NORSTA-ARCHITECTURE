@@ -6,7 +6,7 @@ const AREAS = [
     title: "Private Houses",
     body: (
       <>
-        Intimate dwellings rooted in landscape, light,
+        Intimate dwellings rooted in landscape, light,{" "}
         <br />
         and the daily rituals of those who inhabit them.
       </>
@@ -18,7 +18,7 @@ const AREAS = [
     title: "Hospitality",
     body: (
       <>
-        Hotels and retreats designed as immersive places
+        Hotels and retreats designed as immersive places{" "}
         <br />
         of stillness, slowness, and considered material.
       </>
@@ -30,7 +30,7 @@ const AREAS = [
     title: "Adaptive Reuse",
     body: (
       <>
-        Reawakening historic structures with restraint,
+        Reawakening historic structures with restraint,{" "}
         <br />
         memory, and a careful contemporary hand.
       </>
@@ -42,7 +42,7 @@ const AREAS = [
     title: "Interiors",
     body: (
       <>
-        Atmospheres composed through proportion, texture,
+        Atmospheres composed through proportion, texture,{" "}
         <br />
         and a deep attention to the smallest details.
       </>

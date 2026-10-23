@@ -453,3 +453,152 @@ body.lb-open{overflow:hidden}
   .lb-nav{width:40px;height:40px}
   .lb-img{max-height:calc(100vh - 200px)}
 }
+
+/* =====================================================================
+   RESPONSIVE LAYER
+   Additive only: every rule below lives inside a max-width query, so the
+   desktop composition (>960px) is byte-for-byte the original design.
+   Breakpoints are content-driven, not device presets:
+     ≤960px  stacked two-column sections, tabular lists
+     ≤680px  single column, hamburger nav, fluid editorial type
+     ≤440px  very small phones: metrics + footer stacking
+   ===================================================================== */
+
+/* ---------- Hamburger control (hidden until the mobile breakpoint) ---------- */
+.nav-toggle{
+  display:none;
+  align-items:center;justify-content:center;
+  width:44px;height:44px;margin:-10px -10px -10px 0;
+  padding:0;border:0;background:transparent;color:var(--ink);cursor:pointer;
+}
+.nav-toggle-box{
+  display:flex;flex-direction:column;justify-content:center;gap:6px;
+  width:24px;height:24px;
+}
+.nav-toggle-box span{
+  display:block;height:1px;width:100%;background:currentColor;
+  transition:transform .38s cubic-bezier(.7,0,.2,1);
+}
+.nav[data-menu-open="true"] .nav-toggle-box span:first-child{transform:translateY(3.5px) rotate(45deg)}
+.nav[data-menu-open="true"] .nav-toggle-box span:last-child{transform:translateY(-3.5px) rotate(-45deg)}
+.nav-toggle:focus-visible,
+.nav-links a:focus-visible,
+.brand:focus-visible{
+  outline:2px solid var(--ink);outline-offset:4px;border-radius:2px;
+}
+body.menu-open{overflow:hidden}
+
+/* ---------- ≤960px : keep the original tablet stacking, no gradient seam ---------- */
+@media (max-width: 960px){
+  /* The left-to-right fade only makes sense against the desktop text column. */
+  .contact-image::before{display:none}
+  .contact-copy{padding-top:104px;padding-bottom:96px}
+  .metrics{flex-wrap:wrap;gap:40px 64px}
+}
+
+/* ---------- ≤680px : mobile ---------- */
+@media (max-width: 680px){
+  /* Header / navigation */
+  .nav{padding:20px var(--pad-x)}
+  .nav.is-scrolled{padding:14px var(--pad-x)}
+  .brand{font-size:13px;letter-spacing:.26em}
+  .nav-toggle{display:flex}
+
+  .nav-links{
+    position:absolute;top:100%;left:0;right:0;
+    display:flex;flex-direction:column;gap:0;
+    margin:0 var(--pad-x);padding:2px 0;
+    background:rgba(243,233,222,.97);
+    -webkit-backdrop-filter:saturate(140%) blur(14px);
+    backdrop-filter:saturate(140%) blur(14px);
+    border:1px solid rgba(0,0,0,.06);
+    box-shadow:0 22px 44px -28px rgba(0,0,0,.38);
+    opacity:0;visibility:hidden;pointer-events:none;
+    transform:translate3d(0,-8px,0);
+    transition:opacity .3s ease,
+               transform .34s cubic-bezier(.22,.61,.36,1),
+               visibility .34s linear;
+  }
+  .nav[data-menu-open="true"] .nav-links{
+    opacity:1;visibility:visible;pointer-events:auto;transform:none;
+  }
+  .nav-links a{
+    padding:15px 4px;font-size:15px;letter-spacing:.05em;
+  }
+  .nav-links a + a{border-top:1px solid var(--hair)}
+  .nav-links a::after{display:none}
+
+  /* Hero */
+  .hero{padding-top:114px}
+  .hero-copy h1{
+    font-size:clamp(56px,17vw,120px);white-space:normal;
+  }
+  .hero-copy p{margin-top:20px;font-size:clamp(16px,4.6vw,19px);}
+  /* The desktop line breaks are too wide for a phone; let the text reflow. */
+  .hero-copy p br{display:none}
+  .hero-copy .link-underline{font-size:17px;margin-top:28px}
+  .hero-image{height:50%}
+  .scroll-cue{bottom:18px;font-size:11px}
+  .scroll-cue i{height:28px}
+
+  /* Practice / Areas of work */
+  .services{padding:104px var(--pad-x) 120px}
+  .section-head{margin-bottom:56px}
+  .section-head h2{font-size:clamp(40px,11.5vw,64px)}
+  .service-list li{
+    grid-template-columns:48px 1fr;gap:16px;padding:30px 0;
+  }
+  .service-list .num{font-size:22px}
+  .service-list h3{
+    font-size:clamp(28px,7.6vw,40px);white-space:normal;
+    overflow-wrap:anywhere;
+  }
+  .service-list p{font-size:14px}
+  /* Authored line breaks read as orphans on a phone; the source keeps a
+     trailing space before each <br> so dropping them never joins words. */
+  .service-list p br{display:none}
+
+  /* Studio */
+  .about{padding-top:96px;padding-bottom:110px;gap:40px}
+  .about-copy{padding-right:0}
+  .about-copy h2{font-size:clamp(40px,11.5vw,64px);margin:18px 0 30px}
+  .about-copy .lede{font-size:clamp(19px,4.8vw,23px)}
+  .about-copy .sub{margin-top:24px}
+  .metrics{gap:32px 48px;margin-top:54px}
+  .metrics .num{font-size:clamp(46px,12vw,64px)}
+  [data-reveal="metrics-rule"]::before{top:-24px}
+
+  /* Recent projects */
+  .work{padding:92px var(--pad-x) 118px}
+  .work-head{margin-bottom:48px;gap:20px}
+  .work-head h2{font-size:clamp(42px,12vw,72px)}
+  .work-lede{max-width:none;font-size:14px}
+  .work-lede br{display:none}
+  .arrow-link{font-size:19px}
+  .work-grid{gap:44px}
+  .proj-meta{grid-template-columns:1fr;row-gap:8px}
+  .proj-meta .num{margin-bottom:0}
+  .proj-meta h3{font-size:clamp(24px,6.4vw,32px)}
+  .proj-meta .view{justify-self:start}
+
+  /* Contact */
+  .contact-copy{padding:92px var(--pad-x) 72px}
+  .contact-copy h2{font-size:clamp(42px,12.5vw,72px);margin:22px 0 34px}
+  .contact-copy hr{width:100%;margin-bottom:28px}
+  .note{margin-bottom:34px}
+  .note br{display:none}
+  .link-underline.strong{font-size:12px;letter-spacing:.2em}
+
+  /* Footer */
+  .foot{padding:26px var(--pad-x);font-size:11px;letter-spacing:.18em;gap:12px}
+}
+
+/* ---------- ≤440px : very small phones ---------- */
+@media (max-width: 440px){
+  .metrics{gap:28px}
+  .foot{flex-direction:column;align-items:flex-start;gap:8px}
+  .addr{align-items:flex-start}
+  .addr a{min-width:0;overflow-wrap:anywhere}
+  .service-list h3{font-size:clamp(26px,8vw,32px)}
+}
+

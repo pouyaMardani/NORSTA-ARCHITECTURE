@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "audit:responsive": "node scripts/responsive-audit.mjs"
   },
   "dependencies": {
     "next": "^15.5.28",

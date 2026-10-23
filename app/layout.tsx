@@ -17,7 +17,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Monolith Atelier",
+  title: "NORSTA HOME",
   description:
     "Architecture shaped by silence, weight, and the slow passage of light through space.",
 };

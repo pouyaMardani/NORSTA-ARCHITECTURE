@@ -34,7 +34,7 @@ export default function Contact() {
           </a>
         </p>
         <p className="note">
-          We take on a small number of commissions each year,
+          We take on a small number of commissions each year,{" "}
           <br />
           chosen for their depth, site and shared intent.
         </p>

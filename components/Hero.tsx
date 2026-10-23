@@ -6,12 +6,10 @@ export default function Hero() {
           <span className="line">
             <span>NORSTA</span>
           </span>
-          <span className="line">
-            <span>PERFECT</span>
-          </span>
+
         </h1>
         <p data-reveal="fade-up" data-delay="600">
-          Architecture shaped by silence, weight, and
+          Architecture shaped by silence, weight, and{" "}
           <br />
           the slow passage of light through space.
         </p>
