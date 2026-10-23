@@ -3,48 +3,48 @@ import Image from "next/image";
 const AREAS = [
   {
     num: "01",
-    title: "Private Houses",
+    title: "خانه‌های شخصی",
     body: (
       <>
-        Intimate dwellings rooted in landscape, light,{" "}
+        خانه‌هایی صمیمی که در پیوند با طبیعت، نور و{" "}
         <br />
-        and the daily rituals of those who inhabit them.
+        آیین‌های روزمره‌ی ساکنانشان شکل می‌گیرند.
       </>
     ),
     delay: 0,
   },
   {
     num: "02",
-    title: "Hospitality",
+    title: "مهمان‌نوازی",
     body: (
       <>
-        Hotels and retreats designed as immersive places{" "}
+        هتل‌ها و اقامتگاه‌هایی که همچون فضاهایی غوطه‌ور در سکون،{" "}
         <br />
-        of stillness, slowness, and considered material.
+        آهستگی و مصالحِ سنجیده طراحی می‌شوند.
       </>
     ),
     delay: 80,
   },
   {
     num: "03",
-    title: "Adaptive Reuse",
+    title: "بازآفرینی بنا",
     body: (
       <>
-        Reawakening historic structures with restraint,{" "}
+        بیدار کردنِ دوباره‌ی بناهای تاریخی، با خویشتن‌داری،{" "}
         <br />
-        memory, and a careful contemporary hand.
+        حافظه و نگاهی معاصر و سنجیده.
       </>
     ),
     delay: 160,
   },
   {
     num: "04",
-    title: "Interiors",
+    title: "فضای داخلی",
     body: (
       <>
-        Atmospheres composed through proportion, texture,{" "}
+        فضاهایی که با تناسبات، بافت و{" "}
         <br />
-        and a deep attention to the smallest details.
+        توجهی عمیق به کوچک‌ترین جزئیات ساخته می‌شوند.
       </>
     ),
     delay: 240,
@@ -55,8 +55,8 @@ export default function Services() {
   return (
     <section id="services" className="services">
       <div className="section-head" data-reveal="fade-up">
-        <span className="eyebrow">PRACTICE</span>
-        <h2>Areas of Work</h2>
+        <span className="eyebrow">حوزه فعالیت</span>
+        <h2>زمینه‌های فعالیت</h2>
       </div>
 
       <ul className="service-list">
@@ -76,7 +76,7 @@ export default function Services() {
       <div className="services-edge" data-reveal="fade-left">
         <Image
           src="/images/services-arch.png"
-          alt="Architectural detail"
+          alt="جزئیات معماری"
           fill
           sizes="34vw"
           style={{ objectFit: "cover" }}

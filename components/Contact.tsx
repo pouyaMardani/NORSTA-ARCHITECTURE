@@ -4,12 +4,13 @@ export default function Contact() {
   return (
     <section id="contact" className="contact">
       <div className="contact-copy" data-reveal="fade-up">
-        <span className="eyebrow">GET IN TOUCH</span>
+        <span className="eyebrow">در تماس باشید</span>
         <h2>
-          Begin a<br />
-          Quiet
+          آغاز
           <br />
-          Project
+          پروژه‌ای
+          <br />
+          آرام
         </h2>
         <hr />
         <p className="addr">
@@ -30,26 +31,26 @@ export default function Contact() {
             target="_blank"
             rel="noopener"
           >
-            Bredgade 47, 1260 Copenhagen, Denmark
+            خیابان بردگید 47، 1260 کپنهاگ، دانمارک
           </a>
         </p>
         <p className="note">
-          We take on a small number of commissions each year,{" "}
+          هر سال شمارِ محدودی پروژه می‌پذیریم؛{" "}
           <br />
-          chosen for their depth, site and shared intent.
+          پروژه‌هایی که برای عمق، بستر و نیتِ مشترکشان برگزیده می‌شوند.
         </p>
         <a
           href="mailto:studio@monolithatelier.com"
           className="link-underline strong"
         >
-          START A CONVERSATION &nbsp;→
+          آغاز گفت‌وگو &nbsp;→
         </a>
       </div>
 
       <div className="contact-image" data-reveal="image-reveal">
         <Image
           src="/images/contact-stairs.png"
-          alt="Pale stone stair with olive tree"
+          alt="پلکان سنگیِ روشن با درخت زیتون"
           fill
           sizes="(max-width: 960px) 100vw, 50vw"
           style={{ objectFit: "cover" }}

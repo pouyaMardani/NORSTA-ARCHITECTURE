@@ -16,10 +16,10 @@ import { useEffect, useState } from "react";
  */
 
 const LINKS = [
-  { href: "#services", label: "Practice" },
-  { href: "#about", label: "Studio" },
-  { href: "#work", label: "Works" },
-  { href: "#contact", label: "Contact" },
+  { href: "#services", label: "حوزه فعالیت" },
+  { href: "#about", label: "استودیو" },
+  { href: "#work", label: "پروژه‌ها" },
+  { href: "#contact", label: "تماس" },
 ] as const;
 
 /** Matches the hamburger breakpoint in `globals.css`. */
@@ -81,7 +81,7 @@ export default function Nav() {
       <button
         type="button"
         className="nav-toggle"
-        aria-label={open ? "Close menu" : "Open menu"}
+        aria-label={open ? "بستن منو" : "باز کردن منو"}
         aria-expanded={open}
         aria-controls="primary-navigation"
         onClick={() => setOpen((v) => !v)}
@@ -95,7 +95,7 @@ export default function Nav() {
       <nav
         id="primary-navigation"
         className="nav-links"
-        aria-label="Primary"
+        aria-label="ناوبری اصلی"
         aria-hidden={collapsed}
         inert={collapsed}
       >

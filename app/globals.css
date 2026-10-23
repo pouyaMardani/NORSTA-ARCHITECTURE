@@ -15,14 +15,42 @@
   --ink-soft:#3a3833;
   --muted:#8a857a;
   --hair:#d3c8b6;
+
+  /* Latin faces — now reserved for the kept-English brand text only:
+     `NORSTA` (hero wordmark, Cormorant) and `NORSTA HOME` (header/footer, Inter). */
   --serif:var(--font-serif), "Times New Roman", serif;
   --sans:var(--font-sans), -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+
+  /* Persian body face — Vazirmatn (variable, 100–900), self-hosted. */
+  --fa:var(--font-vazirmatn), "Vazirmatn", "Segoe UI", Tahoma, system-ui, Arial, sans-serif;
+
+  /* ---- Persian type scale ----
+     Persian glyphs are optically denser than Latin, so the display sizes are
+     trimmed slightly and the body sizes raised a touch; hierarchy between
+     display / heading / title / lede / body / ui / meta is kept intact. */
+  --fs-display:clamp(52px, 7.2vw, 120px);    /* work + contact display            */
+  --fs-subdisplay:clamp(46px, 6.5vw, 104px); /* practice + studio display         */
+  --fs-title:clamp(26px, 2.7vw, 42px);       /* service + project card titles     */
+  --fs-lede:clamp(21px, 2vw, 31px);        /* serif intro paragraphs          */
+  --fs-body:1.0625rem;                     /* 17px — descriptions, notes      */
+  --fs-ui:0.9375rem;                       /* 15px — nav, buttons, address    */
+  --fs-meta:0.8125rem;                     /* 13px — locations, captions      */
+  --fs-caption:0.75rem;                    /* 12px — eyebrows, footer, labels */
+
+  --lh-heading:1.28;                       /* 1.2–1.4 for Persian headings    */
+  --lh-body:1.75;                          /* 1.5–1.8 for Persian body copy   */
+
+  /* Persian script does not tolerate the wide tracking the Latin original used
+     for its all-caps micro-labels (it visually pulls the joined letters apart),
+     so micro-labels get a restrained value instead. */
+  --track-meta:0.01em;
+
   --pad-x: clamp(28px, 6vw, 96px);
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+html,body{background:var(--bg);color:var(--ink);font-family:var(--fa);-webkit-font-smoothing:antialiased}
 body{overflow-x:hidden}
 img{display:block;width:100%;height:100%;object-fit:cover}
 a{color:inherit;text-decoration:none}
@@ -110,7 +138,7 @@ a{color:inherit;text-decoration:none}
 .arrow-link{display:inline-block;transition:transform .5s cubic-bezier(.22,.61,.36,1)}
 .arrow-link:hover{transform:translateX(8px)}
 .view{transition:letter-spacing .5s cubic-bezier(.22,.61,.36,1),opacity .3s}
-.view:hover{letter-spacing:.32em;opacity:.75}
+.view:hover{letter-spacing:.06em;opacity:.75}
 
 /* Scroll cue gentle pulse */
 @keyframes scroll-pulse{
@@ -161,7 +189,7 @@ a{color:inherit;text-decoration:none}
   font-family:var(--sans);font-weight:400;letter-spacing:.32em;font-size:14px;color:var(--ink);
 }
 .nav-links{display:flex;gap:48px}
-.nav-links a{font-size:15px;font-weight:400;color:var(--ink);letter-spacing:.02em}
+.nav-links a{font-size:var(--fs-ui);font-weight:500;color:var(--ink);letter-spacing:0}
 .nav-links a:hover{opacity:.6}
 
 /* ============== HERO ============== */
@@ -180,8 +208,8 @@ a{color:inherit;text-decoration:none}
   white-space:nowrap;
 }
 .hero-copy p{
-  margin-top:28px;font-family:var(--serif);font-weight:400;
-  font-size:clamp(18px,1.6vw,24px);line-height:1.5;color:var(--ink-soft);
+  margin-top:28px;font-family:var(--fa);font-weight:400;
+  font-size:clamp(18px,1.6vw,23px);line-height:1.7;color:var(--ink-soft);
 }
 .hero-copy .link-underline{margin-top:36px;display:inline-block}
 
@@ -205,23 +233,24 @@ a{color:inherit;text-decoration:none}
 .scroll-cue{
   position:absolute;left:50%;bottom:28px;transform:translateX(-50%);
   z-index:4;display:flex;flex-direction:column;align-items:center;gap:8px;
-  font-size:12px;letter-spacing:.16em;color:var(--ink-soft);
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);color:var(--ink-soft);
 }
 .scroll-cue i{display:block;width:1px;height:36px;background:var(--ink-soft);opacity:.7}
 .scroll-cue a{display:flex;flex-direction:column;align-items:center;gap:8px;color:inherit}
 
 /* ============== LINKS ============== */
 .link-underline{
-  font-family:var(--serif);font-size:20px;color:var(--ink);
+  font-family:var(--fa);font-size:clamp(18px,1.4vw,21px);color:var(--ink);
   border-bottom:1px solid var(--ink);padding-bottom:6px;
+  unicode-bidi:isolate;   /* keeps the trailing “→” to the right, layout stays LTR */
 }
 .link-underline.strong{
-  font-family:var(--sans);font-size:13px;letter-spacing:.22em;font-weight:500;
-  border-bottom-width:1px;padding-bottom:10px;
+  font-family:var(--fa);font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  font-weight:500;border-bottom-width:1px;padding-bottom:10px;
 }
 .eyebrow{
-  display:inline-block;font-size:12px;letter-spacing:.32em;font-weight:500;
-  color:var(--ink-soft);
+  display:inline-block;font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  font-weight:500;color:var(--ink-soft);unicode-bidi:isolate;
 }
 
 /* ============== SERVICES ============== */
@@ -235,9 +264,10 @@ a{color:inherit;text-decoration:none}
 .about-copy h2,
 .work h2,
 .contact h2{
-  font-family:var(--serif);font-weight:400;letter-spacing:-.01em;color:var(--ink);
+  font-family:var(--fa);font-weight:600;letter-spacing:0;color:var(--ink);
+  line-height:var(--lh-heading);
 }
-.section-head h2{font-size:clamp(56px,7vw,108px);line-height:1;margin-top:18px}
+.section-head h2{font-size:var(--fs-subdisplay);margin-top:18px}
 
 .service-list{list-style:none;max-width:1100px;position:relative;z-index:2}
 .service-list li{
@@ -249,15 +279,18 @@ a{color:inherit;text-decoration:none}
 }
 .service-list li:last-child{border-bottom:1px solid var(--hair)}
 .service-list .num{
-  font-family:var(--serif);font-size:34px;color:var(--muted);font-weight:300;
+  font-family:var(--fa);font-size:34px;color:var(--muted);font-weight:300;
 }
 .service-list h3{
-  font-family:var(--serif);font-weight:400;
-  font-size:clamp(40px,4.6vw,72px);line-height:1;color:var(--ink);
-  white-space:nowrap;
+  font-family:var(--fa);font-weight:600;
+  font-size:var(--fs-title);line-height:var(--lh-heading);color:var(--ink);
+  /* Persian titles wrap to two lines instead of the Latin original's single
+     `nowrap` line, and are allowed to break long words rather than overflow. */
+  white-space:normal;
+  overflow-wrap:break-word;
 }
 .service-list p{
-  font-size:15px;line-height:1.7;color:var(--ink-soft);max-width:380px;
+  font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-soft);max-width:380px;
 }
 
 .services-edge{
@@ -284,24 +317,25 @@ a{color:inherit;text-decoration:none}
 }
 .about-image{position:relative;aspect-ratio:4/5;overflow:hidden}
 .about-copy{padding-right:4%}
-.about-copy h2{font-size:clamp(56px,6.4vw,104px);line-height:1;margin:24px 0 56px}
+.about-copy h2{font-size:var(--fs-subdisplay);margin:22px 0 46px}
 .about-copy .lede{
-  font-family:var(--serif);font-weight:400;
-  font-size:clamp(22px,2.1vw,32px);line-height:1.4;color:var(--ink);
+  font-family:var(--fa);font-weight:400;
+  font-size:var(--fs-lede);line-height:1.6;color:var(--ink);
   max-width:620px;
 }
 .about-copy .sub{
-  margin-top:32px;font-size:15px;line-height:1.75;color:var(--ink-soft);max-width:520px;
+  margin-top:32px;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-soft);max-width:520px;
 }
 .metrics{
   display:flex;gap:96px;margin-top:96px;
 }
 .metrics .num{
-  display:block;font-family:var(--serif);font-weight:400;
-  font-size:clamp(56px,5.6vw,88px);line-height:1;color:var(--ink);
+  display:block;font-family:var(--fa);font-weight:600;
+  font-size:clamp(52px,5.2vw,80px);line-height:1.1;color:var(--ink);
 }
 .metrics .label{
-  display:block;margin-top:18px;font-size:12px;letter-spacing:.28em;color:var(--ink-soft);
+  display:block;margin-top:18px;font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  color:var(--ink-soft);
 }
 
 /* ============== SELECTED WORK ============== */
@@ -310,9 +344,9 @@ a{color:inherit;text-decoration:none}
   display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end;
   margin-bottom:72px;
 }
-.work-head h2{font-size:clamp(64px,7.4vw,124px);line-height:1;margin-top:14px}
+.work-head h2{font-size:var(--fs-display);margin-top:14px}
 .work-lede{
-  position:relative;font-size:15px;line-height:1.7;color:var(--ink-soft);
+  position:relative;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-soft);
   max-width:440px;justify-self:end;
 }
 .arrow-link{display:block;margin-top:24px;font-size:22px;color:var(--ink)}
@@ -334,19 +368,21 @@ a{color:inherit;text-decoration:none}
   border-top:1px solid var(--hair);margin-top:22px;
 }
 .proj-meta .num{
-  grid-column:1/-1;font-family:var(--serif);color:var(--muted);font-size:18px;
+  grid-column:1/-1;font-family:var(--fa);color:var(--muted);font-size:18px;
   margin-bottom:-6px;
 }
 .proj-meta h3{
-  font-family:var(--serif);font-weight:400;font-size:clamp(28px,2.4vw,38px);
-  line-height:1.05;color:var(--ink);
+  font-family:var(--fa);font-weight:600;font-size:var(--fs-title);
+  line-height:var(--lh-heading);color:var(--ink);
 }
 .proj-meta .loc{
-  display:block;margin-top:6px;font-size:12px;letter-spacing:.22em;color:var(--ink-soft);
+  display:block;margin-top:6px;font-size:var(--fs-meta);letter-spacing:var(--track-meta);
+  color:var(--ink-soft);unicode-bidi:isolate;
 }
 .proj-meta .view{
-  font-size:11px;letter-spacing:.24em;color:var(--ink);
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);color:var(--ink);
   border-bottom:1px solid var(--ink);padding-bottom:4px;white-space:nowrap;
+  unicode-bidi:isolate;
 }
 
 /* ============== CONTACT ============== */
@@ -359,17 +395,18 @@ a{color:inherit;text-decoration:none}
   display:flex;flex-direction:column;justify-content:center;max-width:880px;
 }
 .contact-copy h2{
-  font-size:clamp(64px,7.6vw,128px);line-height:.98;margin:36px 0 56px;
+  font-size:var(--fs-display);margin:36px 0 56px;
 }
 .contact-copy hr{
   border:none;border-top:1px solid var(--hair);margin:0 0 36px;width:62%;
 }
 .addr{
   display:flex;align-items:center;gap:14px;
-  font-size:15px;color:var(--ink);margin-bottom:28px;
+  font-size:var(--fs-ui);color:var(--ink);margin-bottom:28px;
 }
 .addr svg{flex:none;color:var(--ink)}
-.note{font-size:15px;line-height:1.75;color:var(--ink-soft);margin-bottom:48px;max-width:420px}
+.addr a{unicode-bidi:isolate}
+.note{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-soft);margin-bottom:48px;max-width:420px}
 
 .contact-image{position:relative}
 .contact-image::before{
@@ -382,9 +419,12 @@ a{color:inherit;text-decoration:none}
 .foot{
   display:flex;justify-content:space-between;align-items:center;
   padding:36px var(--pad-x);
-  font-size:12px;letter-spacing:.22em;color:var(--ink-soft);
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);color:var(--ink-soft);
   border-top:1px solid var(--hair);background:var(--bg);
 }
+.foot span{unicode-bidi:isolate}
+/* The footer wordmark stays on the Latin brand face. */
+.foot span:first-child{font-family:var(--sans);letter-spacing:.22em}
 
 /* ============== RESPONSIVE ============== */
 @media (max-width: 960px){
@@ -431,9 +471,10 @@ a{color:inherit;text-decoration:none}
 .lb-cap{
   display:flex;justify-content:space-between;align-items:baseline;
   width:100%;color:#e8dfd2;
-  font-family:var(--sans);font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+  font-family:var(--fa);font-size:var(--fs-meta);letter-spacing:var(--track-meta);
+  text-transform:none;
 }
-.lb-title{font-family:var(--serif);font-size:20px;letter-spacing:.02em;text-transform:none;color:#f3e9de}
+.lb-title{font-family:var(--fa);font-weight:600;font-size:21px;letter-spacing:0;text-transform:none;color:#f3e9de}
 .lb-loc{color:#9c9485}
 .lb-close,.lb-nav{
   position:absolute;background:transparent;border:1px solid rgba(243,233,222,.22);
@@ -523,7 +564,7 @@ body.menu-open{overflow:hidden}
     opacity:1;visibility:visible;pointer-events:auto;transform:none;
   }
   .nav-links a{
-    padding:15px 4px;font-size:15px;letter-spacing:.05em;
+    padding:15px 4px;font-size:1rem;letter-spacing:0;font-weight:500;
   }
   .nav-links a + a{border-top:1px solid var(--hair)}
   .nav-links a::after{display:none}
@@ -533,27 +574,27 @@ body.menu-open{overflow:hidden}
   .hero-copy h1{
     font-size:clamp(56px,17vw,120px);white-space:normal;
   }
-  .hero-copy p{margin-top:20px;font-size:clamp(16px,4.6vw,19px);}
+  .hero-copy p{margin-top:20px;font-size:clamp(17px,4.7vw,20px);line-height:1.75;}
   /* The desktop line breaks are too wide for a phone; let the text reflow. */
   .hero-copy p br{display:none}
-  .hero-copy .link-underline{font-size:17px;margin-top:28px}
+  .hero-copy .link-underline{font-size:1.0625rem;margin-top:28px}
   .hero-image{height:50%}
-  .scroll-cue{bottom:18px;font-size:11px}
+  .scroll-cue{bottom:18px;font-size:var(--fs-caption)}
   .scroll-cue i{height:28px}
 
   /* Practice / Areas of work */
   .services{padding:104px var(--pad-x) 120px}
   .section-head{margin-bottom:56px}
-  .section-head h2{font-size:clamp(40px,11.5vw,64px)}
+  .section-head h2{font-size:clamp(34px,9.8vw,56px)}
   .service-list li{
-    grid-template-columns:48px 1fr;gap:16px;padding:30px 0;
+    grid-template-columns:44px 1fr;gap:16px;padding:30px 0;
   }
   .service-list .num{font-size:22px}
   .service-list h3{
-    font-size:clamp(28px,7.6vw,40px);white-space:normal;
-    overflow-wrap:anywhere;
+    font-size:clamp(24px,6.6vw,34px);
+    overflow-wrap:break-word;
   }
-  .service-list p{font-size:14px}
+  .service-list p{font-size:1rem;line-height:var(--lh-body)}
   /* Authored line breaks read as orphans on a phone; the source keeps a
      trailing space before each <br> so dropping them never joins words. */
   .service-list p br{display:none}
@@ -561,36 +602,37 @@ body.menu-open{overflow:hidden}
   /* Studio */
   .about{padding-top:96px;padding-bottom:110px;gap:40px}
   .about-copy{padding-right:0}
-  .about-copy h2{font-size:clamp(40px,11.5vw,64px);margin:18px 0 30px}
-  .about-copy .lede{font-size:clamp(19px,4.8vw,23px)}
+  .about-copy h2{font-size:clamp(36px,10.2vw,58px);margin:18px 0 30px}
+  .about-copy .lede{font-size:clamp(19px,4.8vw,23px);line-height:1.65}
   .about-copy .sub{margin-top:24px}
   .metrics{gap:32px 48px;margin-top:54px}
-  .metrics .num{font-size:clamp(46px,12vw,64px)}
+  .metrics .num{font-size:clamp(44px,11.5vw,62px)}
   [data-reveal="metrics-rule"]::before{top:-24px}
 
   /* Recent projects */
   .work{padding:92px var(--pad-x) 118px}
   .work-head{margin-bottom:48px;gap:20px}
-  .work-head h2{font-size:clamp(42px,12vw,72px)}
-  .work-lede{max-width:none;font-size:14px}
+  .work-head h2{font-size:clamp(36px,10.2vw,60px)}
+  .work-lede{max-width:none;font-size:1rem}
   .work-lede br{display:none}
   .arrow-link{font-size:19px}
   .work-grid{gap:44px}
   .proj-meta{grid-template-columns:1fr;row-gap:8px}
   .proj-meta .num{margin-bottom:0}
-  .proj-meta h3{font-size:clamp(24px,6.4vw,32px)}
+  .proj-meta h3{font-size:clamp(23px,6.2vw,32px)}
   .proj-meta .view{justify-self:start}
 
   /* Contact */
   .contact-copy{padding:92px var(--pad-x) 72px}
-  .contact-copy h2{font-size:clamp(42px,12.5vw,72px);margin:22px 0 34px}
+  .contact-copy h2{font-size:clamp(36px,10.6vw,60px);margin:22px 0 34px}
   .contact-copy hr{width:100%;margin-bottom:28px}
   .note{margin-bottom:34px}
   .note br{display:none}
-  .link-underline.strong{font-size:12px;letter-spacing:.2em}
+  .link-underline.strong{font-size:0.8125rem;letter-spacing:var(--track-meta)}
 
   /* Footer */
-  .foot{padding:26px var(--pad-x);font-size:11px;letter-spacing:.18em;gap:12px}
+  .foot{padding:26px var(--pad-x);font-size:0.75rem;letter-spacing:var(--track-meta);gap:12px}
+  .foot span:first-child{letter-spacing:.18em}
 }
 
 /* ---------- ≤440px : very small phones ---------- */
@@ -599,6 +641,6 @@ body.menu-open{overflow:hidden}
   .foot{flex-direction:column;align-items:flex-start;gap:8px}
   .addr{align-items:flex-start}
   .addr a{min-width:0;overflow-wrap:anywhere}
-  .service-list h3{font-size:clamp(26px,8vw,32px)}
+  .service-list h3{font-size:clamp(22px,7.2vw,28px)}
 }
 

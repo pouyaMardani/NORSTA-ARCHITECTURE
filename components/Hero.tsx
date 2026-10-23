@@ -2,19 +2,19 @@ export default function Hero() {
   return (
     <section className="hero" id="top">
       <div className="hero-copy">
+        {/* Brand wordmark — intentionally kept in English. */}
         <h1 className="hero-title">
           <span className="line">
             <span>NORSTA</span>
           </span>
-
         </h1>
         <p data-reveal="fade-up" data-delay="600">
-          Architecture shaped by silence, weight, and{" "}
+          معماری‌ای که با سکوت، وزن و{" "}
           <br />
-          the slow passage of light through space.
+          گذرِ آرام نور در فضا شکل می‌گیرد.
         </p>
         <a href="#work" className="link-underline" data-reveal="fade-up" data-delay="800">
-          Explore Works
+          مشاهده پروژه‌ها
         </a>
       </div>
 
@@ -34,7 +34,7 @@ export default function Hero() {
 
       <div className="scroll-cue" data-reveal="fade-up" data-delay="1100">
         <a href="#services">
-          <span>Scroll</span>
+          <span>پایین</span>
           <i />
         </a>
       </div>

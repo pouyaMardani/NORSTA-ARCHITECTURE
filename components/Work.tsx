@@ -13,26 +13,26 @@ type Project = {
 const PROJECTS: Project[] = [
   {
     num: "01",
-    title: "House on the Fjord",
-    loc: "BERGEN, 2024",
+    title: "خانه‌ی کنار فیورد",
+    loc: "برگن، 2024",
     src: "/images/project-minimal-residence.png",
-    alt: "House on the Fjord",
+    alt: "خانه‌ی کنار فیورد",
     large: true,
   },
   {
     num: "02",
-    title: "Foundry Offices",
-    loc: "COPENHAGEN, 2023",
+    title: "دفاتر ریخته‌گری",
+    loc: "کپنهاگ، 2023",
     src: "/images/project-corporate-headquarters.png",
-    alt: "Atelier Headquarters",
+    alt: "ساختمان مرکزی استودیو",
     delay: 120,
   },
   {
     num: "03",
-    title: "Tea Pavilion",
-    loc: "KYOTO, 2023",
+    title: "پاویون چای",
+    loc: "کیوتو، 2023",
     src: "/images/project-cultural-center.png",
-    alt: "Tea Pavilion",
+    alt: "پاویون چای",
     delay: 240,
   },
 ];
@@ -42,16 +42,16 @@ export default function Work() {
     <section id="work" className="work">
       <div className="work-head" data-reveal="fade-up">
         <div>
-          <span className="eyebrow">4 / 5 &nbsp;&nbsp; SELECTED WORKS</span>
-          <h2>Recent Projects</h2>
+          <span className="eyebrow">4 / 5 &nbsp;&nbsp; پروژه‌های منتخب</span>
+          <h2>پروژه‌های اخیر</h2>
         </div>
         <p className="work-lede">
-          A small selection of built work — studies in{" "}
+          گزیده‌ای کوچک از پروژه‌های اجراشده؛{" "}
           <br />
-          mass, threshold and light, drawn from the{" "}
+          پژوهش‌هایی در جرم، آستانه و نور که از{" "}
           <br />
-          atelier&rsquo;s ongoing pursuit of quiet form.
-          <a href="#work" className="arrow-link" aria-label="Jump to works">
+          جست‌وجوی پیوسته‌ی استودیو برای فرمی آرام برآمده‌اند.
+          <a href="#work" className="arrow-link" aria-label="پرش به پروژه‌ها">
             →
           </a>
         </p>
@@ -80,7 +80,7 @@ export default function Work() {
               <h3>{project.title}</h3>
               <span className="loc">{project.loc}</span>
               <a href="#" className="view" data-open-lightbox="">
-                VIEW PROJECT &nbsp;→
+                مشاهده‌ی پروژه &nbsp;→
               </a>
             </div>
           </article>

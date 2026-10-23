@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "audit:responsive": "node scripts/responsive-audit.mjs"
+    "audit:responsive": "node scripts/responsive-audit.mjs",
+    "verify:fa": "node scripts/verify-fa.mjs"
   },
   "dependencies": {
     "next": "^15.5.28",

@@ -10,9 +10,9 @@ export default function Lightbox() {
       id="lightbox"
       aria-hidden="true"
       role="dialog"
-      aria-label="Project image viewer"
+      aria-label="نمایشگر تصویر پروژه"
     >
-      <button className="lb-close" type="button" aria-label="Close">
+      <button className="lb-close" type="button" aria-label="بستن">
         <svg
           width="22"
           height="22"
@@ -25,7 +25,7 @@ export default function Lightbox() {
           <path d="M5 5l14 14M19 5L5 19" />
         </svg>
       </button>
-      <button className="lb-nav lb-prev" type="button" aria-label="Previous">
+      <button className="lb-nav lb-prev" type="button" aria-label="قبلی">
         <svg
           width="28"
           height="28"
@@ -38,7 +38,7 @@ export default function Lightbox() {
           <path d="M15 5l-7 7 7 7" />
         </svg>
       </button>
-      <button className="lb-nav lb-next" type="button" aria-label="Next">
+      <button className="lb-nav lb-next" type="button" aria-label="بعدی">
         <svg
           width="28"
           height="28"
