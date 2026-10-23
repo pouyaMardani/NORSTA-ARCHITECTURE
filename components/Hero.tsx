@@ -11,7 +11,7 @@ export default function Hero() {
         <p data-reveal="fade-up" data-delay="600">
           معماری‌ای که با سکوت، وزن و{" "}
           <br />
-          گذرِ آرام نور در فضا شکل می‌گیرد.
+          .گذرِ آرام نور در فضا شکل می‌گیرد
         </p>
         <a href="#work" className="link-underline" data-reveal="fade-up" data-delay="800">
           مشاهده پروژه‌ها

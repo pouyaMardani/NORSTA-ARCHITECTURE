@@ -11,16 +11,16 @@ type Project = {
 };
 
 const PROJECTS: Project[] = [
+  // {
+  //   num: "01",
+  //   title: "خانه‌ی کنار تهرانپارس",
+  //   loc: "برگن، 2024",
+  //   src: "/images/project-minimal-residence.png",
+  //   alt: "خانه‌ی کنار تهرانپارس",
+  //   large: true,
+  // },
   {
     num: "01",
-    title: "خانه‌ی کنار فیورد",
-    loc: "برگن، 2024",
-    src: "/images/project-minimal-residence.png",
-    alt: "خانه‌ی کنار فیورد",
-    large: true,
-  },
-  {
-    num: "02",
     title: "دفاتر ریخته‌گری",
     loc: "کپنهاگ، 2023",
     src: "/images/project-corporate-headquarters.png",
@@ -28,12 +28,29 @@ const PROJECTS: Project[] = [
     delay: 120,
   },
   {
-    num: "03",
+    num: "02",
     title: "پاویون چای",
     loc: "کیوتو، 2023",
-    src: "/images/project-cultural-center.png",
+    src: "/images/proj3.png",
     alt: "پاویون چای",
     delay: 240,
+  },
+  {
+    num: "03",
+    title: "دفاتر ریخته‌گری",
+    loc: "کپنهاگ، 2023",
+    src: "/images/project-cultural-center.png",
+    alt: "ساختمان مرکزی استودیو",
+    delay: 360,
+  },
+  {
+    num: "04",
+    title: "پاویون چای",
+    loc: "کیوتو، 2023",
+    src: "/images/proj4.png",
+    alt: "پاویون چای",
+    delay: 480,
+    large:true
   },
 ];
 
@@ -77,8 +94,8 @@ export default function Work() {
             </figure>
             <div className="proj-meta">
               <span className="num">{project.num}</span>
-              <h3>{project.title}</h3>
               <span className="loc">{project.loc}</span>
+              <h3>{project.title}</h3>
               <a href="#" className="view" data-open-lightbox="">
                 مشاهده‌ی پروژه &nbsp;→
               </a>
