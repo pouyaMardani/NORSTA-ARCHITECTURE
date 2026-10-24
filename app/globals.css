@@ -2159,3 +2159,823 @@ body.lb-open .to-top{
   .route-loader-rule i{transform:translate3d(-130%,0,0)}
 }
 
+
+/* =====================================================================
+   ACADEMY  (microcement lessons)
+   The home page's academy block, the landing page at /academy and the
+   lesson pages under it.
+
+   Same construction as the magazine above: the site's own type scale, its
+   hairline-and-plate vocabulary and its asymmetric corner family, on the
+   same deep warm charcoal. The home-page block therefore continues the dark
+   stretch the magazine opens, with no light gap between them, and /academy
+   reads as another room of this site rather than a separately designed
+   course platform.
+
+   Tokens are scoped to `.aca` (the home-page block) and `.aca-shell` (every
+   /academy route), so nothing here can leak into a light section.
+
+   Layout contract
+   ──────────────
+   • `.aca`         the home-page block (between the magazine and the craftsman)
+   • `.aca-shell`   the wrapper of every /academy route
+   • `.aca-hero`    the landing page's entrance
+   • `.aca-grid`    the shared lesson grid (the landing row and related lessons)
+   • `.aca-post`    one lesson
+   • `.aca-player`  a lesson's media plate
+   ===================================================================== */
+
+.aca,
+.aca-shell{
+  --aca-bg:#100e0b;                        /* the magazine's own charcoal   */
+  --aca-bg-2:#161311;
+  --aca-surface:#1c1815;
+  --aca-ink:#f3e9de;
+  --aca-ink-soft:rgba(243,233,222,.74);
+  --aca-muted:rgba(243,233,222,.52);
+  --aca-hair:rgba(243,233,222,.14);
+  --aca-hair-2:rgba(243,233,222,.32);
+  --aca-accent:#c9ab84;
+  --aca-radius:clamp(18px,1.8vw,28px) 2px clamp(18px,1.8vw,28px) 2px;
+  --aca-gap:clamp(20px,2.2vw,34px);
+  --aca-pad-y:clamp(96px,9.6vw,150px);
+  /* One measure for every academy column, the way the magazine has its own:
+     the hero's copy, the section heads, the lesson rows and the grid all line
+     up on it, so nothing on /academy is off by a few pixels. */
+  --aca-wrap:1180px;
+}
+
+/* ---------- Academy shell (/academy and below) ---------- */
+.aca-shell{
+  min-height:100vh;
+  background:var(--aca-bg);
+  color:var(--aca-ink);
+}
+
+/* The site's own footer, re-toned for the academy's ground. Same markup,
+   same component — only the colours change. */
+.aca-shell .foot{
+  background:var(--aca-bg);
+  border-top-color:var(--aca-hair);
+  color:var(--aca-ink-soft);
+}
+
+/* ---------- Pieces shared by every academy screen ---------- */
+.aca-eyebrow{color:var(--aca-accent)}
+
+/* The button. One shape in two weights: a solid ivory plate for the action a
+   section is actually asking for, and a hairline ghost for the quieter one. */
+.aca-btn{
+  display:inline-flex;align-items:center;gap:.75em;
+  padding:.95em 1.5em;
+  border:1px solid transparent;border-radius:2px;
+  font-size:var(--fs-ui);
+  transition:background-color .45s ease,border-color .45s ease,
+             color .45s ease;
+}
+.aca-btn-arrow,
+.aca-btn-glyph{
+  display:inline-flex;flex:0 0 auto;width:1.1em;height:1.1em;
+  transition:transform .5s cubic-bezier(.22,.61,.36,1);
+}
+.aca-btn svg{width:100%;height:100%}
+.aca-btn-solid{
+  background:var(--aca-ink);border-color:var(--aca-ink);color:var(--aca-bg);
+}
+.aca-btn-ghost{border-color:var(--aca-hair-2);color:var(--aca-ink)}
+.aca-btn:focus-visible{outline:2px solid var(--aca-accent);outline-offset:4px}
+@media (hover:hover){
+  .aca-btn-solid:hover{background:var(--aca-accent);border-color:var(--aca-accent)}
+  .aca-btn-ghost:hover{border-color:var(--aca-ink)}
+  /* Both arrows travel to the left: in this register onwards is leftwards. */
+  .aca-btn:hover .aca-btn-arrow{transform:translate3d(-4px,0,0)}
+}
+/* ---------- The home-page block ----------
+   It is not a banner: it is an index of what the academy contains — the three
+   free lessons, by name, with their own plates. The hairline above it is the
+   seam between the magazine's card row and this list. */
+.aca{
+  position:relative;
+  padding:clamp(64px,6vw,96px) var(--pad-x) var(--aca-pad-y);
+  background:var(--aca-bg);
+  color:var(--aca-ink);
+}
+.aca::before{
+  content:"";position:absolute;top:0;inset-inline:var(--pad-x);
+  height:1px;background:var(--aca-hair);
+}
+
+.aca-head{
+  display:grid;grid-template-columns:1.02fr .98fr;
+  gap:clamp(28px,4vw,84px);align-items:end;
+  padding-bottom:clamp(34px,3.6vw,56px);
+  border-bottom:1px solid var(--aca-hair);
+  max-width:var(--aca-wrap);margin-inline:auto;
+  margin-bottom:clamp(38px,4vw,60px);
+}
+.aca-promo-title{
+  margin-top:18px;max-width:18ch;
+  font-family:var(--fa);font-weight:600;letter-spacing:0;
+  font-size:var(--fs-subdisplay);line-height:var(--lh-heading);
+  color:var(--aca-ink);
+}
+.aca-head-copy{display:flex;flex-direction:column;align-items:flex-start}
+.aca-promo-body{
+  max-width:52ch;
+  font-size:clamp(16px,1.15vw,19px);line-height:1.9;
+  color:var(--aca-ink-soft);
+}
+
+/* The link into the academy: the magazine's underlined label, with the count
+   of free lessons carried beside it rather than in a badge of its own. */
+.aca-all{
+  display:inline-flex;align-items:center;gap:.8em;
+  margin-top:clamp(22px,2.4vw,32px);
+  padding-bottom:9px;
+  border-bottom:1px solid var(--aca-hair-2);
+  font-size:var(--fs-ui);color:var(--aca-ink);
+  transition:border-color .4s ease,color .4s ease;
+}
+.aca-all-count{font-size:var(--fs-caption);color:var(--aca-muted)}
+.aca-all-arrow{
+  display:inline-flex;width:1.15em;height:1.15em;
+  transition:transform .5s cubic-bezier(.22,.61,.36,1);
+}
+.aca-all-arrow svg{width:100%;height:100%}
+.aca-all:hover{border-bottom-color:var(--aca-accent)}
+.aca-all:hover .aca-all-arrow{transform:translate3d(-5px,0,0)}
+.aca-all:focus-visible{outline:2px solid var(--aca-accent);outline-offset:4px}
+
+/* ---------- The index itself ----------
+   One row per lesson: its own plate, its number and title, one arrow. The rows
+   are separated by hairlines instead of being boxed, so the block reads as a
+   table of contents rather than as a second row of cards. */
+.aca-index{
+  list-style:none;max-width:var(--aca-wrap);margin-inline:auto;
+  border-top:1px solid var(--aca-hair);
+}
+.aca-index-item{
+  position:relative;
+  display:grid;grid-template-columns:132px minmax(0,1fr) 1.15em;
+  gap:clamp(18px,2.4vw,36px);align-items:center;
+  padding:clamp(20px,2.2vw,30px) 0;
+  border-bottom:1px solid var(--aca-hair);
+  transition:border-color .45s ease;
+}
+/* A fixed 4/3 crop, so every row's type starts on the same line whatever the
+   copy beside it does. */
+.aca-index-thumb{
+  position:relative;aspect-ratio:4/3;overflow:hidden;
+  border-radius:var(--aca-radius);
+  background:var(--aca-surface);
+}
+.aca-index-thumb img{transition:transform 1.2s cubic-bezier(.22,.61,.36,1)}
+.aca-index-body{min-width:0}
+.aca-index-meta{
+  display:flex;align-items:center;gap:10px;
+  font-size:var(--fs-meta);letter-spacing:var(--track-meta);
+  color:var(--aca-muted);
+}
+.aca-index-num{color:var(--aca-ink-soft)}
+.aca-index-title{
+  margin-top:8px;
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(20px,1.75vw,29px);line-height:var(--lh-heading);
+  color:var(--aca-ink);
+}
+.aca-index-link{transition:color .4s ease}
+/* Stretched link: the row is the target, the title stays the name. */
+.aca-index-link::after{content:"";position:absolute;inset:0}
+.aca-index-link:focus-visible{outline:2px solid var(--aca-accent);outline-offset:4px}
+.aca-index-summary{
+  margin-top:10px;max-width:70ch;
+  font-size:var(--fs-body);line-height:1.8;color:var(--aca-ink-soft);
+}
+.aca-index-arrow{
+  display:inline-flex;width:1.15em;height:1.15em;
+  color:var(--aca-muted);
+  transition:transform .5s cubic-bezier(.22,.61,.36,1),color .4s ease;
+}
+.aca-index-arrow svg{width:100%;height:100%}
+@media (hover:hover){
+  .aca-index-item:hover{border-bottom-color:var(--aca-hair-2)}
+  .aca-index-item:hover .aca-index-thumb img{transform:scale(1.05)}
+  .aca-index-item:hover .aca-index-arrow{
+    transform:translate3d(-5px,0,0);color:var(--aca-accent);
+  }
+}
+.aca-note{
+  max-width:var(--aca-wrap);margin:clamp(20px,2.2vw,30px) auto 0;
+  font-size:var(--fs-meta);color:var(--aca-muted);
+}
+/* ---------- Landing page: the entrance ----------
+   A single full-bleed still with the copy mounted on its lower edge — the
+   composition the magazine's article pages use, so the academy opens the same
+   way the magazine does. The copy column starts well below the header, which is
+   absolutely positioned over the top of the page. */
+.aca-hero{
+  position:relative;display:flex;align-items:flex-end;
+  min-height:min(86vh,820px);overflow:hidden;
+  background:var(--aca-surface);
+}
+.aca-hero-media{position:absolute;inset:0}
+.aca-hero-veil{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(to top,
+      rgba(8,7,5,.97) 0%,
+      rgba(10,8,6,.9) 26%,
+      rgba(12,10,8,.62) 52%,
+      rgba(12,10,8,.34) 74%,
+      rgba(16,14,11,.4) 100%),
+    linear-gradient(105deg,rgba(8,7,5,.72) 0%,rgba(8,7,5,.28) 46%,rgba(8,7,5,0) 78%);
+}
+.aca-hero-inner{
+  position:relative;z-index:2;width:100%;
+  max-width:var(--aca-wrap);margin-inline:auto;
+  padding:clamp(150px,14vw,210px) var(--pad-x) clamp(46px,4.6vw,80px);
+}
+.aca-hero-title{
+  margin-top:20px;max-width:22ch;
+  font-family:var(--fa);font-weight:600;letter-spacing:0;
+  font-size:clamp(38px,5.4vw,74px);line-height:1.24;
+  color:var(--aca-ink);
+}
+.aca-hero-lede{
+  margin-top:clamp(20px,2.2vw,30px);max-width:58ch;
+  font-size:clamp(17px,1.3vw,21px);line-height:1.95;
+  color:var(--aca-ink-soft);
+}
+.aca-hero-actions{
+  display:flex;flex-wrap:wrap;gap:14px;
+  margin-top:clamp(28px,3vw,42px);
+}
+/* Who the lessons are attributed to, and how many of them are open, on one
+   quiet line under the actions. */
+.aca-hero-credit{
+  display:flex;flex-wrap:wrap;align-items:center;gap:12px;
+  margin-top:clamp(30px,3.2vw,48px);padding-top:20px;
+  border-top:1px solid var(--aca-hair);
+  font-size:var(--fs-meta);letter-spacing:var(--track-meta);
+  color:var(--aca-muted);
+}
+
+/* ---------- Text blocks shared by the landing page and the 404 ---------- */
+.aca-page-title{
+  margin-top:16px;
+  font-family:var(--fa);font-weight:600;letter-spacing:0;
+  font-size:var(--fs-subdisplay);line-height:var(--lh-heading);
+  color:var(--aca-ink);
+}
+.aca-page-lede{
+  margin-top:clamp(20px,2.2vw,30px);max-width:56ch;
+  font-size:clamp(16px,1.2vw,19px);line-height:2;
+  color:var(--aca-ink-soft);
+}
+/* The 404 body: the header clearance the light sections use, since there is no
+   hero above it to sit under. */
+.aca-missing{
+  padding:clamp(140px,12vw,200px) var(--pad-x) var(--aca-pad-y);
+  max-width:var(--aca-wrap);margin-inline:auto;
+}
+.aca-empty-link{
+  display:inline-block;margin-top:clamp(22px,2.4vw,32px);padding-bottom:8px;
+  border-bottom:1px solid var(--aca-hair-2);
+  font-size:var(--fs-ui);color:var(--aca-ink);
+  transition:border-color .4s ease;
+}
+.aca-empty-link:hover{border-bottom-color:var(--aca-accent)}
+.aca-empty-link:focus-visible{outline:2px solid var(--aca-accent);outline-offset:4px}
+/* ---------- Landing page: the lessons ---------- */
+.aca-lessons{padding:var(--aca-pad-y) var(--pad-x)}
+.aca-lessons-head{
+  max-width:var(--aca-wrap);margin-inline:auto;
+  padding-bottom:clamp(30px,3.4vw,50px);
+  border-bottom:1px solid var(--aca-hair);
+  margin-bottom:clamp(38px,4vw,60px);
+}
+.aca-lessons-title{
+  margin-top:18px;max-width:20ch;
+  font-family:var(--fa);font-weight:600;letter-spacing:0;
+  font-size:var(--fs-subdisplay);line-height:var(--lh-heading);
+  color:var(--aca-ink);
+}
+.aca-lessons-intro{
+  margin-top:clamp(20px,2.2vw,30px);max-width:62ch;
+  font-size:clamp(16px,1.15vw,19px);line-height:1.9;
+  color:var(--aca-ink-soft);
+}
+/* The shared lesson grid: the landing page's row and a lesson page's
+   related-lessons row are the same grid. */
+.aca-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:var(--aca-gap);
+  max-width:var(--aca-wrap);margin-inline:auto;
+}
+/* A grid stamp, so a shorter card still fills its row's height. */
+.aca-grid-item{display:grid}
+
+/* ---------- Lesson card ----------
+   A photograph with the copy mounted on its lower half, like the magazine's
+   article card: the media fills the plate, the veil darkens it towards the
+   bottom so the type keeps contrast in every state, and the lesson number sits
+   in the upper corner. The title link is stretched over the whole plate by its
+   ::after, so the entire card is clickable while the link's accessible name
+   stays the lesson title. */
+.aca-card{
+  position:relative;display:flex;flex-direction:column;
+  aspect-ratio:4/5;overflow:hidden;
+  background:var(--aca-surface);
+  border:1px solid var(--aca-hair);border-radius:var(--aca-radius);
+  box-shadow:0 30px 60px -40px rgba(0,0,0,.95);
+  transition:transform .6s cubic-bezier(.22,.61,.36,1),
+             border-color .45s ease,
+             box-shadow .6s ease;
+}
+.aca-card-media{position:absolute;inset:0}
+.aca-card-media img{transition:transform 1.5s cubic-bezier(.22,.61,.36,1)}
+.aca-card-veil{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(to top,
+      rgba(9,8,6,.96) 0%,
+      rgba(9,8,6,.9) 22%,
+      rgba(9,8,6,.64) 44%,
+      rgba(9,8,6,.24) 66%,
+      rgba(9,8,6,0) 86%),
+    linear-gradient(rgba(9,8,6,.24),rgba(9,8,6,.24));
+}
+/* The number is a watermark, not a badge: the same two-up Persian numeral the
+   index and the lesson page print, at a size the veil keeps legible. */
+.aca-card-num{
+  position:absolute;top:0;inset-inline-start:0;
+  padding:clamp(14px,1.5vw,22px);
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(30px,2.9vw,44px);line-height:1;
+  color:rgba(243,233,222,.62);
+  letter-spacing:.04em;
+}
+.aca-card-body{
+  position:relative;z-index:2;margin-top:auto;
+  display:flex;flex-direction:column;align-items:flex-start;gap:12px;
+  padding:clamp(18px,1.9vw,28px);
+  text-align:start;
+}
+.aca-card-meta{
+  display:flex;align-items:center;gap:10px;width:100%;
+  font-size:var(--fs-meta);letter-spacing:var(--track-meta);
+  color:var(--aca-muted);
+}
+/* The only accent in the card's copy: the one word that matters to a newcomer. */
+.aca-card-free{color:var(--aca-accent)}
+.aca-card-sep{width:14px;height:1px;background:currentColor;opacity:.55;flex:0 0 auto}
+.aca-card-title{
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(19px,1.5vw,25px);line-height:var(--lh-heading);
+  color:var(--aca-ink);
+}
+.aca-card-link{transition:color .4s ease}
+.aca-card-link:focus-visible{
+  outline:2px solid var(--aca-accent);outline-offset:4px;border-radius:2px;
+}
+.aca-card-link::after{content:"";position:absolute;inset:0;z-index:3}
+.aca-card-excerpt{
+  font-size:var(--fs-body);line-height:1.8;color:var(--aca-ink-soft);
+  /* Clamped to three lines so every card in a row stays the same height. */
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;
+  line-clamp:3;overflow:hidden;
+}
+.aca-card-cta{
+  display:flex;align-items:center;gap:.7em;width:100%;
+  margin-top:auto;padding-top:6px;
+  font-size:var(--fs-meta);letter-spacing:var(--track-meta);
+  color:var(--aca-muted);
+  transition:color .4s ease;
+}
+.aca-card-arrow{
+  display:inline-flex;width:18px;height:18px;margin-inline-start:auto;
+  color:var(--aca-ink-soft);
+  transition:transform .5s cubic-bezier(.22,.61,.36,1),color .4s ease;
+}
+.aca-card-arrow svg{width:100%;height:100%}
+@media (hover:hover){
+  .aca-card:hover{
+    transform:translate3d(0,-6px,0);
+    border-color:var(--aca-hair-2);
+    box-shadow:0 40px 70px -34px rgba(0,0,0,1);
+  }
+  .aca-card:hover .aca-card-media img{transform:scale(1.055)}
+  .aca-card:hover .aca-card-cta{color:var(--aca-ink-soft)}
+  .aca-card:hover .aca-card-arrow{
+    transform:translate3d(-5px,0,0);color:var(--aca-accent);
+  }
+}
+/* ---------- The instructor ----------
+   Composed the way the studio's craftsman block is: a real photograph of the
+   studio's own work, captioned by its alt text, with the name, the role and the
+   introduction in type beside it. No portrait is invented. */
+.aca-teacher{
+  display:grid;grid-template-columns:.86fr 1.14fr;
+  gap:clamp(30px,4.4vw,86px);align-items:center;
+  padding:var(--aca-pad-y) var(--pad-x) 0;
+  max-width:calc(var(--aca-wrap) + 2 * var(--pad-x));
+  margin-inline:auto;
+}
+.aca-teacher-visual{display:flex;flex-direction:column;gap:14px}
+.aca-teacher-frame{
+  position:relative;aspect-ratio:4/5;overflow:hidden;
+  border-radius:var(--aca-radius);
+  background:var(--aca-surface);
+}
+.aca-teacher-figure{position:relative;display:block;width:100%;height:100%}
+.aca-teacher-caption{
+  font-size:var(--fs-meta);letter-spacing:var(--track-meta);
+  color:var(--aca-muted);
+}
+.aca-teacher-copy{min-width:0}
+.aca-teacher-name{
+  margin-top:18px;max-width:16ch;
+  font-family:var(--fa);font-weight:600;letter-spacing:0;
+  font-size:clamp(32px,3.6vw,56px);line-height:var(--lh-heading);
+  color:var(--aca-ink);
+}
+.aca-teacher-role{
+  margin-top:12px;
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  color:var(--aca-accent);
+}
+.aca-teacher-bio{
+  margin-top:clamp(18px,2vw,26px);max-width:58ch;
+  font-size:clamp(16px,1.15vw,19px);line-height:1.95;
+  color:var(--aca-ink-soft);
+}
+/* The subjects she teaches, on hairlines rather than in a box. */
+.aca-focus,
+.aca-outcomes{
+  list-style:none;display:grid;gap:14px;
+  margin-top:clamp(24px,2.6vw,34px);padding-top:22px;
+  border-top:1px solid var(--aca-hair);
+  font-size:var(--fs-body);line-height:1.8;color:var(--aca-ink-soft);
+}
+.aca-focus li,
+.aca-outcomes li{position:relative;padding-inline-start:1.6em}
+.aca-focus li::before,
+.aca-outcomes li::before{
+  content:"";position:absolute;inset-inline-start:0;top:.85em;
+  width:11px;height:1px;background:var(--aca-accent);
+}
+/* ---------- The complete collection ----------
+   The academy's one commercial block, and its only link out: the topics the
+   collection covers on one side, two of the studio's own plates on the other,
+   one button into Instagram and one plain sentence saying that the purchase is
+   arranged in direct messages there. Nothing here states a price, a discount or
+   an instant unlock, because none of those exists yet. */
+.aca-collection{
+  display:grid;grid-template-columns:1.08fr .92fr;
+  gap:clamp(32px,4.6vw,88px);align-items:center;
+  padding:var(--aca-pad-y) var(--pad-x);
+  max-width:calc(var(--aca-wrap) + 2 * var(--pad-x));
+  margin-inline:auto;
+}
+.aca-collection-copy{min-width:0}
+.aca-collection-title{
+  margin-top:18px;max-width:18ch;
+  font-family:var(--fa);font-weight:600;letter-spacing:0;
+  font-size:var(--fs-subdisplay);line-height:var(--lh-heading);
+  color:var(--aca-ink);
+}
+.aca-collection-p{
+  margin-top:clamp(18px,2vw,26px);max-width:60ch;
+  font-size:clamp(16px,1.15vw,19px);line-height:1.95;
+  color:var(--aca-ink-soft);
+}
+.aca-collection-cta{
+  display:flex;flex-direction:column;align-items:flex-start;gap:16px;
+  margin-top:clamp(28px,3vw,40px);
+}
+.aca-collection-note{
+  max-width:58ch;
+  font-size:var(--fs-meta);line-height:1.95;color:var(--aca-muted);
+}
+.aca-collection-note-label{
+  margin-inline-end:.5em;color:var(--aca-accent);
+}
+/* Two plates, the second dropped so the pair reads as a spread rather than a
+   strip of thumbnails. */
+.aca-collection-plates{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--aca-gap);align-items:start;
+}
+.aca-collection-plate{
+  position:relative;aspect-ratio:3/4;overflow:hidden;
+  border-radius:var(--aca-radius);
+  background:var(--aca-surface);
+}
+.aca-collection-plate-second{margin-top:clamp(28px,5vw,72px)}
+/* ---------- One lesson (/academy/<slug>) ----------
+   The magazine's article composition, with the lesson's own sequence in place of
+   a category: cover, then the title mounted on the cover's lower edge, then the
+   media plate, then what the lesson walks through, then the way onward. */
+.aca-post{padding-bottom:var(--aca-pad-y)}
+
+.aca-post-head{position:relative}
+.aca-post-cover{
+  position:relative;height:min(72vh,720px);overflow:hidden;
+  background:var(--aca-surface);
+}
+/* The gradient carries the photograph into the page ground, and keeps the head
+   legible in every crop. */
+.aca-post-veil{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,
+    rgba(10,8,6,.68) 0%,
+    rgba(10,8,6,.42) 30%,
+    rgba(12,10,8,.74) 68%,
+    rgba(16,14,11,.96) 92%,
+    var(--aca-bg) 100%);
+}
+.aca-post-inner{
+  position:relative;z-index:2;
+  margin-top:calc(-1 * clamp(48px,6vw,104px));
+  max-width:var(--aca-wrap);margin-inline:auto;
+  padding:0 var(--pad-x);
+}
+.aca-back{
+  display:inline-flex;align-items:center;gap:.7em;
+  font-size:var(--fs-meta);letter-spacing:var(--track-meta);
+  color:var(--aca-ink-soft);
+  transition:color .4s ease;
+}
+.aca-back-arrow{
+  display:inline-flex;width:16px;height:16px;
+  transition:transform .5s cubic-bezier(.22,.61,.36,1);
+}
+.aca-back-arrow svg{width:100%;height:100%}
+.aca-back:hover{color:var(--aca-ink)}
+/* Going "back" in a right-to-left register is travelling to the right. */
+.aca-back:hover .aca-back-arrow{transform:translate3d(4px,0,0)}
+.aca-back:focus-visible{outline:2px solid var(--aca-accent);outline-offset:3px}
+
+.aca-post-title-block{margin-top:clamp(20px,2.2vw,30px)}
+.aca-post-badges{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.aca-badge{
+  display:inline-block;padding:.5em .85em;
+  border:1px solid var(--aca-hair-2);border-radius:2px;
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  color:var(--aca-ink-soft);
+}
+/* The free badge is the one place the beige accent is used as a border. */
+.aca-badge-free{border-color:var(--aca-accent);color:var(--aca-accent)}
+.aca-post-title{
+  margin-top:18px;max-width:28ch;
+  font-family:var(--fa);font-weight:600;letter-spacing:0;
+  font-size:clamp(30px,4.4vw,62px);line-height:1.22;
+  color:var(--aca-ink);
+}
+.aca-post-meta{
+  display:flex;flex-wrap:wrap;align-items:center;gap:12px;
+  margin-top:clamp(24px,2.6vw,36px);padding-top:22px;
+  border-top:1px solid var(--aca-hair);
+  font-size:var(--fs-meta);letter-spacing:var(--track-meta);
+  color:var(--aca-muted);
+}
+.aca-post-author{display:flex;align-items:baseline;gap:.6em}
+.aca-post-author-name{color:var(--aca-ink-soft)}
+.aca-post-sep{width:18px;height:1px;background:currentColor;opacity:.5;flex:0 0 auto}
+.aca-post-free{color:var(--aca-accent)}
+
+/* The reading column. Wider than the magazine's 780px measure, because the
+   lesson's plate lives in it and a video wants the room. */
+.aca-post-wrap{
+  max-width:860px;margin-inline:auto;
+  padding:clamp(44px,5vw,80px) var(--pad-x) 0;
+}
+.aca-post-lede{
+  font-size:clamp(19px,1.6vw,25px);line-height:1.8;color:var(--aca-ink);
+  padding-bottom:clamp(28px,3vw,42px);
+  border-bottom:1px solid var(--aca-hair);
+}
+.aca-post-h2{
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(22px,2.1vw,32px);line-height:var(--lh-heading);
+  color:var(--aca-ink);
+}
+/* A short beige rule marks the section, echoing the site's hairlines. */
+.aca-post-h2::before{
+  content:"";display:block;width:34px;height:1px;margin-bottom:18px;
+  background:var(--aca-accent);
+}
+.aca-outline-block{margin-top:clamp(42px,4.4vw,66px)}
+.aca-outline{
+  list-style:none;display:grid;gap:14px;
+  margin-top:22px;
+  font-size:clamp(16px,1.1vw,18px);line-height:1.9;
+  color:var(--aca-ink-soft);
+}
+.aca-outline li{position:relative;padding-inline-start:1.5em}
+.aca-outline li::before{
+  content:"";position:absolute;inset-inline-start:0;top:.9em;
+  width:11px;height:1px;background:var(--aca-accent);
+}
+/* ---------- The lesson's media plate ----------
+   One plate in three states: a native file, a third-party embed, or — as in this
+   version, where no recording exists yet — the lesson's own still, pushed out of
+   focus, with the honest statement of status on top. There is deliberately no
+   play button in the empty state: nothing here pretends the video is one click
+   away, and no date is promised. */
+.aca-player{
+  position:relative;margin-top:clamp(34px,3.6vw,52px);
+  overflow:hidden;
+  border:1px solid var(--aca-hair);border-radius:var(--aca-radius);
+  background:var(--aca-bg-2);
+}
+.aca-player-frame{aspect-ratio:16/9}
+.aca-frame{display:block;width:100%;height:100%;border:0}
+.aca-video{
+  display:block;width:100%;height:auto;aspect-ratio:16/9;
+  background:#000;object-fit:contain;
+}
+.aca-video-fallback{font-size:var(--fs-meta);color:var(--aca-ink-soft)}
+
+.aca-player-empty{
+  display:flex;align-items:center;justify-content:center;
+  aspect-ratio:16/9;
+}
+.aca-player-plate{position:absolute;inset:0}
+.aca-player-plate img{
+  filter:blur(4px) saturate(.7);
+  opacity:.42;transform:scale(1.05);
+}
+/* The veil over the still, so the copy on top keeps its contrast in any crop. */
+.aca-player-plate::after{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(62% 62% at 50% 50%,
+    rgba(16,14,11,.86), rgba(16,14,11,.97));
+}
+.aca-player-soon{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  max-width:46ch;padding:clamp(22px,3vw,40px);text-align:center;
+}
+.aca-player-glyph{
+  display:inline-flex;width:34px;height:34px;
+  color:var(--aca-accent);
+}
+.aca-player-glyph svg{width:100%;height:100%}
+.aca-player-soon-title{
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(17px,1.4vw,22px);line-height:var(--lh-heading);
+  color:var(--aca-ink);
+}
+.aca-player-soon-body{
+  font-size:var(--fs-meta);line-height:1.95;color:var(--aca-ink-soft);
+}
+
+/* ---------- The sequence controls ----------
+   Two plates at the foot of a lesson: the previous lesson on the reading side
+   and the next one opposite. Both ends of the sequence are nullable, so the
+   first lesson prints a single control and the pager never links to itself. */
+.aca-pager{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--aca-gap);
+  margin-top:clamp(44px,4.6vw,68px);padding-top:clamp(28px,3vw,40px);
+  border-top:1px solid var(--aca-hair);
+}
+.aca-pager-link{
+  display:flex;flex-direction:column;gap:8px;
+  padding:clamp(18px,2vw,26px);
+  border:1px solid var(--aca-hair);border-radius:var(--aca-radius);
+  transition:border-color .45s ease,background-color .45s ease;
+}
+/* The next lesson sits on the opposite side of the column, so the two plates
+   read as a pair of directions rather than as a list. */
+.aca-pager-link:nth-child(2){align-items:flex-end;text-align:end}
+.aca-pager-dir{
+  display:inline-flex;align-items:center;gap:.7em;
+  font-size:var(--fs-meta);letter-spacing:var(--track-meta);
+  color:var(--aca-muted);
+  transition:color .4s ease;
+}
+.aca-pager-arrow{
+  display:inline-flex;width:15px;height:15px;
+  transition:transform .5s cubic-bezier(.22,.61,.36,1);
+}
+.aca-pager-arrow svg{width:100%;height:100%}
+.aca-pager-title{
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(16px,1.3vw,20px);line-height:var(--lh-heading);
+  color:var(--aca-ink);
+}
+.aca-pager-num{font-size:var(--fs-caption);color:var(--aca-muted)}
+/* The empty slot at either end of the sequence. */
+.aca-pager-gap{display:block}
+.aca-pager-link:focus-visible{
+  outline:2px solid var(--aca-accent);outline-offset:4px;
+}
+@media (hover:hover){
+  .aca-pager-link:hover{
+    border-color:var(--aca-hair-2);background:var(--aca-bg-2);
+  }
+  .aca-pager-link:hover .aca-pager-dir{color:var(--aca-ink-soft)}
+  /* Each arrow travels the way its label points: back is rightwards, on is left. */
+  .aca-pager-link:nth-child(1):hover .aca-pager-arrow{transform:translate3d(4px,0,0)}
+  .aca-pager-link:nth-child(2):hover .aca-pager-arrow{transform:translate3d(-4px,0,0)}
+}
+
+/* ---------- Related lessons ---------- */
+.aca-related{padding:clamp(56px,6vw,96px) var(--pad-x) 0}
+.aca-related-title{
+  max-width:var(--aca-wrap);margin-inline:auto;
+  padding-bottom:clamp(24px,2.6vw,36px);
+  margin-bottom:clamp(30px,3.2vw,46px);
+  border-bottom:1px solid var(--aca-hair);
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(24px,2.4vw,36px);line-height:var(--lh-heading);
+  color:var(--aca-ink);
+}
+/* ---------- Academy at narrower widths ----------
+   The same ladder the magazine uses: the three-across arrangements are desktop
+   arrangements, and each one re-flows rather than squeezing. */
+@media (max-width: 1100px){
+  .aca-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .aca-head{grid-template-columns:1fr;gap:26px;align-items:start}
+  .aca-promo-title{font-size:clamp(40px,6.6vw,76px);max-width:none}
+  .aca-index-item{grid-template-columns:112px minmax(0,1fr) 1.15em}
+  .aca-teacher{grid-template-columns:1fr;gap:34px}
+  /* The instructor's plate turns landscape once it sits above the copy. */
+  .aca-teacher-frame{aspect-ratio:16/10}
+  .aca-collection{grid-template-columns:1fr;gap:36px}
+}
+
+@media (max-width: 960px){
+  .aca-hero{min-height:min(78vh,700px)}
+  .aca-hero-inner{padding-top:clamp(132px,16vw,178px)}
+  .aca-post-cover{height:min(58vh,520px)}
+  .aca-post-inner{margin-top:calc(-1 * clamp(40px,5vw,72px))}
+  .aca-related{padding-top:clamp(64px,9vw,96px)}
+}
+
+@media (max-width: 680px){
+  /* One clean column, and the index loses its thumbnail's fixed column. */
+  .aca-grid{grid-template-columns:1fr;gap:22px}
+  .aca-index-item{grid-template-columns:86px minmax(0,1fr);gap:16px}
+  /* The row is clickable edge to edge, so the arrow is redundancy at this size. */
+  .aca-index-arrow{display:none}
+  .aca-index-title{font-size:clamp(18px,5.2vw,22px)}
+  .aca-hero{min-height:auto}
+  .aca-hero-inner{
+    padding-top:clamp(112px,24vw,150px);
+    padding-bottom:clamp(36px,9vw,56px);
+  }
+  .aca-hero-title{font-size:clamp(30px,8.4vw,42px)}
+  .aca-hero-actions{flex-direction:column;align-items:stretch}
+  .aca-hero-actions .aca-btn{justify-content:center}
+  .aca-card-num{padding:14px;font-size:30px}
+  .aca-teacher-name{font-size:clamp(28px,7.4vw,40px)}
+  .aca-collection-plates{gap:14px}
+  .aca-collection-plate-second{margin-top:24px}
+  .aca-missing{padding-top:clamp(112px,22vw,132px)}
+  .aca-page-title{font-size:clamp(36px,10.5vw,52px)}
+  .aca-post-cover{height:auto;aspect-ratio:4/3;max-height:52vh}
+  .aca-post-inner{margin-top:calc(-1 * clamp(32px,8vw,56px))}
+  .aca-post-title{font-size:clamp(27px,8vw,38px);max-width:none}
+  .aca-post-meta{gap:10px;font-size:var(--fs-caption)}
+  .aca-post-author{flex-direction:column;align-items:flex-start;gap:.2em}
+  .aca-post-wrap{padding-top:clamp(32px,8vw,48px)}
+  /* A portrait-ish plate: on a phone the extra height is worth more than the
+     wide-screen 16/9 crop. */
+  .aca-player-empty,
+  .aca-player-frame,
+  .aca-video{aspect-ratio:4/3}
+  .aca-pager{grid-template-columns:1fr;gap:14px}
+  .aca-pager-link:nth-child(2){align-items:flex-start;text-align:start}
+  .aca-related{padding-top:clamp(52px,12vw,72px)}
+  .aca-related-title{font-size:clamp(22px,6.6vw,30px)}
+}
+
+/* Very small phones: the metadata row wraps instead of colliding with the arrow. */
+@media (max-width: 400px){
+  .aca-card-meta{flex-wrap:wrap;row-gap:6px}
+  .aca-btn{padding:.9em 1.15em}
+  .aca-index-item{grid-template-columns:74px minmax(0,1fr);gap:14px}
+}
+
+/* Where the user asked for less motion, drop the travel outright; the global
+   reduced-motion block above has already neutralised every transition. */
+@media (prefers-reduced-motion: reduce){
+  .aca-card:hover,
+  .aca-card:hover .aca-card-media img,
+  .aca-card:hover .aca-card-arrow,
+  .aca-index-item:hover .aca-index-thumb img,
+  .aca-index-item:hover .aca-index-arrow,
+  .aca-btn:hover .aca-btn-arrow,
+  .aca-all:hover .aca-all-arrow,
+  .aca-back:hover .aca-back-arrow,
+  .aca-pager-link:hover .aca-pager-arrow{transform:none}
+}
+
+
+
+
+
+

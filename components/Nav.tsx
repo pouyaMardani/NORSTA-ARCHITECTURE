@@ -30,6 +30,7 @@ const LINKS = [
   { href: "#instagram", label: "اینستاگرام" },
   { href: "#contact", label: "تماس با ما" },
   { href: "#craft", label: "استادکار" },
+  { href: "#academy", label: "آموزش میکروسمنت" },
   { href: "#journal", label: "مجله" },
   { href: "#work", label: "پروژه‌ها" },
   { href: "#about", label: "درباره ما" },
@@ -40,14 +41,14 @@ const LINKS = [
 /** One link as the header renders it. */
 type NavLink = { href: string; label: string };
 
-/** On the home page the eight labels are the page's own anchors, verbatim. */
+/** On the home page the nine labels are the page's own anchors, verbatim. */
 const NAV_LINKS: NavLink[] = LINKS.map((link) => ({
   href: link.href,
   label: link.label,
 }));
 
 /**
- * On every other route the same eight labels point back at the home page's
+ * On every other route the same nine labels point back at the home page's
  * sections, so the header stays useful on `/articles` — an anchor without a `/`
  * would simply do nothing away from the home page.
  */
@@ -57,13 +58,15 @@ const NAV_LINKS_FROM_HOME: NavLink[] = LINKS.map((link) => ({
 }));
 
 /**
- * Routes painted on the magazine's dark ground, which need the header's dark
- * variant. The home page is not one of them, so its header is unchanged.
+ * Routes painted on a dark ground, which need the header's dark variant: the
+ * magazine and the academy. The home page is not one of them, so its header is
+ * unchanged — the academy's own home-page block sits far below the fold and does
+ * not change the header it scrolls under.
  */
-const DARK_ROUTES = ["/articles"];
+const DARK_ROUTES = ["/articles", "/academy"];
 
 /**
- * Matches the hamburger breakpoint in `globals.css` (the `≤860px` block). Eight
+ * Matches the hamburger breakpoint in `globals.css` (the `≤860px` block). Nine
  * section labels no longer fit one comfortable row below that, so the panel
  * takes over there. `Nav` tracks only this one query; every other breakpoint
  * belongs to the stylesheet.

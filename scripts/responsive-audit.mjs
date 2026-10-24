@@ -144,6 +144,22 @@ const MENU_OPEN_JS = `(() => {
   return { clicked: true };
 })()`;
 
+/**
+ * The panel is closed by choosing a link. The home page's `#work` is the link
+ * the harness has always used; on other routes the header points back at the
+ * home sections (`/#work`), so the panel's own first link is used instead of
+ * assuming a route-specific one exists — the assertion is "choosing a link
+ * closes the panel", which holds either way.
+ */
+const MENU_LINK_JS = `(() => {
+  const links = document.querySelector(".nav-links");
+  if (!links) return { clicked: false, reason: "no panel" };
+  const target = links.querySelector('a[href="#work"]') || links.querySelector("a");
+  if (!target) return { clicked: false, reason: "no links" };
+  target.click();
+  return { clicked: true, href: target.getAttribute("href") };
+})()`;
+
 const MENU_STATE_JS = `(() => {
   const t = document.querySelector(".nav-toggle");
   const links = document.querySelector(".nav-links");
@@ -307,7 +323,7 @@ for (const vp of VIEWPORTS) {
     await cdp.eval(MENU_OPEN_JS);
     await sleep(400);
     const beforeNav = await cdp.eval(MENU_STATE_JS);
-    await cdp.eval(`document.querySelector('.nav-links a[href="#work"]').click(); true`);
+    const linkPicked = await cdp.eval(MENU_LINK_JS);
     await sleep(900);
     const afterNav = await cdp.eval(MENU_STATE_JS);
 
@@ -315,6 +331,7 @@ for (const vp of VIEWPORTS) {
       open: openState,
       afterEscape: closedState,
       beforeLinkSelect: beforeNav.expanded,
+      linkSelected: linkPicked,
       afterLinkSelect: afterNav.expanded,
       scrolledToWork: await cdp.eval("Math.round(window.scrollY)"),
     };
@@ -332,17 +349,30 @@ for (const vp of VIEWPORTS) {
 }
 
 // ---- dense section sweep on the reference mobile width ----
+// The four sections below are the home page's; a route such as `/academy` or
+// `/articles` has none of them, so the sweep reports what it actually found
+// rather than photographing the top of the page four times.
 await cdp.send("Emulation.setDeviceMetricsOverride", {
   width: 390, height: 844, deviceScaleFactor: 2, mobile: true,
 });
 await goto();
-for (const id of ["services", "about", "work", "contact"]) {
+const sweepIds = ["services", "about", "work", "contact"];
+const presentIds = await cdp.eval(
+  `(() => ${JSON.stringify(sweepIds)}.filter((id) => document.getElementById(id)))()`
+);
+if (presentIds.length === 0) {
+  console.error("  (no home-page sections on this route — sweep skipped)");
+} else if (presentIds.length < sweepIds.length) {
+  console.error(`  sweep: ${presentIds.join(", ")} present of ${sweepIds.join(", ")}`);
+}
+for (const id of presentIds) {
   await cdp.eval(SCROLL_JS(id));
   // Reveal transitions run up to 1.4s (clip-path) — wait them out so the
   // capture shows settled geometry rather than a mid-animation frame.
   await sleep(2400);
   await shot(`${label}-390x844-${id}`);
 }
+report.sweepIds = presentIds;
 
 writeFileSync(
   join(process.cwd(), "_ref", `${label}-report.json`),
