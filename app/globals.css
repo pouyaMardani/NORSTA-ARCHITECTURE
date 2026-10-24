@@ -122,6 +122,36 @@ a{color:inherit;text-decoration:none}
 }
 [data-reveal="metrics-rule"].is-in::before{width:62%}
 
+/* Reversible reveal (`data-reveal-cycle`).
+   The system above fires once per element and then unobserves it. This variant
+   keeps watching: `SiteInteractions` adds `is-in` while the marked section
+   overlaps the viewport and removes it once the section has left, so the same
+   transition plays the entrance and the exit. A single boolean from one
+   observer drives it, so there is no threshold band to oscillate on and no
+   repeated-animation glitch. `data-reveal-item` marks the blocks that move. */
+[data-reveal-cycle] [data-reveal-item]{
+  opacity:0;transform:translate3d(0,26px,0);
+  will-change:transform,opacity;
+  transition:opacity 1.05s cubic-bezier(.22,.61,.36,1),
+             transform 1.05s cubic-bezier(.22,.61,.36,1);
+}
+[data-reveal-cycle].is-in [data-reveal-item]{opacity:1;transform:none}
+
+/* Masked heading: same clip-path contract as `[data-reveal="mask-line"]`, but
+   keyed to the cycle's `is-in` so the lines can slide back out again. */
+[data-reveal-cycle].is-in .mask-title .line > span{transform:none}
+
+/* Entrance stagger. Declared only on the revealed state, so the exit always
+   leaves as one piece instead of trailing off item by item. */
+[data-reveal-cycle].is-in .craft-visual{transition-delay:.06s}
+[data-reveal-cycle].is-in .craft-copy .eyebrow{transition-delay:.16s}
+[data-reveal-cycle].is-in .craft-copy .mask-title{transition-delay:.22s}
+[data-reveal-cycle].is-in .craft-copy .craft-name{transition-delay:.28s}
+[data-reveal-cycle].is-in .craft-copy .craft-role{transition-delay:.34s}
+[data-reveal-cycle].is-in .craft-copy .craft-bio{transition-delay:.4s}
+[data-reveal-cycle].is-in .craft-copy .metrics{transition-delay:.46s}
+[data-reveal-cycle].is-in .craft-copy .link-underline{transition-delay:.52s}
+
 
 /* Nav link underline */
 .nav-links a{position:relative;padding-bottom:4px}
@@ -168,6 +198,8 @@ a{color:inherit;text-decoration:none}
   }
   [data-reveal]{opacity:1 !important;transform:none !important;clip-path:none !important}
   [data-reveal="image-reveal"] img{transform:none !important}
+  [data-reveal-cycle] [data-reveal-item]{opacity:1 !important;transform:none !important}
+  [data-reveal-cycle] .mask-title .line > span{transform:none !important}
   .hero-title .line > span{transform:none !important}
 }
 
@@ -262,6 +294,7 @@ a{color:inherit;text-decoration:none}
 .section-head{margin-bottom:96px}
 .section-head h2,
 .about-copy h2,
+.craft-copy h2,
 .work h2,
 .contact h2,
 .ig-copy h2{
@@ -388,6 +421,110 @@ a{color:inherit;text-decoration:none}
   unicode-bidi:isolate;
 }
 
+/* ============== CRAFT MASTER ============== */
+/*
+ * The craftsman section: an asymmetric plate on the left, the person's details
+ * on the right, on the deeper `--bg-2` so the block reads as its own register
+ * between the projects and the contact copy.
+ *
+ * The plate is content-agnostic on purpose. `--craft-radius` shapes the figure
+ * *and* the hairline ghost frame displaced behind it, `--craft-offset` is that
+ * displacement, and both travel together at every width. A photograph is cropped
+ * by `object-fit:cover` inside the fixed 4/5 box, so any replacement image lands
+ * in exactly the same silhouette without a stylesheet change.
+ */
+.craft{
+  --craft-radius:clamp(40px,8vw,148px) 2px clamp(16px,3vw,56px) 2px;
+  --craft-offset:clamp(16px,2.2vw,34px);
+  display:grid;grid-template-columns:1.05fr 1fr;
+  gap:clamp(48px,7vw,140px);
+  align-items:center;
+  padding:140px var(--pad-x) 160px;
+  background:var(--bg-2);
+}
+
+/* The plate owns the positioning context for the ghost frame and the mounted
+   label, so both are measured from the plate's own edges rather than from the
+   section. The asymmetric padding is the room the ghost frame hangs into on the
+   right and below — keeping it on this box (instead of negative insets) is what
+   stops the displaced frame from widening the page at narrow widths. */
+.craft-visual{position:relative}
+.craft-plate{position:relative;padding:0 var(--craft-offset) var(--craft-offset) 0}
+
+.craft-figure{
+  position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;
+  border-radius:var(--craft-radius);
+  background:#d9d3c5;                 /* inert tone until the photo decodes */
+}
+.craft-figure img{transition:transform 1.6s cubic-bezier(.22,.61,.36,1)}
+
+/* Ghost frame: the plate's own silhouette, displaced and drawn in hairline.
+   Painted before the plate, which is why the two overlap rather than double. */
+.craft-frame{
+  position:absolute;inset:var(--craft-offset) 0 0 var(--craft-offset);
+  border:1px solid var(--hair);border-radius:var(--craft-radius);
+  pointer-events:none;
+  transition:transform 1.6s cubic-bezier(.22,.61,.36,1);
+}
+
+/* Mounted label: its centre sits on the plate's lower edge, so the plate's
+   outline runs into the label instead of around it. The containing block is
+   `.craft-plate`, whose padding box reaches `--craft-offset` past the plate, so
+   `bottom` is offset by exactly that much to land back on the figure's edge. */
+.craft-badge{
+  position:absolute;
+  left:clamp(20px,2.4vw,34px);
+  bottom:var(--craft-offset);
+  transform:translateY(50%);
+  display:inline-flex;align-items:center;gap:.75em;
+  padding:.72em 1.1em;
+  background:var(--bg-2);border:1px solid var(--hair);border-radius:2px;
+  font-family:var(--sans);font-size:var(--fs-caption);
+  letter-spacing:.18em;color:var(--ink-soft);
+  white-space:nowrap;unicode-bidi:isolate;
+}
+.craft-badge i{display:block;width:6px;height:6px;background:var(--ink);opacity:.5}
+
+/* Material rule under the plate: same width as the plate, so the hairline and
+   the plate's left edge share one vertical. `.craft-tags` sits outside
+   `.craft-plate`, which is what allows it to line up with the plate rather than
+   with the ghost frame's overhang — hence the right margin. */
+.craft-tags{
+  display:flex;align-items:baseline;gap:clamp(20px,2.6vw,38px);
+  margin-top:clamp(30px,3.6vw,54px);margin-right:var(--craft-offset);
+  padding-top:14px;border-top:1px solid var(--hair);
+  font-family:var(--sans);font-size:var(--fs-caption);
+  letter-spacing:.16em;color:var(--muted);text-transform:uppercase;
+}
+
+.craft-copy{display:flex;flex-direction:column;align-items:flex-start}
+.craft-copy h2{font-size:var(--fs-subdisplay);margin-top:20px}
+.craft-name{
+  margin-top:36px;font-family:var(--fa);font-weight:600;
+  font-size:var(--fs-title);line-height:var(--lh-heading);color:var(--ink);
+}
+.craft-role{
+  margin-top:12px;font-size:var(--fs-meta);letter-spacing:var(--track-meta);
+  color:var(--muted);unicode-bidi:isolate;
+}
+.craft-bio{
+  margin-top:30px;max-width:540px;
+  font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-soft);
+}
+/* The metric reuses the Studio block, trimmed to a single figure. */
+.craft-copy .metrics{
+  gap:56px;margin-top:46px;padding-top:26px;width:100%;max-width:420px;
+  border-top:1px solid var(--hair);
+}
+.craft-copy .metrics .num{font-size:clamp(34px,3.4vw,52px)}
+.craft-copy .link-underline{margin-top:44px}
+
+/* Restrained movement, and only where a cursor can actually hover. */
+@media (hover:hover){
+  .craft-visual:hover .craft-figure img{transform:scale(1.035)}
+  .craft-visual:hover .craft-frame{transform:translate3d(6px,6px,0)}
+}
+
 /* ============== CONTACT ============== */
 .contact{
   position:relative;display:grid;grid-template-columns:1fr 1fr;
@@ -502,6 +639,10 @@ a{color:inherit;text-decoration:none}
   .services-edge{display:none}
   .about{grid-template-columns:1fr;padding-top:100px;padding-bottom:120px}
   .about-image{aspect-ratio:5/4}
+  /* Craftsman: the plate stacks above its copy and is capped, so a full-width
+     4/5 portrait cannot stretch the section past a comfortable scroll. */
+  .craft{grid-template-columns:1fr;gap:44px;padding-top:100px;padding-bottom:120px}
+  .craft-visual{max-width:560px}
   .work-head{grid-template-columns:1fr;gap:24px}
   .work-lede{justify-self:start}
   .work-grid{grid-template-columns:1fr}
@@ -694,6 +835,26 @@ body.menu-open{overflow:hidden}
   .proj-meta .num{margin-bottom:0;text-align:center}
   .proj-meta h3{font-size:clamp(23px,6.2vw,32px)}
   .proj-meta .view{justify-self:center}
+
+  /* Craftsman */
+  .craft{padding:92px var(--pad-x) 104px;gap:36px}
+  /* Centred column: the plate, the label and the material rule all share the
+     copy's centre line. `width:100%` is required — the inline `auto` margins
+     would otherwise make this a shrink-to-fit grid item, and the plate would be
+     sized by the decorative tags row instead of by the column. */
+  .craft-visual{width:100%;max-width:min(100%,460px);margin-inline:auto}
+  /* The badge's box is the plate plus the ghost frame's offset, so the true
+     centre of the plate is half an offset to the left of 50%. */
+  .craft-badge{left:calc(50% - var(--craft-offset) / 2);transform:translate(-50%,50%)}
+  .craft-tags{justify-content:center;margin-top:34px}
+  .craft-copy{align-items:center;text-align:center}
+  .craft-copy h2{font-size:clamp(34px,9.8vw,56px);margin-top:16px}
+  .craft-name{font-size:clamp(23px,6.2vw,32px);margin-top:28px}
+  .craft-bio{max-width:none;margin-top:22px}
+  .craft-copy .metrics{
+    max-width:none;gap:32px;margin-top:34px;padding-top:22px;justify-content:center;
+  }
+  .craft-copy .link-underline{margin-top:34px}
 
   /* Contact */
   .contact-copy{padding:92px var(--pad-x) 72px}

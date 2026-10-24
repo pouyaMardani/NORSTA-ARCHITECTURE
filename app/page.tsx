@@ -1,5 +1,6 @@
 import About from "@/components/About";
 import Contact from "@/components/Contact";
+import Craftsman from "@/components/Craftsman";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import InstagramShowcase from "@/components/InstagramShowcase";
@@ -18,6 +19,7 @@ export default function Page() {
         <Services />
         <About />
         <Work />
+        <Craftsman />
         <Contact />
         <InstagramShowcase />
       </main>

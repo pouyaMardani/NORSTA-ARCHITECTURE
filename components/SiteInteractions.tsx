@@ -68,6 +68,37 @@ export default function SiteInteractions() {
       }, 4000);
     }
 
+    // ---------- Reversible reveal on scroll ----------
+    // `[data-reveal-cycle]` extends the system above with an exit state: the
+    // marked section fades back out once it has left the viewport and fades in
+    // again on the way back. It reuses the same `is-in` class name, but stays
+    // observed, so one boolean per section drives both directions — there is no
+    // threshold band to oscillate on and no repeated-animation glitch.
+    //
+    // The root is the viewport inset by 8% at the top and bottom: the section
+    // counts as on-screen while it overlaps that band, which is what stops the
+    // fade-out from firing while most of it is still visible.
+    const cycles = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-reveal-cycle]")
+    );
+    let ro: IntersectionObserver | null = null;
+
+    if (cycles.length) {
+      if (reduced) {
+        cycles.forEach((el) => el.classList.add("is-in"));
+      } else {
+        ro = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              entry.target.classList.toggle("is-in", entry.isIntersecting);
+            });
+          },
+          { rootMargin: "-8% 0px -8% 0px" }
+        );
+        cycles.forEach((el) => ro?.observe(el));
+      }
+    }
+
     // ---------- Number counters ----------
     const counters = Array.from(document.querySelectorAll<HTMLElement>("[data-count]"));
     let co: IntersectionObserver | null = null;
@@ -267,6 +298,7 @@ export default function SiteInteractions() {
       rafs.forEach((r) => cancelAnimationFrame(r));
       io?.disconnect();
       co?.disconnect();
+      ro?.disconnect();
       cleanups.forEach((fn) => fn());
     };
   }, []);

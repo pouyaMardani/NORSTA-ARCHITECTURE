@@ -96,9 +96,7 @@ export default function Work() {
               <span className="num">{project.num}</span>
               <span className="loc">{project.loc}</span>
               <h3>{project.title}</h3>
-              <a href="#" className="view" data-open-lightbox="">
-                مشاهده‌ی پروژه &nbsp;→
-              </a>
+             
             </div>
           </article>
         ))}
