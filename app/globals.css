@@ -801,7 +801,12 @@ a{color:inherit;text-decoration:none}
 /* ============== RESPONSIVE ============== */
 @media (max-width: 960px){
   .nav{padding:22px var(--pad-x)}
-  .nav-links{gap:24px;font-size:13px}
+  /* Eight labels: the row tightens here, long before the wordmark would have to
+     shrink with it. The size is set on the anchors themselves — the container
+     `font-size` this rule used to carry never reached them, because
+     `.nav-links a` pins `var(--fs-ui)` at a higher specificity. */
+  .nav-links{gap:22px}
+  .nav-links a{font-size:0.875rem}
   .hero{padding-top:130px}
   .hero-image{height:54%}
   .service-list li{grid-template-columns:64px 1fr;row-gap:14px}
@@ -890,8 +895,9 @@ body.lb-open{overflow:hidden}
    Additive only: every rule below lives inside a max-width query, so the
    desktop composition (>960px) is byte-for-byte the original design.
    Breakpoints are content-driven, not device presets:
-     ≤960px  stacked two-column sections, tabular lists
-     ≤680px  single column, hamburger nav, fluid editorial type
+     ≤960px  stacked two-column sections, tabular lists, a tighter header row
+     ≤860px  the header row becomes the hamburger panel
+     ≤680px  single column, fluid editorial type
      ≤440px  very small phones: metrics + footer stacking
    ===================================================================== */
 
@@ -931,8 +937,14 @@ body.menu-open{overflow:hidden}
   .metrics{flex-wrap:wrap;gap:40px 64px}
 }
 
-/* ---------- ≤680px : mobile ---------- */
-@media (max-width: 680px){
+/* ---------- ≤860px : the section row becomes the hamburger panel ----------
+   Eight section labels need the width the old four did not, so the row steps
+   aside earlier than it used to. Measured, it only keeps real clearance down to
+   around 900px; the panel therefore takes over at 860, which leaves the row
+   room to breathe and stops `space-between` from squeezing the wordmark. The
+   rest of the layout keeps its own breakpoints — only the header changes here,
+   and the panel itself is unchanged in look, only centred and scrolled. */
+@media (max-width: 860px){
   /* Header / navigation */
   .nav{padding:20px var(--pad-x)}
   .nav.is-scrolled{padding:14px var(--pad-x)}
@@ -948,6 +960,13 @@ body.menu-open{overflow:hidden}
     backdrop-filter:saturate(140%) blur(14px);
     border:1px solid rgba(0,0,0,.06);
     box-shadow:0 22px 44px -28px rgba(0,0,0,.38);
+    /* Eight rows are taller than a landscape phone leaves under the header: cap
+       the panel to the remaining height and let it scroll, so no item can be
+       clipped. `100%` resolves against the header, which is the panel's
+       containing block. */
+    max-height:calc(100vh - 100%);
+    max-height:calc(100dvh - 100%);
+    overflow-y:auto;overscroll-behavior:contain;
     opacity:0;visibility:hidden;pointer-events:none;
     transform:translate3d(0,-8px,0);
     transition:opacity .3s ease,
@@ -957,12 +976,22 @@ body.menu-open{overflow:hidden}
   .nav[data-menu-open="true"] .nav-links{
     opacity:1;visibility:visible;pointer-events:auto;transform:none;
   }
+  /* One centred, tappable row per section. Flex centring (rather than
+     `text-align`) centres the label optically whatever the direction of its own
+     script, the 52px minimum is the tap target, and `nowrap` stops a label from
+     ever breaking mid-name. */
   .nav-links a{
-    padding:15px 4px;font-size:1rem;letter-spacing:0;font-weight:500;
+    display:flex;align-items:center;justify-content:center;
+    min-height:52px;padding:14px 8px;
+    font-size:1rem;line-height:1.5;letter-spacing:0;font-weight:500;
+    text-align:center;white-space:nowrap;
   }
   .nav-links a + a{border-top:1px solid var(--hair)}
   .nav-links a::after{display:none}
+}
 
+/* ---------- ≤680px : mobile ---------- */
+@media (max-width: 680px){
   /* Hero */
   .hero{padding-top:114px}
   .hero-copy h1{
@@ -1588,9 +1617,10 @@ body.menu-open{overflow:hidden}
   .art-card-arrow{margin-inline-start:0}
 }
 
-/* The header's dark variant on a phone: the collapsed panel is the site's ivory
-   panel re-toned, so the links stay legible over the magazine's ground. */
-@media (max-width: 680px){
+/* The header's dark variant where the panel is in play: the collapsed panel is
+   the site's ivory panel re-toned, so the links stay legible over the
+   magazine's ground. */
+@media (max-width: 860px){
   .nav[data-theme="dark"] .nav-links{
     background:rgba(16,14,12,.97);
     border-color:rgba(243,233,222,.12);

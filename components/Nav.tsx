@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 /**
  * Header + primary navigation.
  *
- * Desktop presentation is unchanged: the wordmark sits left and the four links
- * sit right. Below the mobile breakpoint the links collapse into a minimal
+ * Desktop presentation is unchanged: the wordmark sits left and the section
+ * links sit right. Below the mobile breakpoint the links collapse into a minimal
  * slide-down panel toggled by a hamburger button.
  *
  * The link elements are always mounted (the panel is shown/hidden with classes
@@ -16,24 +16,38 @@ import { useEffect, useState } from "react";
  * nothing re-mounts when the menu opens and closes.
  */
 
+/**
+ * Every section of the home page, top to bottom.
+ *
+ * The list is a map of `app/page.tsx`, not a second opinion about it: each
+ * `href` is that section's own `id`, and the order below is the order the
+ * sections are actually stacked in. Keep the two in step — if a section moves
+ * or is renamed, move its entry here with it. `Hero` owns `#top`, so "خانه" is
+ * an in-page jump rather than a route, which is also what makes it work away
+ * from the home page (`/#top` in `NAV_LINKS_FROM_HOME`).
+ */
 const LINKS = [
-  { href: "#services", label: "حوزه فعالیت" },
-  { href: "#about", label: "استودیو" },
+  { href: "#instagram", label: "اینستاگرام" },
+  { href: "#contact", label: "تماس با ما" },
+  { href: "#craft", label: "استادکار" },
+  { href: "#journal", label: "مجله" },
   { href: "#work", label: "پروژه‌ها" },
-  { href: "#contact", label: "تماس" },
+  { href: "#about", label: "درباره ما" },
+  { href: "#services", label: "خدمات" },
+  { href: "#top", label: "خانه" },
 ] as const;
 
 /** One link as the header renders it. */
 type NavLink = { href: string; label: string };
 
-/** On the home page the four labels are the page's own anchors, verbatim. */
+/** On the home page the eight labels are the page's own anchors, verbatim. */
 const NAV_LINKS: NavLink[] = LINKS.map((link) => ({
   href: link.href,
   label: link.label,
 }));
 
 /**
- * On every other route the same four labels point back at the home page's
+ * On every other route the same eight labels point back at the home page's
  * sections, so the header stays useful on `/articles` — an anchor without a `/`
  * would simply do nothing away from the home page.
  */
@@ -48,8 +62,13 @@ const NAV_LINKS_FROM_HOME: NavLink[] = LINKS.map((link) => ({
  */
 const DARK_ROUTES = ["/articles"];
 
-/** Matches the hamburger breakpoint in `globals.css`. */
-const MOBILE_QUERY = "(max-width: 680px)";
+/**
+ * Matches the hamburger breakpoint in `globals.css` (the `≤860px` block). Eight
+ * section labels no longer fit one comfortable row below that, so the panel
+ * takes over there. `Nav` tracks only this one query; every other breakpoint
+ * belongs to the stylesheet.
+ */
+const MOBILE_QUERY = "(max-width: 860px)";
 
 export default function Nav() {
   const [open, setOpen] = useState(false);

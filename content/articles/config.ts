@@ -55,7 +55,9 @@ export const ARTICLE_IMAGES = {
     alt: "جزئیات معماری و تکسچر سطوح نما",
   },
   villa: {
-    src: "/images/hero-villa-poster.jpg",
+    /* The hero band no longer ships a poster, so this record borrows the
+       original villa still rather than a file the page has stopped copying. */
+    src: "/images/hero-villa.png",
     alt: "ویلایی با سطوح ساده و پنجرههای بزرگ",
   },
 } satisfies Record<string, ArticleImage>;
