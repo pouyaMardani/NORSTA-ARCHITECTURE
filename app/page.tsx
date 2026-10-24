@@ -1,4 +1,5 @@
 import About from "@/components/About";
+import Articles from "@/components/Articles";
 import Contact from "@/components/Contact";
 import Craftsman from "@/components/Craftsman";
 import Footer from "@/components/Footer";
@@ -19,6 +20,7 @@ export default function Page() {
         <Services />
         <About />
         <Work />
+        <Articles />
         <Craftsman />
         <Contact />
         <InstagramShowcase />

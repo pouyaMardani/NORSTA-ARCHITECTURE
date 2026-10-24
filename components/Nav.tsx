@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 /**
@@ -22,12 +23,47 @@ const LINKS = [
   { href: "#contact", label: "تماس" },
 ] as const;
 
+/** One link as the header renders it. */
+type NavLink = { href: string; label: string };
+
+/** On the home page the four labels are the page's own anchors, verbatim. */
+const NAV_LINKS: NavLink[] = LINKS.map((link) => ({
+  href: link.href,
+  label: link.label,
+}));
+
+/**
+ * On every other route the same four labels point back at the home page's
+ * sections, so the header stays useful on `/articles` — an anchor without a `/`
+ * would simply do nothing away from the home page.
+ */
+const NAV_LINKS_FROM_HOME: NavLink[] = LINKS.map((link) => ({
+  href: `/${link.href}`,
+  label: link.label,
+}));
+
+/**
+ * Routes painted on the magazine's dark ground, which need the header's dark
+ * variant. The home page is not one of them, so its header is unchanged.
+ */
+const DARK_ROUTES = ["/articles"];
+
 /** Matches the hamburger breakpoint in `globals.css`. */
 const MOBILE_QUERY = "(max-width: 680px)";
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Route awareness. On `/` the anchors stay exactly as they were; elsewhere they
+  // are rewritten to point at the home sections, and the dark magazine routes
+  // also switch the header to its dark variant.
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const links = isHome ? NAV_LINKS : NAV_LINKS_FROM_HOME;
+  const isDark = DARK_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  );
 
   // Track the viewport so `inert`/`aria-hidden` are only applied on mobile.
   useEffect(() => {
@@ -67,14 +103,16 @@ export default function Nav() {
   return (
     <header
       /* `className` is intentionally static: SiteInteractions writes
-         `is-in` / `is-scrolled` / `is-hidden` onto this element imperatively,
-         and a React-controlled className would wipe them on every re-render.
-         Menu state is therefore exposed as a data attribute instead. */
+         `is-scrolled` / `is-hidden` onto this element imperatively, and a
+         React-controlled className would wipe them on every re-render.
+         Menu state is therefore exposed as a data attribute instead. The
+         header deliberately has no entrance animation (see `globals.css` →
+         "Above-the-fold entrance"), so it is on screen from the first paint. */
       className="nav"
-      data-reveal="fade-down"
+      data-theme={isDark ? "dark" : undefined}
       data-menu-open={open ? "true" : undefined}
     >
-      <a href="#top" className="brand" onClick={() => setOpen(false)}>
+      <a href={isHome ? "#top" : "/#top"} className="brand" onClick={() => setOpen(false)}>
         NORSTA HOME
       </a>
 
@@ -99,7 +137,7 @@ export default function Nav() {
         aria-hidden={collapsed}
         inert={collapsed}
       >
-        {LINKS.map((link) => (
+        {links.map((link) => (
           <a key={link.href} href={link.href} onClick={() => setOpen(false)}>
             {link.label}
           </a>

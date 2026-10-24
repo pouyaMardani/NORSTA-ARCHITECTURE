@@ -7,18 +7,21 @@ import { useEffect } from "react";
  *
  * All progressive-enhancement behaviour lives here so that the rest of the
  * page can stay a Server Component:
- *   - hero entrance + masked headline reveal
  *   - scroll reveal system (`[data-reveal]` + IntersectionObserver)
  *   - metric number counters (`[data-count]`)
  *   - hero parallax
  *   - sticky / auto-hiding navigation
  *   - project lightbox (open, close, prev, next, keyboard)
+ *
+ * Nothing in the first viewport is gated on hydration: the header, the hero
+ * media and the scroll cue are static at their final style, and the two hero
+ * text blocks are animated by CSS from the first paint. An `is-loaded` class
+ * added here would hide the top of the page until this file had run.
  */
 export default function SiteInteractions() {
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const timeouts: number[] = [];
-    const rafs: number[] = [];
     const cleanups: Array<() => void> = [];
 
     const later = (fn: () => void, ms: number) => {
@@ -26,22 +29,26 @@ export default function SiteInteractions() {
     };
 
     // ---------- Hero entrance ----------
-    const hero = document.querySelector<HTMLElement>(".hero");
-    if (hero) {
-      rafs.push(
-        requestAnimationFrame(() => {
-          later(() => hero.classList.add("is-loaded"), 120);
-        })
-      );
-    }
+    // Deliberately not here. The reference ran the entrance from an `is-loaded`
+    // class, but this file only runs after hydration: doing it here hides the
+    // wordmark, the header and the media for that whole window, so the page
+    // appears to hang and then snap in. Only the hero text animates, and it
+    // animates from CSS. See `globals.css` → "Above-the-fold entrance".
 
     // ---------- Reveal on scroll ----------
-    const items = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
+    // `[data-reveal]` starts at `opacity: 0` in CSS, so this observer is what
+    // makes such an element visible at all — one it never sees stays invisible
+    // for good. A single scan is therefore not enough: the App Router keeps a
+    // layout mounted while the page inside it changes (`/articles` ⇄
+    // `/articles/<slug>`, a category chip, a back navigation), so marked
+    // elements do appear after this effect has run. Every later batch is picked
+    // up below, and each batch gets its own safety net so nothing can hang at
+    // `opacity: 0`, however the element arrived.
     let io: IntersectionObserver | null = null;
+    let mo: MutationObserver | null = null;
+    const seen = new WeakSet<HTMLElement>();
 
-    if (reduced) {
-      items.forEach((el) => el.classList.add("is-in"));
-    } else {
+    if (!reduced) {
       io = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -58,15 +65,49 @@ export default function SiteInteractions() {
         },
         { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
       );
-      items.forEach((el) => io?.observe(el));
-
-      // Safety net: if any element is still hidden after 4s, reveal it.
-      later(() => {
-        items.forEach((el) => {
-          if (!el.classList.contains("is-in")) el.classList.add("is-in");
-        });
-      }, 4000);
     }
+
+    /** Safety net: reveal a batch that is still hidden after 4s, no matter why. */
+    const armSafetyNet = (els: HTMLElement[]) => {
+      if (reduced || !els.length) return;
+      later(() => {
+        els.forEach((el) => el.classList.add("is-in"));
+      }, 4000);
+    };
+
+    const watch = (el: HTMLElement) => {
+      if (seen.has(el)) return;
+      seen.add(el);
+      if (reduced) el.classList.add("is-in");
+      else io?.observe(el);
+    };
+
+    const scan = (root: ParentNode = document) => {
+      const found = Array.from(root.querySelectorAll<HTMLElement>("[data-reveal]"));
+      found.forEach(watch);
+      armSafetyNet(found);
+    };
+
+    scan();
+
+    // Elements the router inserts later (a new route's content, a re-rendered
+    // grid) are marked-and-observed as they arrive. Only child additions are
+    // watched, and `seen` is keyed by node, so our own `is-in` writes can never
+    // feed back into this observer.
+    mo = new MutationObserver((records) => {
+      const arrivals: HTMLElement[] = [];
+      records.forEach((record) => {
+        record.addedNodes.forEach((node) => {
+          if (!(node instanceof HTMLElement)) return;
+          if (node.hasAttribute("data-reveal")) arrivals.push(node);
+          arrivals.push(...node.querySelectorAll<HTMLElement>("[data-reveal]"));
+        });
+      });
+      if (!arrivals.length) return;
+      arrivals.forEach(watch);
+      armSafetyNet(arrivals);
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
 
     // ---------- Reversible reveal on scroll ----------
     // `[data-reveal-cycle]` extends the system above with an exit state: the
@@ -137,6 +178,29 @@ export default function SiteInteractions() {
           { threshold: 0.5 }
         );
         counters.forEach((el) => co?.observe(el));
+      }
+    }
+
+    // ---------- Hero video reveal ----------
+    // The hero band is painted in the theme's ground colour and the video fades
+    // in on top of it (`globals.css`), so all that is needed here is the moment
+    // it can actually play. Two things this has to survive:
+    //   · the video may already have loaded before this effect ran, in which
+    //     case neither event fires again — hence the `readyState` check;
+    //   · `is-ready` is added once and never removed, so nothing can hide the
+    //     media again.
+    const heroVideo = document.querySelector<HTMLVideoElement>(".hero-video");
+    if (heroVideo) {
+      const reveal = () => heroVideo.classList.add("is-ready");
+      if (heroVideo.readyState >= 2 /* first frame decoded */) {
+        reveal();
+      } else {
+        heroVideo.addEventListener("loadeddata", reveal, { once: true });
+        heroVideo.addEventListener("canplay", reveal, { once: true });
+        cleanups.push(() => {
+          heroVideo.removeEventListener("loadeddata", reveal);
+          heroVideo.removeEventListener("canplay", reveal);
+        });
       }
     }
 
@@ -295,8 +359,8 @@ export default function SiteInteractions() {
 
     return () => {
       timeouts.forEach((t) => clearTimeout(t));
-      rafs.forEach((r) => cancelAnimationFrame(r));
       io?.disconnect();
+      mo?.disconnect();
       co?.disconnect();
       ro?.disconnect();
       cleanups.forEach((fn) => fn());
