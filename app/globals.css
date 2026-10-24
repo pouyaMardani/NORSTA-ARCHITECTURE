@@ -203,11 +203,6 @@ a{color:inherit;text-decoration:none}
 .proj figure{overflow:hidden;cursor:zoom-in}
 .proj figure img{transition:transform 1.6s cubic-bezier(.22,.61,.36,1)}
 .proj:hover figure img{transform:scale(1.045)}
-/* The ghost frame steps out from under the card, as the craftsman plate's does. */
-.proj-frame{will-change:transform}
-@media (hover:hover){
-  .proj:hover .proj-frame{transform:translate3d(6px,6px,0)}
-}
 
 /* Service row hover */
 .service-list li{transition:transform .5s cubic-bezier(.22,.61,.36,1),background-color .5s ease}
@@ -495,101 +490,17 @@ a{color:inherit;text-decoration:none}
 }
 .arrow-link{display:block;margin-top:24px;font-size:22px;color:var(--ink)}
 
-/*
- * Each project is a mounted card rather than a bare figure: a matt on `--bg-2`
- * inside a hairline frame, with the card's own silhouette echoed by a ghost
- * frame displaced behind it, and the plate number mounted on the hairline above
- * the caption. That is the craftsman plate's construction at card scale, so the
- * projects and the hands that made them read as one family.
- *
- * `--proj-offset` is the room the ghost hangs into. It is reserved as padding on
- * `.proj` (right and bottom only) instead of a negative inset, which is what
- * keeps the displaced frame from widening the page at narrow widths; both
- * `--proj-offset` and `--proj-radius` travel together at every breakpoint.
- *
- * `align-self:start` keeps each card at its content height — a stretched grid
- * item would drag the ghost, which is anchored to this box, below a card that is
- * shorter than its own row.
- */
-.work-grid{
-  display:grid;grid-template-columns:1.18fr 1fr;
-  grid-template-rows:auto auto;
-  gap:clamp(36px,3.8vw,56px) clamp(32px,3.4vw,48px);
-}
-.proj{
-  --proj-radius:clamp(26px,2.9vw,50px) 2px clamp(20px,2.3vw,38px) 2px;
-  --proj-offset:clamp(10px,1.1vw,18px);
-  position:relative;align-self:start;
-  display:flex;flex-direction:column;
-  padding:0 var(--proj-offset) var(--proj-offset) 0;
-}
-.proj-large{grid-row:span 2}
 
-/* Ghost frame: the card's silhouette, displaced and drawn in hairline. Painted
-   before the card, which is why the two overlap rather than double. */
-.proj-frame{
-  position:absolute;inset:var(--proj-offset) 0 0 var(--proj-offset);
-  border:1px solid var(--hair);border-radius:var(--proj-radius);
-  pointer-events:none;
-  transition:transform 1.6s cubic-bezier(.22,.61,.36,1);
-}
-
-/* The matt: the surface the photograph and its caption are mounted on. */
-.proj-card{
-  position:relative;display:flex;flex-direction:column;
-  padding:clamp(12px,1.3vw,20px);
-  background:var(--bg-2);border:1px solid var(--hair);border-radius:var(--proj-radius);
-}
 
 .proj figure{
   position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;background:#d9d3c5;
   border-radius:clamp(16px,1.9vw,34px) 2px clamp(12px,1.5vw,28px) 2px;
 }
-.proj-large figure{aspect-ratio:5/6}
 /* The plate cannot travel inside a mounted card: the frame, the rule and the
    caption are static, so the reveal is the fade plus the photograph's own settle
    (the image keeps its `image-reveal` scale). */
 .proj [data-reveal="image-reveal"]{transform:none}
 
-/* Mounted plate number. `top:0` is the hairline above the caption, so the label
-   sits across it exactly as the craftsman plate's label sits across the plate's
-   lower edge; the matt's own colour hides the rule behind it. */
-.proj-badge{
-  position:absolute;left:clamp(14px,1.5vw,22px);top:0;
-  transform:translateY(-50%);
-  display:inline-flex;align-items:center;gap:.7em;
-  padding:.6em 1em;
-  background:var(--bg-2);border:1px solid var(--hair);border-radius:2px;
-  font-family:var(--fa);font-size:var(--fs-caption);
-  letter-spacing:.16em;color:var(--ink-soft);
-  white-space:nowrap;unicode-bidi:isolate;
-}
-.proj-badge i{display:block;width:6px;height:6px;background:var(--ink);opacity:.5}
-
-/* Caption ledger: the title reads from the right, the location and the lightbox
-   affordance share the line under it. The room above is the mounted label's. */
-.proj-meta{
-  position:relative;
-  display:grid;grid-template-columns:1fr auto;align-items:baseline;
-  gap:8px 18px;
-  margin-top:0;padding:clamp(28px,2.6vw,36px) 2px 2px;
-  border-top:1px solid var(--hair);
-}
-.proj-meta h3{
-  grid-column:1/-1;text-align:end;
-  font-family:var(--fa);font-weight:600;font-size:var(--fs-title);
-  line-height:var(--lh-heading);color:var(--ink);
-}
-.proj-meta .loc{
-  display:block;font-size:var(--fs-meta);letter-spacing:var(--track-meta);
-  color:var(--ink-soft);unicode-bidi:isolate;
-}
-.proj-meta .view{
-  justify-self:end;
-  font-size:var(--fs-caption);letter-spacing:var(--track-meta);color:var(--ink);
-  border-bottom:1px solid var(--ink);padding-bottom:4px;white-space:nowrap;
-  unicode-bidi:isolate;
-}
 
 /* ============== CRAFT MASTER ============== */
 /*
@@ -834,8 +745,6 @@ a{color:inherit;text-decoration:none}
   .craft-visual{max-width:100%}
   .work-head{grid-template-columns:1fr;gap:24px}
   .work-lede{justify-self:start}
-  .work-grid{grid-template-columns:1fr}
-  .proj-large{grid-row:auto}
   .contact{grid-template-columns:1fr;min-height:auto}
   .contact-image{aspect-ratio:4/3}
   .metrics{gap:48px;margin-top:64px}
@@ -1047,13 +956,6 @@ body.menu-open{overflow:hidden}
   .work-lede{max-width:none;font-size:1rem;margin-inline:auto}
   .work-lede br{display:none}
   .arrow-link{font-size:19px}
-  .work-grid{gap:44px}
-  /* The caption ledger stacks and centres; the mounted plate number takes the
-     plate's centre line, as the craftsman plate's label does on a phone. */
-  .proj-meta{grid-template-columns:1fr;row-gap:8px;text-align:center}
-  .proj-badge{left:50%;transform:translate(-50%,-50%)}
-  .proj-meta h3{font-size:clamp(23px,6.2vw,32px);text-align:center}
-  .proj-meta .view{justify-self:center}
 
   /* Craftsman */
   .craft{padding:92px var(--pad-x) 104px;gap:36px}
@@ -1639,5 +1541,482 @@ body.menu-open{overflow:hidden}
   .art-card:hover .art-card-arrow,
   .art-all:hover .art-all-arrow,
   .post-back:hover .post-back-arrow{transform:none}
+}
+
+
+/* =====================================================================
+   PROJECT GALLERY  (the home page's "selected work")
+
+   The gallery is one horizontal track that drifts from right to left without a
+   seam. What travels is `.mrq-track`, which holds the same projects `N` times
+   (`--mrq-copies`); the animation moves it by exactly one copy, so copy n+1
+   lands where copy n started and the restart is invisible. Both knobs are
+   written by `components/ProjectMarquee.tsx`, which measures the track — the
+   fallbacks here (two copies, 160s) keep the loop seamless before that script
+   runs, and if it never runs at all.
+
+   The plate itself is `.pcard`, shared with the related-projects row on a
+   project page, so a project looks the same wherever it appears. Every colour
+   comes from the site's palette: warm stone, beige, charcoal and ivory.
+
+   The project PAGES are the second half of this block (`.pj-*`).
+   ===================================================================== */
+
+.mrq,
+.pj-shell,
+.pj{
+  --mrq-ink:#f3e9de;                       /* ivory, as type over a photograph */
+  --mrq-ink-soft:rgba(243,233,222,.78);
+  --mrq-accent:#c9ab84;                    /* warm beige, used sparingly       */
+  --mrq-scrim:rgba(17,15,12,.9);
+  /* The site's corner family, in two mirrored cuts: a plate takes one or the
+     other, which is what gives the row its variation without a second design. */
+  --mrq-radius-a:clamp(24px,2.6vw,44px) 2px clamp(20px,2.1vw,36px) 2px;
+  --mrq-radius-b:2px clamp(22px,2.4vw,40px) clamp(26px,2.8vw,46px) 2px;
+  --mrq-gap:clamp(18px,2.2vw,34px);
+  --mrq-card:clamp(276px,30vw,560px);
+}
+
+/* ---------- The plate: one project ---------------------------------------- */
+.pcard{
+  position:relative;display:block;
+  border-radius:var(--pcard-radius, var(--mrq-radius-a));
+  overflow:hidden;
+  background:#2a2723;                      /* inert tone until the photo decodes */
+  box-shadow:0 22px 50px -34px rgba(29,28,24,.5);
+  transition:transform .8s cubic-bezier(.22,.61,.36,1),
+             box-shadow .8s cubic-bezier(.22,.61,.36,1);
+}
+.pcard-media{position:relative;display:block;width:100%;aspect-ratio:4/3;overflow:hidden}
+.pcard-media img{transition:transform 1.6s cubic-bezier(.22,.61,.36,1)}
+
+/* The scrim is what keeps the copy readable on every photograph; it deepens a
+   little when the plate is picked out. */
+.pcard-scrim{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,
+    var(--mrq-scrim) 0%,
+    rgba(17,15,12,.66) 24%,
+    rgba(17,15,12,.2) 52%,
+    rgba(17,15,12,0) 76%);
+  transition:opacity .8s ease;
+}
+
+/* Mounted plate number — the crafted label the rest of the site already uses,
+   now read over a photograph. */
+.pcard-num{
+  position:absolute;top:clamp(14px,1.4vw,22px);left:clamp(14px,1.4vw,22px);
+  display:inline-flex;align-items:center;
+  padding:.55em .9em;
+  background:rgba(243,233,222,.12);border:1px solid rgba(243,233,222,.3);
+  border-radius:2px;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  color:var(--mrq-ink);white-space:nowrap;unicode-bidi:isolate;
+}
+
+/* The ledger: category, title and location read from the right, the arrow keeps
+   the left corner so nothing has to wrap around it. */
+.pcard-meta{
+  position:absolute;left:0;right:0;bottom:0;
+  display:grid;grid-template-columns:auto minmax(0,1fr);align-items:end;
+  gap:6px 16px;
+  padding:clamp(22px,2.2vw,34px);
+  color:var(--mrq-ink);text-align:right;
+}
+.pcard-cat{
+  grid-column:1/-1;justify-self:end;
+  display:inline-flex;align-items:center;gap:.7em;
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  color:var(--mrq-accent);unicode-bidi:isolate;
+}
+/* A short rule that grows as the plate is picked out — the same device the
+   magazine's section headings use. */
+.pcard-cat::before{
+  content:"";display:block;width:20px;height:1px;background:currentColor;opacity:.8;
+  transition:width .7s cubic-bezier(.22,.61,.36,1);
+}
+.pcard-title{
+  grid-column:1/-1;
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(21px,1.7vw,31px);line-height:var(--lh-heading);
+  color:var(--mrq-ink);
+  text-shadow:0 2px 24px rgba(17,15,12,.45);
+}
+.pcard-loc{
+  grid-column:2;justify-self:end;
+  font-size:var(--fs-meta);color:var(--mrq-ink-soft);unicode-bidi:isolate;
+}
+.pcard-arrow{
+  grid-column:1;justify-self:start;align-self:end;
+  display:flex;align-items:center;justify-content:center;
+  width:32px;height:32px;
+  border:1px solid rgba(243,233,222,.36);border-radius:50%;
+  color:var(--mrq-ink);opacity:.72;
+  transition:transform .6s cubic-bezier(.22,.61,.36,1),
+             opacity .6s ease,background-color .6s ease,border-color .6s ease;
+}
+.pcard-arrow svg{width:15px;height:15px}
+/* Drawn just inside the plate, so the radius can never clip the ring. */
+.pcard:focus-visible{outline:2px solid var(--mrq-accent);outline-offset:-4px}
+
+/* ---------- The travelling track ------------------------------------------ */
+.mrq{
+  position:relative;
+  /* The row is shown to both edges of the viewport: the section's own gutter is
+     handed back as a negative margin, and the edge fades do the rest. */
+  margin-inline:calc(-1 * var(--pad-x));
+  padding-block:clamp(8px,1vw,14px);
+}
+.mrq-viewport{
+  overflow:hidden;
+  padding-block:clamp(20px,2.2vw,34px);    /* room for the hover lift */
+}
+.mrq-track{
+  display:flex;align-items:flex-end;
+  width:max-content;
+  /* The loop itself is fixed; only how long one step takes is measured. The
+     duration is set as its own declaration on purpose: a missing or malformed
+     value then falls back to 160s instead of invalidating the whole shorthand
+     and leaving the row standing still. */
+  animation:mrq-drift 160s linear infinite;
+  animation-duration:var(--mrq-duration, 160s);
+  will-change:transform;
+}
+@keyframes mrq-drift{
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(calc(-100% / var(--mrq-copies,2)),0,0)}
+}
+/* One copy of the track is a set of plates; the trailing space is part of the
+   set, which is what makes a step equal to a copy's own width. */
+.mrq-item{flex:0 0 auto;margin-inline-end:var(--mrq-gap)}
+
+/* Proportions alternate so the row reads as a composition rather than a strip:
+   every second plate is a little narrower and shallower, and cut the other way
+   round. */
+.mrq-card{width:var(--mrq-card)}
+.mrq-item[data-slot="1"] .mrq-card{width:calc(var(--mrq-card) * .87)}
+.mrq-item[data-slot="1"] .pcard-media{aspect-ratio:16/11}
+.mrq-item[data-slot="1"] .pcard{--pcard-radius:var(--mrq-radius-b)}
+
+/* The two edges say the row continues, in the section's own ground colour. */
+.mrq-edge{
+  position:absolute;top:0;bottom:0;z-index:2;width:clamp(36px,7vw,132px);
+  pointer-events:none;
+}
+.mrq-edge-start{left:0;background:linear-gradient(to right, var(--bg), rgba(243,233,222,0))}
+.mrq-edge-end{right:0;background:linear-gradient(to left, var(--bg), rgba(243,233,222,0))}
+
+/* ---------- Holding still ------------------------------------------------- */
+/* A gallery that is being read should not walk away: hovering it, focusing any
+   plate, pressing on it (touch) or having it off screen all pause the drift,
+   which keeps its position — so nothing jumps when it starts again. */
+.mrq:hover .mrq-track,
+.mrq:focus-within .mrq-track,
+.mrq[data-paused="true"] .mrq-track{animation-play-state:paused}
+
+@media (hover:hover){
+  .mrq-card:hover{transform:translate3d(0,-10px,0);box-shadow:0 34px 70px -34px rgba(29,28,24,.62)}
+  .mrq-card:hover .pcard-media img{transform:scale(1.05)}
+  .mrq-card:hover .pcard-scrim{opacity:.92}
+  .mrq-card:hover .pcard-cat::before{width:34px}
+  .mrq-card:hover .pcard-arrow{
+    opacity:1;background-color:rgba(243,233,222,.14);border-color:var(--mrq-accent);
+    transform:translate3d(5px,0,0);
+  }
+}
+
+/* Touch: the drift keeps running, and the row can also be pushed by hand. While
+   a finger is down the drift pauses (the component sets `data-paused`), so the
+   two motions never fight over the same gesture. Keyed to the header's
+   breakpoint as well as to a hoverless pointer: a width is something every
+   engine reports reliably, and a narrow desktop window can scroll the row just
+   as harmlessly as a phone can. */
+@media (max-width: 860px), (hover:none) and (pointer:coarse){
+  .mrq-viewport{
+    overflow-x:auto;overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    scroll-snap-type:x proximity;
+    scrollbar-width:none;
+  }
+  .mrq-viewport::-webkit-scrollbar{display:none}
+  .mrq-item{scroll-snap-align:center}
+}
+
+/* =====================================================================
+   PROJECT PAGES  (/projects/<slug> and the segment's 404)
+
+   The site's own warm ground, its hairlines and its type scale: a full-bleed
+   photograph with the heading mounted on its lower edge, a two-column reading
+   grid (copy beside a list of facts), the page's own gallery, and the related
+   row. Nothing here is dark-on-dark: the photograph's top edge gets a light
+   scrim so the header's ink stays readable, and all page type is the site's
+   charcoal on ivory.
+
+   The gallery shots are `.proj` plates because that is the contract the site's
+   lightbox already walks — the reset below (`--proj-offset:0`, no padding) turns
+   the home page's mounted card into a plain editorial frame with a caption.
+   ===================================================================== */
+
+.pj-shell{min-height:100vh;background:var(--bg);color:var(--ink)}
+.pj{padding-bottom:0}
+
+/* ---------- Hero ---------------------------------------------------------- */
+.pj-hero{position:relative}
+.pj-hero-media{
+  position:relative;height:min(70vh,700px);min-height:380px;overflow:hidden;
+  background:#d9d3c5;                      /* inert tone until the photo decodes */
+}
+.pj-hero-veil{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,
+    rgba(243,233,222,.9) 0%,
+    rgba(243,233,222,.52) 11%,
+    rgba(243,233,222,.14) 30%,
+    rgba(20,18,14,0) 52%,
+    rgba(20,18,14,.18) 100%);
+}
+/* The head begins on the photograph's lower edge and runs past it, so the title
+   reads as mounted on the image rather than next to it. */
+.pj-hero-inner{
+  position:relative;z-index:2;
+  margin-top:calc(-1 * clamp(20px,2.2vw,30px));
+  padding:clamp(26px,3vw,44px) var(--pad-x) 0;
+  display:flex;flex-direction:column;align-items:flex-start;
+  gap:clamp(16px,1.8vw,26px);
+}
+/* The back link is a mounted label: it sits across the photograph's lower edge
+   on a translucent ground, exactly like the plate numbers in the gallery. */
+.pj-back{
+  display:inline-flex;align-items:center;gap:.7em;
+  padding:.6em 1em;
+  background:rgba(243,233,222,.93);border:1px solid var(--hair);border-radius:2px;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  color:var(--ink-soft);white-space:nowrap;
+  transition:color .4s ease,background-color .4s ease,border-color .4s ease;
+}
+.pj-back-arrow{
+  display:inline-flex;width:16px;height:16px;
+  transition:transform .5s cubic-bezier(.22,.61,.36,1);
+}
+.pj-back-arrow svg{width:100%;height:100%}
+.pj-back:hover{color:var(--ink);background:var(--bg)}
+/* Going back is travelling the other way in a right-to-left register. */
+.pj-back:hover .pj-back-arrow{transform:translate3d(-4px,0,0)}
+.pj-back:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+.pj-cat{
+  display:inline-block;padding:.5em .85em;
+  border:1px solid var(--hair);border-radius:2px;
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  color:var(--ink-soft);
+}
+.pj-title{
+  max-width:24ch;
+  font-family:var(--fa);font-weight:600;letter-spacing:0;
+  font-size:clamp(32px,5vw,72px);line-height:1.16;
+  color:var(--ink);
+}
+.pj-lede{
+  max-width:56ch;
+  font-size:var(--fs-lede);line-height:1.7;color:var(--ink-soft);
+}
+
+/* ---------- The reading grid --------------------------------------------- */
+.pj-body{
+  display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);
+  gap:clamp(36px,5vw,104px);
+  align-items:start;
+  padding:clamp(56px,6vw,104px) var(--pad-x) clamp(20px,2.6vw,40px);
+}
+/* One measure for the whole description, so the paragraphs read as prose. */
+.pj-copy{max-width:66ch}
+.pj-p{
+  font-size:var(--fs-body);line-height:1.95;color:var(--ink-soft);
+}
+.pj-p + .pj-p{margin-top:1.1em}
+/* The first paragraph carries the tone of the page and is set a shade larger. */
+.pj-p:first-of-type{font-size:clamp(18px,1.25vw,21px);color:var(--ink)}
+
+/* Only the facts a record actually carries: an empty list renders nothing. */
+.pj-facts{
+  padding:clamp(22px,2.2vw,32px);
+  background:var(--bg-2);border:1px solid var(--hair);
+  border-radius:clamp(18px,1.8vw,28px) 2px clamp(18px,1.8vw,28px) 2px;
+}
+.pj-facts-list{display:flex;flex-direction:column;gap:18px}
+.pj-fact{display:flex;flex-direction:column;gap:6px}
+.pj-fact dt{
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);color:var(--muted);
+}
+.pj-fact dd{font-size:var(--fs-ui);color:var(--ink);unicode-bidi:isolate}
+
+/* ---------- The page's own gallery ---------------------------------------- */
+.pj-gallery{padding:clamp(56px,6vw,104px) var(--pad-x) 0}
+/* A section heading in the magazine's register: a short beige rule, the title,
+   then a hairline under it. */
+.pj-h2{
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(24px,2.6vw,40px);line-height:var(--lh-heading);
+  color:var(--ink);
+  padding-bottom:clamp(18px,2vw,28px);
+  border-bottom:1px solid var(--hair);
+  margin-bottom:clamp(28px,3.2vw,48px);
+}
+.pj-h2::before{
+  content:"";display:block;width:34px;height:1px;margin-bottom:16px;
+  background:var(--mrq-accent);
+}
+
+.pj-shots{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(20px,2.4vw,40px);
+}
+/* The plate, reset: no matt, no reserved offset — just the frame and its
+   caption, which is all a gallery shot needs. */
+.pj-shots .proj{--proj-offset:0;display:block;padding:0}
+.pj-shots .proj figure{
+  position:relative;aspect-ratio:4/3;
+  border-radius:clamp(18px,1.8vw,30px) 2px clamp(16px,1.6vw,26px) 2px;
+}
+/* The first shot leads at double width, so the gallery opens with a spread
+   rather than a row of equal tiles. */
+.pj-shots .proj:first-child{grid-column:span 2}
+.pj-shots .proj:first-child figure{aspect-ratio:16/10}
+.pj-shot-media{position:relative;width:100%;height:100%}
+
+.pj-shot-meta{
+  display:flex;flex-wrap:wrap;align-items:baseline;
+  gap:4px 14px;
+  margin-top:16px;padding-top:14px;
+  border-top:1px solid var(--hair);
+}
+.pj-shot-title{
+  flex:1 1 auto;min-width:0;
+  font-family:var(--fa);font-weight:600;font-size:var(--fs-ui);
+  line-height:var(--lh-heading);color:var(--ink);
+}
+.pj-shot-meta .loc{
+  flex:0 0 auto;
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  color:var(--muted);
+  /* Forced left-to-right: the two numbers and their separator are one run, and
+     in a right-to-left line the bidi algorithm would otherwise print «۰۱ / ۰۳»
+     as «۰۳ / ۰۱». */
+  direction:ltr;unicode-bidi:isolate;
+}
+/* Opens the site's own lightbox (see `components/SiteInteractions.tsx`). */
+.pj-shot-zoom{
+  flex:0 0 auto;
+  display:inline-flex;align-items:center;justify-content:center;
+  width:34px;height:34px;padding:0;
+  background:transparent;border:1px solid var(--hair);border-radius:50%;
+  color:var(--ink-soft);cursor:pointer;
+  transition:background-color .45s ease,border-color .45s ease,
+             color .45s ease,transform .45s ease;
+}
+.pj-shot-zoom svg{width:15px;height:15px}
+.pj-shot-zoom:hover{
+  background:var(--bg-2);border-color:var(--ink);color:var(--ink);
+  transform:translate3d(4px,0,0);
+}
+.pj-shot-zoom:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+/* ---------- Related projects --------------------------------------------- */
+.pj-related{padding:clamp(64px,7vw,132px) var(--pad-x) clamp(72px,8vw,140px)}
+.pj-related-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(20px,2.4vw,40px);
+}
+/* The same plate as the gallery, at grid width. */
+.pj-related-card{width:100%}
+.pj-related-card .pcard-media{aspect-ratio:4/3}
+
+/* ---------- The segment's 404 ------------------------------------------- */
+.pj-missing{
+  max-width:940px;
+  padding:clamp(140px,15vw,232px) var(--pad-x) clamp(96px,11vw,168px);
+  display:flex;flex-direction:column;align-items:flex-start;
+}
+.pj-eyebrow{color:var(--muted)}
+.pj-missing-title{
+  margin-top:16px;
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(30px,4.2vw,60px);line-height:var(--lh-heading);
+  color:var(--ink);
+}
+.pj-missing-lede{
+  margin-top:clamp(18px,2vw,26px);max-width:58ch;
+  font-size:var(--fs-body);line-height:1.9;color:var(--ink-soft);
+}
+.pj-missing-link{
+  margin-top:clamp(26px,3vw,40px);padding-bottom:4px;
+  border-bottom:1px solid var(--ink);
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);color:var(--ink);
+  transition:border-color .4s ease,opacity .4s ease;
+}
+.pj-missing-link:hover{border-bottom-color:var(--muted);opacity:.75}
+.pj-missing-link:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+
+/* ---------- Project-page responsive layer -------------------------------
+   Additive and scoped to the project classes: the desktop composition is
+   untouched, and narrower viewports re-flow instead of squeezing. */
+@media (max-width: 1100px){
+  .pj-shots{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pj-shots .proj:first-child{grid-column:1/-1}
+  .pj-related-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width: 960px){
+  .pj-hero-media{height:min(56vh,480px);min-height:320px}
+  .pj-body{grid-template-columns:1fr;gap:clamp(32px,4vw,48px)}
+  .pj-facts{max-width:560px}
+  .pj-title{max-width:none}
+}
+@media (max-width: 680px){
+  .pj-hero-media{height:auto;aspect-ratio:4/3;min-height:0;max-height:56vh}
+  .pj-hero-inner{padding-top:clamp(22px,6vw,32px);gap:14px}
+  .pj-title{font-size:clamp(28px,8.6vw,42px)}
+  .pj-lede{font-size:1rem}
+  .pj-body{padding-top:clamp(44px,10vw,64px)}
+  .pj-p{line-height:1.85}
+  .pj-shots{grid-template-columns:1fr;gap:26px}
+  .pj-shots .proj:first-child{grid-column:auto}
+  .pj-shots .proj:first-child figure{aspect-ratio:4/3}
+  .pj-related-grid{grid-template-columns:1fr}
+}
+
+/* ---------- Gallery responsive layer ------------------------------------ */
+@media (max-width: 1100px){
+  .mrq{--mrq-card:clamp(258px,38vw,420px)}
+}
+@media (max-width: 860px){
+  /* Past the header's breakpoint the alternation goes: one proportion, one
+     corner treatment, sized so a neighbour is always showing. */
+  .mrq{--mrq-card:min(74vw,380px)}
+  .mrq-item[data-slot="1"] .mrq-card{width:var(--mrq-card)}
+  .mrq-item[data-slot="1"] .pcard-media{aspect-ratio:4/3}
+  .mrq-item[data-slot="1"] .pcard{--pcard-radius:var(--mrq-radius-a)}
+}
+@media (max-width: 680px){
+  .mrq{--mrq-card:min(78vw,320px);--mrq-gap:16px}
+  .mrq-edge{width:28px}
+  .pcard-meta{padding:18px}
+  .pcard-title{font-size:clamp(20px,5.6vw,26px)}
+}
+
+@media (prefers-reduced-motion: reduce){
+  /* The static alternative: one copy, no drift, and a row that can be scrolled
+     by hand (and with the keyboard, through the plates' own links). */
+  .mrq-track{animation:none;transform:none}
+  .mrq-item:not([data-copy="0"]){display:none}
+  .mrq-viewport{
+    overflow-x:auto;overflow-y:hidden;
+    scroll-snap-type:x proximity;
+    scrollbar-width:none;
+  }
+  .mrq-viewport::-webkit-scrollbar{display:none}
+  .mrq-item{scroll-snap-align:start}
+  .mrq-card{box-shadow:none}
 }
 
