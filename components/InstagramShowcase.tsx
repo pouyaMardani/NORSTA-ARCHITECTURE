@@ -42,7 +42,7 @@ export default function InstagramShowcase() {
 
         <a
           className="ig-cta"
-          href="https://www.instagram.com/norsta.studio/"
+          href="https://www.instagram.com/norsta.home/"
           target="_blank"
           rel="noopener noreferrer"
           data-reveal="fade-up"

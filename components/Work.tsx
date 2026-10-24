@@ -58,10 +58,7 @@ export default function Work() {
   return (
     <section id="work" className="work">
       <div className="work-head" data-reveal="fade-up">
-        <div>
-          <span className="eyebrow">4 / 5 &nbsp;&nbsp; پروژه‌های منتخب</span>
-          <h2>پروژه‌های اخیر</h2>
-        </div>
+      
         <p className="work-lede">
           گزیده‌ای کوچک از پروژه‌های اجراشده؛{" "}
           <br />
@@ -72,6 +69,10 @@ export default function Work() {
             →
           </a>
         </p>
+         <div>
+          <span className="eyebrow">4 / 5 &nbsp;&nbsp; پروژه‌های منتخب</span>
+          <h2>پروژه‌های اخیر</h2>
+        </div>
       </div>
 
       <div className="work-grid">
@@ -80,23 +81,44 @@ export default function Work() {
             key={project.num}
             className={`proj${project.large ? " proj-large" : ""}`}
           >
-            <figure
-              data-reveal="image-reveal"
-              data-delay={project.delay ? String(project.delay) : undefined}
-            >
-              <Image
-                src={project.src}
-                alt={project.alt}
-                fill
-                sizes={project.large ? "(max-width: 960px) 100vw, 50vw" : "(max-width: 960px) 100vw, 42vw"}
-                style={{ objectFit: "cover" }}
-              />
-            </figure>
-            <div className="proj-meta">
-              <span className="num">{project.num}</span>
-              <span className="loc">{project.loc}</span>
-              <h3>{project.title}</h3>
-             
+            {/* Each project is a mounted card, built from the same parts as the
+                craftsman plate below: a ghost frame in hairline, the matt the
+                photograph sits on, and a mounted label. The ghost frame is
+                drawn first so the card stacks over it. */}
+            <span className="proj-frame" aria-hidden="true" />
+
+            <div className="proj-card">
+              <figure
+                data-reveal="image-reveal"
+                data-delay={project.delay ? String(project.delay) : undefined}
+              >
+                <Image
+                  src={project.src}
+                  alt={project.alt}
+                  fill
+                  sizes={project.large ? "(max-width: 960px) 100vw, 50vw" : "(max-width: 960px) 100vw, 42vw"}
+                  style={{ objectFit: "cover" }}
+                />
+              </figure>
+
+              <div className="proj-meta">
+                {/* Mounted plate number: it straddles the hairline above the
+                    caption, so the rule runs into the label instead of around
+                    it — the same device as the craftsman plate's label. It is
+                    out of the flow, so the caption stacks under it. */}
+                <span className="proj-badge">
+                  <i aria-hidden="true" />
+                  {project.num}
+                </span>
+
+                <h3>{project.title}</h3>
+                <span className="loc">{project.loc}</span>
+                {/* Opens the lightbox that `SiteInteractions` already wires to
+                    every `[data-open-lightbox]` inside a project. */}
+                <a className="view" href="#work" data-open-lightbox>
+                  مشاهده پروژه <span aria-hidden="true">→</span>
+                </a>
+              </div>
             </div>
           </article>
         ))}

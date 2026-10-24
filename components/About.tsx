@@ -3,17 +3,38 @@ import Image from "next/image";
 export default function About() {
   return (
     <section id="about" className="about">
-      <div className="about-image" data-reveal="image-reveal">
-        <Image
-          src="/images/about-courtyard.png"
-          alt="فضای داخلی سنگیِ آفتاب‌گیر با درخت و پلکان"
-          fill
-          sizes="(max-width: 960px) 100vw, 48vw"
-          style={{ objectFit: "cover" }}
-        />
+      {/* The photograph is mounted the way the project cards and the craftsman
+          plate are, with fewer parts: a matt in hairline, the same ghost frame
+          displaced behind it, and one label on the rule under the picture. The
+          ghost is drawn first so the plate stacks over it. */}
+      <div className="about-visual">
+        <span className="about-frame" aria-hidden="true" />
+
+        <figure className="about-plate">
+          <div className="about-image" data-reveal="image-reveal">
+            <Image
+              src="/images/about-courtyard.png"
+              alt="فضای داخلی سنگیِ آفتاب‌گیر با درخت و پلکان"
+              fill
+              sizes="(max-width: 960px) 100vw, 48vw"
+              style={{ objectFit: "cover" }}
+            />
+          </div>
+
+          <figcaption className="about-caption">
+            <span className="about-label">
+              <i aria-hidden="true" />
+              حیاط سنگی، کپنهاگ
+            </span>
+          </figcaption>
+        </figure>
       </div>
 
-      <div className="about-copy">
+      {/* `dir="rtl"` is declared here rather than on the page: the shell stays
+          LTR, but this block is unmixed Persian prose, so the paragraph
+          direction, the alignment and the reading order of the metric pair are
+          RTL. Tablet and phone centre the column in the stylesheet. */}
+      <div className="about-copy" dir="rtl">
         <span className="eyebrow" data-reveal="fade-up">
           استودیو
         </span>

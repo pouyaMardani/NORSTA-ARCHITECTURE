@@ -115,8 +115,10 @@ a{color:inherit;text-decoration:none}
 /* Metrics top hairline rule wipe */
 .metrics{position:relative}
 [data-reveal="metrics-rule"]{opacity:1}
+/* Grows from the inline start, so the rule runs out from under the metric pair
+   whether the block reads RTL (the Studio copy) or LTR. */
 [data-reveal="metrics-rule"]::before{
-  content:"";position:absolute;left:0;top:-32px;height:1px;width:0;
+  content:"";position:absolute;inset-inline-start:0;top:-32px;height:1px;width:0;
   background:var(--hair);
   transition:width 1.2s cubic-bezier(.22,.61,.36,1);
 }
@@ -181,6 +183,11 @@ a{color:inherit;text-decoration:none}
 .proj figure{overflow:hidden;cursor:zoom-in}
 .proj figure img{transition:transform 1.6s cubic-bezier(.22,.61,.36,1)}
 .proj:hover figure img{transform:scale(1.045)}
+/* The ghost frame steps out from under the card, as the craftsman plate's does. */
+.proj-frame{will-change:transform}
+@media (hover:hover){
+  .proj:hover .proj-frame{transform:translate3d(6px,6px,0)}
+}
 
 /* Service row hover */
 .service-list li{transition:transform .5s cubic-bezier(.22,.61,.36,1),background-color .5s ease}
@@ -344,13 +351,79 @@ a{color:inherit;text-decoration:none}
 }
 
 /* ============== ABOUT ============== */
+/*
+ * The studio block: the photograph is mounted the way the project cards and the
+ * craftsman plate are, with fewer parts — a matt in hairline, the same ghost
+ * frame displaced behind it, and one label sitting on the rule under the
+ * picture. `--about-offset` is the room the ghost hangs into and is reserved as
+ * padding on `.about-visual`, so the displaced frame can never widen the page;
+ * it travels with `--about-radius` at every width.
+ *
+ * The copy carries `dir="rtl"` from the markup: the page stays LTR, but this
+ * block is unmixed Persian prose, so the paragraphs, the alignment and the
+ * reading order of the metric pair are RTL. Tablet and phone centre the column.
+ */
 .about{
+  --about-radius:clamp(24px,2.6vw,46px) 2px clamp(18px,2.1vw,34px) 2px;
+  --about-offset:clamp(10px,1.1vw,18px);
   display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(48px,6vw,120px);
   padding:140px var(--pad-x) 180px;background:var(--bg);
   align-items:center;
 }
-.about-image{position:relative;aspect-ratio:4/5;overflow:hidden}
-.about-copy{padding-right:4%}
+
+/* Ghost frame: the plate's own silhouette, displaced and drawn in hairline.
+   Painted before the plate, which is why the two overlap rather than double. */
+.about-visual{position:relative;padding:0 var(--about-offset) var(--about-offset) 0}
+.about-frame{
+  position:absolute;inset:var(--about-offset) 0 0 var(--about-offset);
+  border:1px solid var(--hair);border-radius:var(--about-radius);
+  pointer-events:none;
+  transition:transform 1.6s cubic-bezier(.22,.61,.36,1);
+}
+
+/* The matt the photograph is mounted on. */
+.about-plate{
+  position:relative;padding:clamp(11px,1.2vw,18px);
+  background:var(--bg-2);border:1px solid var(--hair);
+  border-radius:var(--about-radius);
+}
+.about-image{
+  position:relative;aspect-ratio:4/5;overflow:hidden;background:#d9d3c5;
+  border-radius:clamp(14px,1.7vw,26px) 2px clamp(10px,1.3vw,20px) 2px;
+}
+/* The matt is static, so the reveal keeps only its fade: the photograph settles
+   in place through its own `image-reveal` scale instead of travelling 40px out
+   of the box it is matted into. */
+.about-visual [data-reveal="image-reveal"]{transform:none}
+
+/* Mounted label: its centre sits on the rule under the picture, so the hairline
+   runs into the label instead of around it — the project cards' own device, a
+   size smaller. The band it is mounted in is what holds the plate's lower
+   margin, which keeps the label clear of the photograph. */
+.about-caption{
+  position:relative;margin-top:clamp(14px,1.5vw,20px);
+  height:clamp(24px,2.2vw,30px);
+  border-top:1px solid var(--hair);
+}
+.about-label{
+  position:absolute;left:clamp(6px,.7vw,12px);top:0;
+  transform:translateY(-50%);
+  display:inline-flex;align-items:center;gap:.7em;
+  padding:.6em 1em;
+  background:var(--bg-2);border:1px solid var(--hair);border-radius:2px;
+  font-family:var(--fa);font-size:var(--fs-caption);
+  letter-spacing:.14em;color:var(--ink-soft);
+  white-space:nowrap;unicode-bidi:isolate;
+}
+.about-label i{display:block;width:6px;height:6px;background:var(--ink);opacity:.5}
+
+/* Restrained movement, and only where a cursor can actually hover. */
+@media (hover:hover){
+  .about-visual:hover .about-image img{transform:scale(1.035)}
+  .about-visual:hover .about-frame{transform:translate3d(6px,6px,0)}
+}
+
+.about-copy{padding-inline-start:4%}
 .about-copy h2{font-size:var(--fs-subdisplay);margin:22px 0 46px}
 .about-copy .lede{
   font-family:var(--fa);font-weight:400;
@@ -385,37 +458,97 @@ a{color:inherit;text-decoration:none}
 }
 .arrow-link{display:block;margin-top:24px;font-size:22px;color:var(--ink)}
 
+/*
+ * Each project is a mounted card rather than a bare figure: a matt on `--bg-2`
+ * inside a hairline frame, with the card's own silhouette echoed by a ghost
+ * frame displaced behind it, and the plate number mounted on the hairline above
+ * the caption. That is the craftsman plate's construction at card scale, so the
+ * projects and the hands that made them read as one family.
+ *
+ * `--proj-offset` is the room the ghost hangs into. It is reserved as padding on
+ * `.proj` (right and bottom only) instead of a negative inset, which is what
+ * keeps the displaced frame from widening the page at narrow widths; both
+ * `--proj-offset` and `--proj-radius` travel together at every breakpoint.
+ *
+ * `align-self:start` keeps each card at its content height — a stretched grid
+ * item would drag the ghost, which is anchored to this box, below a card that is
+ * shorter than its own row.
+ */
 .work-grid{
   display:grid;grid-template-columns:1.18fr 1fr;
   grid-template-rows:auto auto;
-  gap:32px 32px;
+  gap:clamp(36px,3.8vw,56px) clamp(32px,3.4vw,48px);
 }
-.proj{display:flex;flex-direction:column}
+.proj{
+  --proj-radius:clamp(26px,2.9vw,50px) 2px clamp(20px,2.3vw,38px) 2px;
+  --proj-offset:clamp(10px,1.1vw,18px);
+  position:relative;align-self:start;
+  display:flex;flex-direction:column;
+  padding:0 var(--proj-offset) var(--proj-offset) 0;
+}
 .proj-large{grid-row:span 2}
+
+/* Ghost frame: the card's silhouette, displaced and drawn in hairline. Painted
+   before the card, which is why the two overlap rather than double. */
+.proj-frame{
+  position:absolute;inset:var(--proj-offset) 0 0 var(--proj-offset);
+  border:1px solid var(--hair);border-radius:var(--proj-radius);
+  pointer-events:none;
+  transition:transform 1.6s cubic-bezier(.22,.61,.36,1);
+}
+
+/* The matt: the surface the photograph and its caption are mounted on. */
+.proj-card{
+  position:relative;display:flex;flex-direction:column;
+  padding:clamp(12px,1.3vw,20px);
+  background:var(--bg-2);border:1px solid var(--hair);border-radius:var(--proj-radius);
+}
+
 .proj figure{
   position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;background:#d9d3c5;
+  border-radius:clamp(16px,1.9vw,34px) 2px clamp(12px,1.5vw,28px) 2px;
 }
 .proj-large figure{aspect-ratio:5/6}
-.proj-meta{
-  align-items: center;
-  display:grid;grid-template-columns:1fr auto;align-items:end;
-  padding:22px 4px 4px;gap:18px;
-  border-top:1px solid var(--hair);margin-top:22px;
+/* The plate cannot travel inside a mounted card: the frame, the rule and the
+   caption are static, so the reveal is the fade plus the photograph's own settle
+   (the image keeps its `image-reveal` scale). */
+.proj [data-reveal="image-reveal"]{transform:none}
+
+/* Mounted plate number. `top:0` is the hairline above the caption, so the label
+   sits across it exactly as the craftsman plate's label sits across the plate's
+   lower edge; the matt's own colour hides the rule behind it. */
+.proj-badge{
+  position:absolute;left:clamp(14px,1.5vw,22px);top:0;
+  transform:translateY(-50%);
+  display:inline-flex;align-items:center;gap:.7em;
+  padding:.6em 1em;
+  background:var(--bg-2);border:1px solid var(--hair);border-radius:2px;
+  font-family:var(--fa);font-size:var(--fs-caption);
+  letter-spacing:.16em;color:var(--ink-soft);
+  white-space:nowrap;unicode-bidi:isolate;
 }
-.proj-meta .num{
-  text-align: end;
-  grid-column:1/-1;font-family:var(--fa);color:var(--muted);font-size:18px;
-  margin-bottom:-6px;
+.proj-badge i{display:block;width:6px;height:6px;background:var(--ink);opacity:.5}
+
+/* Caption ledger: the title reads from the right, the location and the lightbox
+   affordance share the line under it. The room above is the mounted label's. */
+.proj-meta{
+  position:relative;
+  display:grid;grid-template-columns:1fr auto;align-items:baseline;
+  gap:8px 18px;
+  margin-top:0;padding:clamp(28px,2.6vw,36px) 2px 2px;
+  border-top:1px solid var(--hair);
 }
 .proj-meta h3{
+  grid-column:1/-1;text-align:end;
   font-family:var(--fa);font-weight:600;font-size:var(--fs-title);
   line-height:var(--lh-heading);color:var(--ink);
 }
 .proj-meta .loc{
-  display:block;margin-top:6px;font-size:var(--fs-meta);letter-spacing:var(--track-meta);
+  display:block;font-size:var(--fs-meta);letter-spacing:var(--track-meta);
   color:var(--ink-soft);unicode-bidi:isolate;
 }
 .proj-meta .view{
+  justify-self:end;
   font-size:var(--fs-caption);letter-spacing:var(--track-meta);color:var(--ink);
   border-bottom:1px solid var(--ink);padding-bottom:4px;white-space:nowrap;
   unicode-bidi:isolate;
@@ -638,11 +771,25 @@ a{color:inherit;text-decoration:none}
   .service-list li p{grid-column:2/-1;max-width:none}
   .services-edge{display:none}
   .about{grid-template-columns:1fr;padding-top:100px;padding-bottom:120px}
+  /* Stacked, the plate and the copy share one full measure and the copy reads
+     as a single centred column: the 4% inset belongs to the desktop two-column
+     split, and the capped intro blocks centre through auto margins. */
+  .about-copy{padding-inline-start:0;text-align:center}
+  .about-copy .lede,
+  .about-copy .sub{margin-inline:auto}
   .about-image{aspect-ratio:5/4}
-  /* Craftsman: the plate stacks above its copy and is capped, so a full-width
-     4/5 portrait cannot stretch the section past a comfortable scroll. */
+  .metrics{justify-content:center;text-align:center;margin-top:72px}
+  /* A centred metric pair wants a rule that grows out of the centre, so the
+     logical inline offset that suits the RTL copy is released here. */
+  [data-reveal="metrics-rule"]::before{
+    top:-26px;inset-inline-start:auto;left:50%;transform:translateX(-50%);
+  }
+  /* Craftsman: the plate stacks above its copy and runs the full column width,
+     like the project figures above it, so the plate, its ghost frame and the
+     material rule keep the copy's measure instead of leaving a dead gutter
+     beside a capped portrait. */
   .craft{grid-template-columns:1fr;gap:44px;padding-top:100px;padding-bottom:120px}
-  .craft-visual{max-width:560px}
+  .craft-visual{max-width:100%}
   .work-head{grid-template-columns:1fr;gap:24px}
   .work-lede{justify-self:start}
   .work-grid{grid-template-columns:1fr}
@@ -739,7 +886,11 @@ body.menu-open{overflow:hidden}
 @media (max-width: 960px){
   /* The left-to-right fade only makes sense against the desktop text column. */
   .contact-image::before{display:none}
-  .contact-copy{padding-top:104px;padding-bottom:96px}
+  /* The 880px cap must stay a full-width, centred block at tablet-landscape
+     widths: `width:100%` keeps the copy filling the column, while the auto
+     margins centre whatever the cap takes off. Without it the grid item would
+     shrink to fit its text and re-wrap the copy into a narrower measure. */
+  .contact-copy{padding-top:104px;padding-bottom:96px;width:100%;margin-inline:auto}
   .metrics{flex-wrap:wrap;gap:40px 64px}
 }
 
@@ -809,17 +960,17 @@ body.menu-open{overflow:hidden}
   .service-list p br{display:none}
 
   /* Studio */
-  .about{padding-top:96px;padding-bottom:110px;gap:40px}
-  /* Studio copy becomes one centred column on a phone. The intro blocks keep
-     their measure, so they centre through auto margins instead of stretching. */
-  .about-copy{padding-right:0;text-align:center}
+  .about{padding-top:96px;padding-bottom:110px;gap:44px}
+  /* The centred column and the centred metric rule are set at ≤960px; on a phone
+     only the display sizes and the label's own placement change. */
   .about-copy h2{font-size:clamp(36px,10.2vw,58px);margin:18px 0 30px}
-  .about-copy .lede{font-size:clamp(19px,4.8vw,23px);line-height:1.65;margin-inline:auto}
-  .about-copy .sub{margin-top:24px;margin-inline:auto}
-  .metrics{gap:32px 48px;margin-top:54px;justify-content:center;text-align:center}
+  .about-copy .lede{font-size:clamp(19px,4.8vw,23px);line-height:1.65}
+  .about-copy .sub{margin-top:24px}
+  .metrics{gap:32px 48px;margin-top:54px}
   .metrics .num{font-size:clamp(44px,11.5vw,62px)}
-  /* The rule grows from the centre so it stays under the centred metric pair. */
-  [data-reveal="metrics-rule"]::before{top:-24px;left:50%;transform:translateX(-50%)}
+  /* The caption takes the centre line of the plate, as the project cards' plate
+     number does. */
+  .about-label{left:50%;transform:translate(-50%,-50%)}
 
   /* Recent projects */
   .work{padding:92px var(--pad-x) 118px}
@@ -831,9 +982,11 @@ body.menu-open{overflow:hidden}
   .work-lede br{display:none}
   .arrow-link{font-size:19px}
   .work-grid{gap:44px}
+  /* The caption ledger stacks and centres; the mounted plate number takes the
+     plate's centre line, as the craftsman plate's label does on a phone. */
   .proj-meta{grid-template-columns:1fr;row-gap:8px;text-align:center}
-  .proj-meta .num{margin-bottom:0;text-align:center}
-  .proj-meta h3{font-size:clamp(23px,6.2vw,32px)}
+  .proj-badge{left:50%;transform:translate(-50%,-50%)}
+  .proj-meta h3{font-size:clamp(23px,6.2vw,32px);text-align:center}
   .proj-meta .view{justify-self:center}
 
   /* Craftsman */

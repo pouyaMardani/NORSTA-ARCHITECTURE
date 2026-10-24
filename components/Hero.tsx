@@ -34,7 +34,7 @@ export default function Hero() {
 
       <div className="scroll-cue" data-reveal="fade-up" data-delay="1100">
         <a href="#services">
-          <span>پایین</span>
+          <span>Scroll</span>
           <i />
         </a>
       </div>
