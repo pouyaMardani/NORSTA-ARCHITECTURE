@@ -2020,3 +2020,142 @@ body.menu-open{overflow:hidden}
   .mrq-card{box-shadow:none}
 }
 
+/* =====================================================================
+   FLOATING BACK-TO-TOP CONTROL   (`components/BackToTop.tsx`)
+   Additive: nothing above this point is touched. The control sits in the
+   bottom corner of the viewport in the site's own ivory / charcoal
+   vocabulary. It layers *above* the header (z 10) but *below* the lightbox
+   (z 100), so a gallery viewer always covers it.
+   ===================================================================== */
+.to-top{
+  position:fixed;
+  z-index:60;
+  inset-block-end:clamp(18px,3.2vw,34px);
+  inset-inline-end:clamp(18px,3.2vw,38px);
+  /* 44px is the minimum comfortable tap target; it grows a little on a wide
+     screen and never takes more room than it needs on a phone. */
+  width:clamp(44px,4vw,50px);
+  height:clamp(44px,4vw,50px);
+  padding:0;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--hair);
+  border-radius:50%;
+  background:rgba(243,233,222,.86);
+  -webkit-backdrop-filter:saturate(140%) blur(10px);
+  backdrop-filter:saturate(140%) blur(10px);
+  color:var(--ink);
+  cursor:pointer;
+  box-shadow:0 14px 32px -20px rgba(29,28,24,.5);
+  /* Asleep until `data-visible` says otherwise. `visibility` keeps the control
+     out of the tab order and away from assistive tech while it is not shown,
+     and `pointer-events` stops it swallowing clicks it should not. */
+  opacity:0;visibility:hidden;pointer-events:none;
+  transform:translate3d(0,10px,0);
+  transition:opacity .4s ease,
+             transform .45s cubic-bezier(.22,.61,.36,1),
+             visibility 0s linear .4s,
+             background-color .4s ease, border-color .4s ease,
+             color .4s ease, box-shadow .4s ease;
+}
+.to-top[data-visible="true"]{
+  opacity:1;visibility:visible;pointer-events:auto;transform:none;
+  /* Appears at once; only the fade-out waits on `visibility`. */
+  transition:opacity .4s ease,
+             transform .45s cubic-bezier(.22,.61,.36,1),
+             visibility 0s,
+             background-color .4s ease, border-color .4s ease,
+             color .4s ease, box-shadow .4s ease;
+}
+.to-top-icon{
+  display:flex;width:18px;height:18px;
+  transition:transform .45s cubic-bezier(.22,.61,.36,1);
+}
+.to-top-icon svg{display:block;width:100%;height:100%}
+.to-top:hover{
+  background:var(--ink);border-color:var(--ink);color:var(--bg);
+  transform:translate3d(0,-4px,0);
+  box-shadow:0 22px 42px -22px rgba(29,28,24,.62);
+}
+.to-top:hover .to-top-icon{transform:translate3d(0,-3px,0)}
+.to-top:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+/* The open mobile menu and the lightbox both own the screen: step aside. */
+body.menu-open .to-top,
+body.lb-open .to-top{
+  opacity:0;visibility:hidden;pointer-events:none;
+}
+
+/* =====================================================================
+   PAGE TRANSITION COVER   (`components/PageTransition.tsx`)
+   Additive. A deep warm-charcoal veil carrying the Norsta wordmark and one
+   thin sweeping hairline — the same restrained vocabulary as the header
+   and the footer, rather than a spinner. The element is always present
+   (server-rendered idle) and is only ever faded, so nothing is inserted,
+   removed or re-parented while the router swaps the page beneath it.
+   It layers above everything, the lightbox included, because it covers a
+   whole page change. The charcoal is the magazine's own ground
+   (`--art-bg:#100e0b`), veiled like the lightbox's ground is.
+   ===================================================================== */
+.route-loader{
+  position:fixed;inset:0;z-index:200;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(16,14,11,.95);
+  -webkit-backdrop-filter:saturate(130%) blur(3px);
+  backdrop-filter:saturate(130%) blur(3px);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .3s ease, visibility 0s linear .3s;
+}
+.route-loader[data-active="true"]{
+  opacity:1;visibility:visible;pointer-events:auto;
+  transition:opacity .32s ease, visibility 0s;
+}
+
+/* The mark: wordmark over hairline, settling in as the veil arrives. */
+.route-loader-mark{
+  display:flex;flex-direction:column;align-items:center;gap:22px;
+  opacity:0;transform:translate3d(0,10px,0);
+  transition:opacity .45s cubic-bezier(.22,.61,.36,1),
+             transform .55s cubic-bezier(.22,.61,.36,1);
+}
+.route-loader[data-active="true"] .route-loader-mark{opacity:1;transform:none}
+
+.route-loader-word{
+  /* The site's own Latin brand face — the same one the header wordmark uses. */
+  font-family:var(--sans);
+  font-weight:400;font-size:13px;
+  letter-spacing:.44em;text-transform:uppercase;
+  /* The trailing tracking is part of the word's width; pull it back so the
+     wordmark reads centred instead of nudged to the left. */
+  text-indent:.44em;
+  color:rgba(243,233,222,.92);
+}
+
+.route-loader-rule{
+  position:relative;display:block;
+  width:clamp(92px,15vw,176px);height:1px;
+  background:rgba(243,233,222,.16);
+  overflow:hidden;
+}
+.route-loader-rule i{
+  position:absolute;top:0;bottom:0;left:0;width:38%;
+  /* The magazine's muted beige accent (`--art-accent`), used as a passing
+     gleam rather than a fill. */
+  background:linear-gradient(to right,
+    rgba(243,233,222,0), #c9ab84, rgba(243,233,222,0));
+  /* Base state is off-stage: with `prefers-reduced-motion` the global block
+     collapses the animation, so the hairline simply rests empty. */
+  transform:translate3d(-130%,0,0);
+  animation:route-loader-sweep 1.15s cubic-bezier(.4,0,.2,1) infinite;
+}
+@keyframes route-loader-sweep{
+  0%{transform:translate3d(-130%,0,0)}
+  100%{transform:translate3d(370%,0,0)}
+}
+
+/* Reduced motion: the veil still marks the change, but nothing travels.
+   The global block above has already neutralised every transition and the
+   sweep animation, so only the settling offset needs dropping outright. */
+@media (prefers-reduced-motion: reduce){
+  .route-loader-mark{transform:none;opacity:1}
+  .route-loader-rule i{transform:translate3d(-130%,0,0)}
+}
+

@@ -1,6 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import localFont from "next/font/local";
+
+import BackToTop from "@/components/BackToTop";
+import PageTransition from "@/components/PageTransition";
+
 import "./globals.css";
 
 /**
@@ -57,7 +61,17 @@ export default function RootLayout({
       className={`${cormorant.variable} ${inter.variable} ${vazirmatn.variable}`}
     >
       {/* No `dir` attribute is set: the page intentionally stays LTR. */}
-      <body>{children}</body>
+      <body>
+        {children}
+
+        {/* Site-wide floating controls, mounted once here so every route — the
+            home page, the magazine, the project gallery and each of their
+            detail pages — gets them without opting in. Both are client
+            components; the markup they render is static and hidden by default,
+            so the server-rendered HTML and the first client render agree. */}
+        <BackToTop />
+        <PageTransition />
+      </body>
     </html>
   );
 }
