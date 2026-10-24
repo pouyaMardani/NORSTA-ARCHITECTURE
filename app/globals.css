@@ -649,43 +649,51 @@ body.menu-open{overflow:hidden}
 
   /* Practice / Areas of work */
   .services{padding:104px var(--pad-x) 120px}
-  .section-head{margin-bottom:56px}
+  /* Every copy block in this section reads as one centred column on a phone. */
+  .section-head{margin-bottom:56px;text-align:center}
   .section-head h2{font-size:clamp(34px,9.8vw,56px)}
   .service-list li{
-    grid-template-columns:44px 1fr;gap:16px;padding:30px 0;
+    grid-template-columns:1fr;justify-items:center;gap:10px;padding:30px 0;
+    text-align:center;
   }
   .service-list .num{font-size:22px}
   .service-list h3{
     font-size:clamp(24px,6.6vw,34px);
     overflow-wrap:break-word;
   }
-  .service-list p{font-size:1rem;line-height:var(--lh-body)}
+  /* Overrides the two-column span set at ≤960px, which no longer exists. */
+  .service-list li p{font-size:1rem;line-height:var(--lh-body);grid-column:auto;max-width:46ch}
   /* Authored line breaks read as orphans on a phone; the source keeps a
      trailing space before each <br> so dropping them never joins words. */
   .service-list p br{display:none}
 
   /* Studio */
   .about{padding-top:96px;padding-bottom:110px;gap:40px}
-  .about-copy{padding-right:0}
+  /* Studio copy becomes one centred column on a phone. The intro blocks keep
+     their measure, so they centre through auto margins instead of stretching. */
+  .about-copy{padding-right:0;text-align:center}
   .about-copy h2{font-size:clamp(36px,10.2vw,58px);margin:18px 0 30px}
-  .about-copy .lede{font-size:clamp(19px,4.8vw,23px);line-height:1.65}
-  .about-copy .sub{margin-top:24px}
-  .metrics{gap:32px 48px;margin-top:54px}
+  .about-copy .lede{font-size:clamp(19px,4.8vw,23px);line-height:1.65;margin-inline:auto}
+  .about-copy .sub{margin-top:24px;margin-inline:auto}
+  .metrics{gap:32px 48px;margin-top:54px;justify-content:center;text-align:center}
   .metrics .num{font-size:clamp(44px,11.5vw,62px)}
-  [data-reveal="metrics-rule"]::before{top:-24px}
+  /* The rule grows from the centre so it stays under the centred metric pair. */
+  [data-reveal="metrics-rule"]::before{top:-24px;left:50%;transform:translateX(-50%)}
 
   /* Recent projects */
   .work{padding:92px var(--pad-x) 118px}
-  .work-head{margin-bottom:48px;gap:20px}
+  /* Heading, lede and each project's meta block centre as a column; the
+     gallery grid and its figures are left untouched. */
+  .work-head{margin-bottom:48px;gap:20px;text-align:center}
   .work-head h2{font-size:clamp(36px,10.2vw,60px)}
-  .work-lede{max-width:none;font-size:1rem}
+  .work-lede{max-width:none;font-size:1rem;margin-inline:auto}
   .work-lede br{display:none}
   .arrow-link{font-size:19px}
   .work-grid{gap:44px}
-  .proj-meta{grid-template-columns:1fr;row-gap:8px}
-  .proj-meta .num{margin-bottom:0}
+  .proj-meta{grid-template-columns:1fr;row-gap:8px;text-align:center}
+  .proj-meta .num{margin-bottom:0;text-align:center}
   .proj-meta h3{font-size:clamp(23px,6.2vw,32px)}
-  .proj-meta .view{justify-self:start}
+  .proj-meta .view{justify-self:center}
 
   /* Contact */
   .contact-copy{padding:92px var(--pad-x) 72px}
@@ -703,7 +711,17 @@ body.menu-open{overflow:hidden}
 /* ---------- ≤440px : very small phones ---------- */
 @media (max-width: 440px){
   .metrics{gap:28px}
-  .foot{flex-direction:column;align-items:flex-start;gap:8px}
+  /* The footer keeps its single row on the narrowest phones. The old stack is
+     replaced by a compact `space-between` row, and the tracking is tightened
+     so both items fit without wrapping or causing horizontal overflow. */
+  .foot{
+    flex-direction:row;flex-wrap:nowrap;
+    align-items:center;justify-content:space-between;
+    gap:10px;padding:22px var(--pad-x);
+    letter-spacing:0;white-space:nowrap;
+  }
+  .foot span{white-space:nowrap}
+  .foot span:first-child{letter-spacing:.12em}
   .addr{align-items:flex-start}
   .addr a{min-width:0;overflow-wrap:anywhere}
   .service-list h3{font-size:clamp(22px,7.2vw,28px)}
@@ -740,6 +758,8 @@ body.menu-open{overflow:hidden}
     width:260%;
     aspect-ratio:1312/793;
   }
-  .ig-copy{padding:88px var(--pad-x) 48px}
+  /* At this width the copy is no longer laid over the plate, so it centres as
+     its own column: eyebrow, heading, note and CTA share one centre line. */
+  .ig-copy{padding:88px var(--pad-x) 48px;align-items:center;text-align:center}
 }
 
