@@ -29,9 +29,19 @@ const VIEWPORTS = [
   { name: "375x812", w: 375, h: 812, mobile: true },
   { name: "390x844", w: 390, h: 844, mobile: true },
   { name: "430x932", w: 430, h: 932, mobile: true },
+  { name: "640x900", w: 640, h: 900, mobile: false },
   { name: "768x1024", w: 768, h: 1024, mobile: false },
-  { name: "1280x800", w: 1280, h: 800, mobile: false },
-  { name: "1440x900", w: 1440, h: 900, mobile: false },
+  { name: "900x800", w: 900, h: 800, mobile: false },
+  { name: "1024x768", w: 1024, h: 768, mobile: false },
+  /* The header's own band. The section row carries ten labels, so the widths that
+     matter are the ones either side of each header breakpoint: the panel's
+     boundary (1000) and the three density steps (1200, 1400, 1600). A width just
+     above each one is the tightest case that breakpoint has to hold. */
+  { name: "990x800", w: 990, h: 800, mobile: false },
+  { name: "1010x800", w: 1010, h: 800, mobile: false },
+  { name: "1210x800", w: 1210, h: 800, mobile: false },
+  { name: "1410x850", w: 1410, h: 850, mobile: false },
+  { name: "1610x900", w: 1610, h: 900, mobile: false },
 ];
 
 const [, , url = "http://localhost:3100", label = "resp"] = process.argv;
@@ -134,6 +144,34 @@ const AUDIT_JS = `(() => {
     navLinksVisible: !!(lc && lc.display !== "none" && lc.visibility !== "hidden" && Number(lc.opacity) > 0.5),
     navLinksPosition: lc ? lc.position : null,
     navLinksRect: lr ? { left: Math.round(lr.left), right: Math.round(lr.right), top: Math.round(lr.top) } : null,
+    navLinksWidth: lr ? Math.round(lr.width) : null,
+    /* The row's own clearance: how much of the header the links actually claim,
+       against the width available to them. A negative slack means the labels have
+       had to shrink or wrap to stay on one line. */
+    navSlack: lr && links
+      ? Math.round(lr.width - Array.from(links.querySelectorAll("a"))
+          .reduce((sum, a) => sum + a.getBoundingClientRect().width, 0))
+      : null,
+    navLinkCount: links ? links.querySelectorAll("a").length : null,
+    /* A wrapped label is a header defect that no scrollWidth check can see: the
+       row stays as wide as its box while a two-line label makes the header grow. */
+    navLinkMaxHeight: links && links.querySelectorAll("a").length
+      ? Math.max(...Array.from(links.querySelectorAll("a")).map((a) => Math.round(a.getBoundingClientRect().height)))
+      : null,
+    /* The header's own density, read from the cascade rather than from the source,
+       so a breakpoint that does not actually apply is visible as such. */
+    navLinkFontSize: links && links.querySelector("a") ? getComputedStyle(links.querySelector("a")).fontSize : null,
+    navLinksGap: lc ? lc.columnGap : null,
+    /* The clearance the row really has left: the distance between the wordmark and
+       the links, whichever side of each other they happen to sit on. Positive
+       means the labels fit on one line with room to spare; zero or below means the
+       row is being squeezed. */
+    navClearance: (() => {
+      const brand = document.querySelector(".brand");
+      if (!brand || !lr) return null;
+      const br = brand.getBoundingClientRect();
+      return Math.round(Math.max(br.left, lr.left) - Math.min(br.right, lr.right));
+    })(),
   };
 })()`;
 
@@ -344,7 +382,11 @@ for (const vp of VIEWPORTS) {
   console.error(
     `  ${vp.name.padEnd(10)} overflow=${audit.overflow ? "YES" : "no "} ` +
       `offenders=${String(audit.offenderCount).padStart(2)} ` +
-      `toggle=${audit.navToggleDisplay} links=${audit.navLinksVisible}`
+      `toggle=${audit.navToggleDisplay} links=${audit.navLinksVisible} ` +
+      (audit.navLinksVisible
+        ? `nav=${audit.navLinkCount} clearance=${audit.navClearance} gap=${audit.navLinksGap} ` +
+          `size=${audit.navLinkFontSize} maxH=${audit.navLinkMaxHeight}`
+        : `nav=${audit.navLinkCount} (panel)`)
   );
 }
 
@@ -356,7 +398,7 @@ await cdp.send("Emulation.setDeviceMetricsOverride", {
   width: 390, height: 844, deviceScaleFactor: 2, mobile: true,
 });
 await goto();
-const sweepIds = ["services", "about", "work", "materials", "contact"];
+const sweepIds = ["services", "about", "work", "products", "materials", "contact"];
 const presentIds = await cdp.eval(
   `(() => ${JSON.stringify(sweepIds)}.filter((id) => document.getElementById(id)))()`
 );

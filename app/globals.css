@@ -710,14 +710,30 @@ a{color:inherit;text-decoration:none}
 
 
 /* ============== RESPONSIVE ============== */
+
+/* ---------- Header density ----------
+   The row carries ten labels, so it tightens in three steps before the panel
+   takes over at ≤1000px (see the next block): the gap first, where there is room
+   to give, then the gap again and the size of the labels themselves. The size is
+   set on the anchors rather than on the container, because `.nav-links a` pins
+   `var(--fs-ui)` at a higher specificity.
+
+   The numbers are measured, not guessed: `npm run audit:responsive` reports the
+   clearance left between the wordmark and the links at every step, and each of
+   these leaves at least ~35px at the narrowest width it governs. */
+@media (max-width: 1600px){
+  .nav-links{gap:38px}
+}
+@media (max-width: 1400px){
+  .nav-links{gap:30px}
+}
+@media (max-width: 1200px){
+  .nav-links{gap:18px}
+  .nav-links a{font-size:0.875rem}
+}
+
 @media (max-width: 960px){
   .nav{padding:22px var(--pad-x)}
-  /* Eight labels: the row tightens here, long before the wordmark would have to
-     shrink with it. The size is set on the anchors themselves — the container
-     `font-size` this rule used to carry never reached them, because
-     `.nav-links a` pins `var(--fs-ui)` at a higher specificity. */
-  .nav-links{gap:22px}
-  .nav-links a{font-size:0.875rem}
   .hero{padding-top:130px}
   .hero-image{height:54%}
   .service-list li{grid-template-columns:64px 1fr;row-gap:14px}
@@ -846,14 +862,15 @@ body.menu-open{overflow:hidden}
   .metrics{flex-wrap:wrap;gap:40px 64px}
 }
 
-/* ---------- ≤860px : the section row becomes the hamburger panel ----------
-   Eight section labels need the width the old four did not, so the row steps
-   aside earlier than it used to. Measured, it only keeps real clearance down to
-   around 900px; the panel therefore takes over at 860, which leaves the row
-   room to breathe and stops `space-between` from squeezing the wordmark. The
-   rest of the layout keeps its own breakpoints — only the header changes here,
-   and the panel itself is unchanged in look, only centred and scrolled. */
-@media (max-width: 860px){
+/* ---------- ≤1000px : the section row becomes the hamburger panel ----------
+   Ten section labels need more width than the four the header was designed
+   around, so the row steps aside earlier than it used to. Measured on the built
+   page, its clearance runs out just under 1000px even after the density steps
+   above; the panel therefore takes over there, which leaves the row room to
+   breathe and stops `space-between` from squeezing the wordmark. The rest of the
+   layout keeps its own breakpoints — only the header changes here, and the panel
+   itself is unchanged in look, only centred and scrolled. */
+@media (max-width: 1000px){
   /* Header / navigation */
   .nav{padding:20px var(--pad-x)}
   .nav.is-scrolled{padding:14px var(--pad-x)}
@@ -869,7 +886,7 @@ body.menu-open{overflow:hidden}
     backdrop-filter:saturate(140%) blur(14px);
     border:1px solid rgba(0,0,0,.06);
     box-shadow:0 22px 44px -28px rgba(0,0,0,.38);
-    /* Eight rows are taller than a landscape phone leaves under the header: cap
+    /* Ten rows are taller than a landscape phone leaves under the header: cap
        the panel to the remaining height and let it scroll, so no item can be
        clipped. `100%` resolves against the header, which is the panel's
        containing block. */
@@ -3562,3 +3579,522 @@ body.mv-open{overflow:hidden}
   .mv-scrim,.mv-dialog{animation:none}
   .mv-frame{transition:none}
 }
+
+/* =====================================================================
+   PRODUCT CATALOGUE
+   The home page's materials & tools showcase (`.mats`) and the catalogue
+   at `/products` (`.prd-*`, with the shared card `.pdc`).
+
+   Unlike the magazine, the academy and the material wall — which each invert
+   the ground — this register stays on the site's own warm ivory, and gives it
+   room instead: wide plates, generous margins, sand and stone tones, and type
+   at the site's own scale. The catalogue is part of the house the visitor is
+   already standing in, which is why nothing here re-tones the page.
+
+   Layout contract
+   ──────────────
+   • `.mats`        the home-page showcase (between the selected work and the wall)
+   • `.prd-shell`   the wrapper of the `/products` route
+   • `.prd-page`    the page inside it: hero, catalogue, help band
+   • `.pdc`         one product card   — owned by `components/ProductCard.tsx`
+   • `.prd-btn`     the ordering actions — owned by `components/InstagramCta.tsx`
+
+   The tokens are scoped to the two wrappers, so no light section above can
+   inherit them by accident and the showcase can be re-toned on its own.
+
+   Reduced motion is handled in the section's own block at the end: the global
+   block already flattens every transition, but the plate's slow push-in and the
+   arrows' travel are transforms rather than motion over time, so they are
+   dropped separately.
+   ===================================================================== */
+
+.mats,
+.prd-shell{
+  --prd-bg:#f3e9de;                        /* the site's warm ivory          */
+  --prd-bg-2:#ede2d3;                      /* the body's raised sand         */
+  --prd-surface:#f7efe4;                   /* a card's own ground            */
+  --prd-ink:#1d1c18;
+  --prd-ink-soft:#3a3833;
+  /* The site's `--muted` (#8a857a) is only ever used on a dark ground, where it
+     clears AA. On this ivory ground it does not — 3.4:1 — so the catalogue's own
+     muted tone is a step darker: still plainly a secondary voice beside
+     `--prd-ink-soft`, but readable at the caption sizes it carries (4.9:1). */
+  --prd-muted:#6a645a;
+  --prd-hair:#d3c8b6;
+  --prd-hair-2:#c2b49c;
+  /* No `--prd-accent`. Every other register carries the same muted beige, but
+     they all sit on a dark ground, where it clears AA comfortably; on this ivory
+     one it measures about 2:1, so it can only ever be a decoration — and a
+     decoration that is nearly invisible is not worth a token. The catalogue's
+     emphasis is carried by the ink and the hairlines instead. */
+  /* The site's corner family, in the same two mirrored cuts the project plates
+     use, so a catalogue card belongs to the same construction. */
+  --prd-radius:clamp(18px,1.8vw,28px) 2px clamp(18px,1.8vw,28px) 2px;
+  --prd-gap:clamp(18px,2vw,30px);
+  --prd-pad-y:clamp(96px,9.6vw,150px);
+}
+
+/* ---------- The shell (/products and below) ---------- */
+.prd-shell{
+  min-height:100vh;
+  background:var(--prd-bg);
+  color:var(--prd-ink);
+}
+
+/* ---------- The ordering actions ----------
+   One shape in two weights: a solid ink plate for the action the visitor came
+   for, and a hairline outline for the quieter one beside it. Both are anchors,
+   so both are real links — keyboard-operable, and honest about leaving the
+   site. */
+.prd-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.75em;
+  padding:.85em 1.15em;
+  border:1px solid transparent;border-radius:999px;
+  font-family:var(--fa);font-size:var(--fs-ui);font-weight:500;line-height:1.35;
+  text-align:center;
+  transition:background-color .4s ease,border-color .4s ease,color .4s ease;
+}
+.prd-btn-glyph{width:1.15em;height:1.15em;flex:none}
+.prd-btn-arrow{width:.9em;height:.9em;flex:none;transition:transform .5s cubic-bezier(.22,.61,.36,1)}
+.prd-btn-label{white-space:nowrap}
+.prd-btn-solid{background:var(--prd-ink);color:var(--prd-bg)}
+.prd-btn-ghost{border-color:var(--prd-hair-2);color:var(--prd-ink);background:transparent}
+.prd-btn:focus-visible{outline:2px solid var(--prd-ink);outline-offset:4px}
+@media (hover:hover){
+  .prd-btn-solid:hover{background-color:#0f0e0b}
+  .prd-btn-ghost:hover{border-color:var(--prd-ink);background-color:rgba(29,28,24,.05)}
+  /* The diagonal arrow points out of the page, so it travels up and out. */
+  .prd-btn:hover .prd-btn-arrow{transform:translate3d(3px,-3px,0)}
+}
+
+/* =====================================================================
+   The home-page showcase (`.mats`)
+   ===================================================================== */
+
+.mats{
+  position:relative;
+  padding:var(--prd-pad-y) var(--pad-x);
+  background:var(--prd-bg);
+  color:var(--prd-ink);
+  /* The section head and the plates both arrive with a translate, and a plate's
+     corner radius must not be able to push the page sideways while it settles. */
+  overflow:hidden;
+}
+
+/* Studio head: the title on one side, the copy and its two actions on the other,
+   sitting on a shared baseline — the same head the material wall below it uses,
+   so the two sections read as one editorial sequence. */
+.mats-head{
+  display:grid;grid-template-columns:1.05fr .95fr;
+  gap:clamp(28px,4vw,84px);
+  align-items:end;
+  margin-bottom:clamp(40px,4.6vw,72px);
+}
+/* The eyebrow is the one place the other registers put their accent colour. This
+   one stays on the site's own ink: on an ivory ground the beige accent would not
+   clear AA at a caption size, and the catalogue is not a section that needs a
+   second colour to be found. */
+.mats-eyebrow{color:var(--prd-ink-soft)}
+/* The title column is a grid item holding a `mask-title`: it must be allowed to
+   shrink, or the masked line's own width becomes the track's minimum. */
+.mats-head-title{min-width:0}
+.mats-title{
+  margin-top:18px;
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(32px,4.6vw,66px);line-height:var(--lh-heading);color:var(--prd-ink);
+}
+/* The Latin shelf words: the brand's micro-label treatment, kept as an ornament
+   rather than as a claim — it repeats the heading in the trade's own language. */
+.mats-latin{
+  margin-top:14px;
+  font-family:var(--sans);font-size:11px;
+  letter-spacing:.34em;text-transform:uppercase;color:var(--prd-muted);
+}
+.mats-lede{
+  max-width:54ch;
+  font-size:clamp(16px,1.15vw,19px);line-height:1.95;
+  color:var(--prd-ink-soft);
+}
+.mats-actions{
+  display:flex;flex-wrap:wrap;align-items:center;gap:16px 22px;
+  margin-top:clamp(22px,2.4vw,34px);
+}
+/* The link into the catalogue: an underlined label with a live arrow, the same
+   device the magazine and the academy use for their own "see everything". */
+.mats-all{
+  display:inline-flex;align-items:center;gap:.7em;
+  padding-bottom:8px;border-bottom:1px solid var(--prd-ink);
+  font-family:var(--fa);font-size:var(--fs-ui);color:var(--prd-ink);
+}
+.mats-all-count{font-size:var(--fs-caption);color:var(--prd-muted)}
+.mats-all-arrow{display:block;width:1.05em;height:1.05em;flex:none;transition:transform .5s cubic-bezier(.22,.61,.36,1)}
+.mats-all-arrow svg{width:100%;height:100%}
+.mats-note{margin-top:16px;font-size:var(--fs-meta);line-height:1.9;color:var(--prd-muted);max-width:48ch}
+
+/* ---------- The four shelves ----------
+   A twelve-column field so the four plates can be laid out asymmetrically —
+   6/6, then 5/7 — while every plate keeps one height. That is what gives the row
+   its variation without a second design, and one `--mats-media-h` for the whole
+   grid is what keeps a row's plates from ending at four different depths. */
+.mats-grid{
+  --mats-media-h:clamp(280px,30vw,440px);
+  display:grid;grid-template-columns:repeat(12,minmax(0,1fr));
+  gap:var(--prd-gap);
+  list-style:none;
+}
+.mats-card:nth-child(1){grid-column:1/7}
+.mats-card:nth-child(2){grid-column:7/13}
+.mats-card:nth-child(3){grid-column:1/6}
+.mats-card:nth-child(4){grid-column:6/13}
+.mats-card{display:flex;flex-direction:column;gap:18px;min-width:0}
+.mats-card-media{
+  position:relative;overflow:hidden;
+  height:var(--mats-media-h);
+  border-radius:var(--prd-radius);
+  background:var(--prd-bg-2);
+  box-shadow:0 30px 60px -46px rgba(29,28,24,.6);
+}
+/* The veil keeps the two overlay labels legible over any plate, including the
+   pale ones, and deepens a plate's lower edge so the body below reads as a
+   separate surface. */
+.mats-card-veil{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg, rgba(243,233,222,.1), rgba(29,28,24,.14) 55%, rgba(29,28,24,.34));
+}
+/* The honesty label: this plate is a stand-in, and it says so on its face. */
+.mats-card-badge{
+  position:absolute;inset-block-start:14px;inset-inline-start:14px;
+  padding:.34em .8em;border-radius:999px;
+  background:rgba(243,233,222,.92);color:#171310;
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);white-space:nowrap;
+}
+.mats-card-no{
+  position:absolute;inset-block-start:16px;inset-inline-end:18px;
+  font-family:var(--sans);font-size:var(--fs-caption);letter-spacing:.16em;
+  color:rgba(243,233,222,.92);
+}
+.mats-card-body{display:flex;flex-direction:column;gap:10px;min-width:0}
+.mats-card-title{
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(19px,1.7vw,26px);line-height:1.4;color:var(--prd-ink);
+}
+.mats-card-desc{font-size:var(--fs-body);line-height:1.9;color:var(--prd-ink-soft);max-width:46ch}
+.mats-card-link{
+  display:inline-flex;align-items:center;gap:.7em;align-self:flex-start;
+  margin-top:4px;padding-bottom:6px;
+  border-bottom:1px solid var(--prd-hair-2);
+  font-family:var(--fa);font-size:var(--fs-meta);color:var(--prd-ink);
+}
+.mats-card-count{font-size:var(--fs-caption);color:var(--prd-muted)}
+.mats-card-arrow{display:block;width:.95em;height:.95em;flex:none;transition:transform .5s cubic-bezier(.22,.61,.36,1)}
+.mats-card-arrow svg{width:100%;height:100%}
+@media (hover:hover){
+  /* In this right-to-left register the arrow travels to the left, i.e. onwards. */
+  .mats-all:hover .mats-all-arrow{transform:translateX(-6px)}
+  .mats-card-link:hover .mats-card-arrow{transform:translateX(-6px)}
+  /* The underline darkens to the ink rather than the label changing colour: the
+     same move the ghost button makes, and the one that keeps the label readable
+     in the hover state as well as at rest. */
+  .mats-card-link:hover{border-color:var(--prd-ink)}
+}
+/* Both of the register's plain links, focused. They take the buttons' own ink
+   outline rather than the beige the darker registers focus with, for the reason
+   given in the token block: on this ground the beige is not a colour that reads. */
+.mats-all:focus-visible,
+.mats-card-link:focus-visible{outline:2px solid var(--prd-ink);outline-offset:4px}
+
+/* =====================================================================
+   The catalogue at /products (`.prd-*`)
+   ===================================================================== */
+
+.prd-page{padding:0 var(--pad-x)}
+
+/* ---------- Hero ----------
+   Copy on one side, and on the other a mosaic of the catalogue's own four
+   shelves. The composition is the catalogue's structure rather than a stock
+   photograph, which is what the page is actually about — and it is drawn from the
+   same records the grid below uses, so it cannot fall out of step with them. */
+.prd-hero{
+  display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  gap:clamp(32px,4vw,72px);
+  align-items:center;
+  padding:clamp(120px,13vw,190px) 0 clamp(56px,6vw,92px);
+}
+.prd-hero-copy{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
+/* Same reasoning as `.mats-eyebrow`: the catalogue's eyebrows stay on the site's
+   ink rather than taking the register's beige. */
+.prd-eyebrow{color:var(--prd-ink-soft)}
+.prd-hero-title{
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(34px,5.2vw,76px);line-height:1.14;color:var(--prd-ink);
+  margin:.36em 0 0;
+}
+.prd-hero-lede{
+  margin-top:clamp(18px,2vw,28px);
+  font-size:clamp(17px,1.5vw,22px);line-height:var(--lh-body);
+  color:var(--prd-ink-soft);max-width:44ch;
+}
+.prd-hero-actions{
+  display:flex;flex-wrap:wrap;align-items:center;gap:14px 18px;
+  margin-top:clamp(24px,2.8vw,38px);
+}
+/* The order route, stated in plain words under the two actions: the button starts
+   a conversation, and the note says so before the visitor finds out the hard
+   way. */
+.prd-hero-note{
+  margin-top:18px;
+  font-size:var(--fs-meta);line-height:1.95;color:var(--prd-muted);max-width:46ch;
+}
+.prd-hero-mosaic{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:clamp(10px,1.2vw,18px);
+  list-style:none;
+}
+.prd-hero-plate{
+  position:relative;aspect-ratio:4/3;overflow:hidden;
+  border-radius:var(--prd-radius);
+  background:var(--prd-bg-2);
+  box-shadow:0 28px 56px -44px rgba(29,28,24,.6);
+}
+/* The second plate of each pair drops, so the four read as a spread rather than
+   as a table — the same device the academy's collection plates use. */
+.prd-hero-plate:nth-child(2),
+.prd-hero-plate:nth-child(4){transform:translateY(clamp(16px,2vw,30px))}
+.prd-hero-plate-no{
+  position:absolute;inset-block-end:12px;inset-inline-end:14px;
+  font-family:var(--sans);font-size:var(--fs-caption);letter-spacing:.16em;
+  color:rgba(243,233,222,.92);
+}
+
+/* ---------- The catalogue ---------- */
+.prd-catalog{
+  padding:clamp(48px,5vw,80px) 0 clamp(56px,6vw,96px);
+  border-top:1px solid var(--prd-hair);
+  /* The hero's second action jumps here, and the header is fixed once the page is
+     scrolled — so the landing needs the header's own height cleared. The site's
+     other in-page jumps are into home sections with 160px of top padding, which is
+     why this is the one place that states the offset outright. */
+  scroll-margin-top:clamp(84px,8vw,104px);
+}
+.prd-catalog-title{
+  margin-top:.34em;
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(28px,3.4vw,48px);line-height:1.2;color:var(--prd-ink);
+}
+
+/* The filter row: a pill per shelf, with the number of products behind it. The
+   open shelf is styled from `aria-current`, i.e. from the attribute the
+   assistive layer already reads — so what a sighted visitor sees selected is
+   exactly what a screen reader is told is current. */
+.prd-filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:clamp(22px,2.4vw,32px)}
+.prd-chip{
+  display:inline-flex;align-items:center;gap:.55em;
+  padding:.55em 1em;
+  border:1px solid var(--prd-hair);border-radius:999px;
+  background:transparent;color:var(--prd-ink-soft);
+  font-family:var(--fa);font-size:var(--fs-meta);
+  transition:background-color .35s ease,border-color .35s ease,color .35s ease;
+}
+/* A chip is a pill: its label must never break inside it, or the pill turns into
+   a rounded rectangle two lines tall. */
+.prd-chip-name{white-space:nowrap}
+.prd-chip-count{font-size:var(--fs-caption);opacity:.6}
+.prd-chip.is-active{background:var(--prd-ink);border-color:var(--prd-ink);color:var(--prd-bg)}
+.prd-chip.is-active .prd-chip-count{opacity:.72}
+.prd-chip:focus-visible{outline:2px solid var(--prd-ink);outline-offset:3px}
+@media (hover:hover){
+  .prd-chip:hover{border-color:var(--prd-hair-2);color:var(--prd-ink)}
+  .prd-chip.is-active:hover{border-color:var(--prd-ink);color:var(--prd-bg)}
+}
+
+.prd-count{
+  margin:clamp(18px,2vw,26px) 0 clamp(22px,2.6vw,34px);
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);color:var(--prd-muted);
+}
+.prd-count-cat{color:var(--prd-ink);font-weight:500}
+
+/* ---------- The grid ----------
+   Four cards to a row on desktop, three, then two, then one. Unlike the material
+   wall — which never drops to a single column, because one column stops reading
+   as a wall — a product card carries real copy and a real control, so on a phone
+   it takes the whole measure. */
+.prd-grid{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:var(--prd-gap);
+  list-style:none;
+}
+/* A grid stamp, so a card with a longer paragraph is still stretched to its row. */
+.prd-grid-item{display:grid}
+
+/* ---------- One product ----------
+   A card is one column of four fixed parts: the plate, a hairline in the item's
+   own tone, the copy, and the one action. Nothing is interactive except the last
+   of them — the plate is not a link, because there is no product page to open,
+   and a large unclickable target that looks clickable would be a lie. */
+.pdc{
+  display:flex;flex-direction:column;
+  background:var(--prd-surface);
+  border:1px solid var(--prd-hair);
+  border-radius:var(--prd-radius);
+  overflow:hidden;
+}
+.pdc-media{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--prd-bg-2)}
+.pdc-media img{transition:transform 1.5s cubic-bezier(.22,.61,.36,1)}
+/* Glass and an inset shadow, so a flat placeholder plate still reads as a surface
+   rather than as a coloured rectangle. */
+.pdc-glass{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg, rgba(243,233,222,.16), rgba(29,28,24,.1) 58%, rgba(29,28,24,.3));
+}
+/* The honesty label: this plate is a stand-in, and it says so on its face. */
+.pdc-badge{
+  position:absolute;inset-block-start:12px;inset-inline-start:12px;
+  padding:.3em .72em;border-radius:999px;
+  background:rgba(243,233,222,.92);color:#171310;
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);white-space:nowrap;
+}
+.pdc-no{
+  position:absolute;inset-block-end:12px;inset-inline-end:14px;
+  font-family:var(--sans);font-size:var(--fs-caption);letter-spacing:.16em;
+  color:rgba(243,233,222,.92);
+}
+/* The record's own `tintHex`, used as an accent under the plate — never as a
+   claim about the product's colour. */
+.pdc-rule{display:block;height:2px;width:100%}
+.pdc-body{display:flex;flex-direction:column;gap:10px;flex:1;padding:clamp(16px,1.6vw,22px)}
+.pdc-cat{
+  display:inline-flex;align-items:center;gap:.6em;
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);color:var(--prd-muted);
+}
+.pdc-cat-label{color:var(--prd-muted)}
+.pdc-cat-sep{display:block;width:20px;height:1px;flex:none;background:var(--prd-hair-2)}
+.pdc-name{
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(18px,1.35vw,21px);line-height:1.45;color:var(--prd-ink);
+}
+.pdc-desc{font-size:var(--fs-body);line-height:1.85;color:var(--prd-ink-soft)}
+/* Pushed to the foot of the card, so a row's actions line up however long the
+   paragraphs above them run. */
+.pdc-cta{
+  display:inline-flex;align-items:center;gap:.6em;
+  width:100%;margin-top:auto;padding-top:14px;
+  border-top:1px solid var(--prd-hair);
+  font-family:var(--fa);font-size:var(--fs-meta);color:var(--prd-ink);
+}
+.pdc-cta-glyph{width:1.05em;height:1.05em;flex:none}
+.pdc-cta-label{white-space:nowrap}
+.pdc-cta-arrow{width:.85em;height:.85em;flex:none;margin-inline-start:auto;transition:transform .5s cubic-bezier(.22,.61,.36,1)}
+.pdc-cta:focus-visible{outline:2px solid var(--prd-ink);outline-offset:3px;border-radius:2px}
+@media (hover:hover){
+  /* As on the showcase's cards: the rule darkens, the label stays legible. */
+  .pdc-cta:hover{border-top-color:var(--prd-ink)}
+  .pdc-cta:hover .pdc-cta-arrow{transform:translate3d(3px,-3px,0)}
+  .pdc:hover .pdc-media img{transform:scale(1.03)}
+}
+
+/* ---------- Empty shelf ----------
+   Reachable only by typing an address by hand, since the filter row never offers
+   a shelf that holds nothing. It still has to be a real page, not a blank one. */
+.prd-empty{
+  display:flex;flex-direction:column;align-items:flex-start;gap:14px;
+  padding:clamp(28px,3vw,44px);
+  border:1px solid var(--prd-hair);border-radius:var(--prd-radius);
+  background:var(--prd-surface);
+  color:var(--prd-ink-soft);font-size:var(--fs-body);
+}
+.prd-empty-link{
+  padding-bottom:4px;border-bottom:1px solid var(--prd-hair-2);
+  font-size:var(--fs-meta);color:var(--prd-ink);
+}
+.prd-empty-link:focus-visible{outline:2px solid var(--prd-ink);outline-offset:3px}
+
+/* ---------- The help band ----------
+   The page's last word: an offer to talk before ordering, with the same action
+   the hero carries. It is the honest end of a catalogue with no checkout. */
+.prd-help{
+  display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);
+  gap:clamp(28px,4vw,64px);align-items:center;
+  margin:clamp(20px,2.4vw,36px) 0 var(--prd-pad-y);
+  padding:clamp(32px,4vw,60px);
+  border:1px solid var(--prd-hair);border-radius:var(--prd-radius);
+  background:var(--prd-bg-2);
+}
+.prd-help-title{
+  margin-top:.34em;
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(24px,2.9vw,40px);line-height:1.25;color:var(--prd-ink);
+}
+.prd-help-body{margin-top:16px;font-size:var(--fs-body);line-height:1.95;color:var(--prd-ink-soft);max-width:52ch}
+.prd-help-action{justify-self:start}
+
+/* ---------- Responsive ----------
+   Four steps, in the order this layout actually gives way: the grid drops to
+   three cards; then the hero's mosaic steps aside under the copy and the head of
+   the showcase stacks; then the plates go two-across and the grid to two; then
+   everything takes the full measure on a phone. */
+@media (max-width:1240px){
+  .prd-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:1100px){
+  .prd-hero{
+    grid-template-columns:1fr;gap:clamp(30px,5vw,46px);
+    padding-top:clamp(104px,14vw,150px);
+  }
+  /* Under the copy the four plates lie in one row of small portrait tiles: a 2x2
+     mosaic beside the text would be a second column of nothing. */
+  .prd-hero-mosaic{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  .prd-hero-plate{aspect-ratio:3/4}
+  .prd-hero-plate:nth-child(2),
+  .prd-hero-plate:nth-child(4){transform:none}
+  .prd-help{grid-template-columns:1fr;gap:26px;align-items:start}
+  .mats-head{grid-template-columns:1fr;gap:26px;align-items:start}
+  .mats-lede{max-width:60ch}
+}
+@media (max-width:960px){
+  .mats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mats-grid .mats-card{grid-column:auto}
+  /* Stacked, a plate is no longer one of a pair in a row, so its height follows
+     its own width again instead of the grid's one shared figure. */
+  .mats-grid{--mats-media-h:auto}
+  .mats-card-media{aspect-ratio:4/3}
+  .prd-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .prd-catalog-title{font-size:clamp(26px,4.6vw,36px)}
+}
+@media (max-width:640px){
+  .prd-grid{grid-template-columns:1fr}
+  .prd-hero-mosaic{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .prd-hero-plate{aspect-ratio:4/3}
+  /* The two actions take the measure on a phone: side by side they would each be
+     too narrow to be a comfortable target. */
+  .prd-hero-actions,
+  .mats-actions{width:100%}
+  .prd-hero-actions .prd-btn,
+  .mats-actions .prd-btn,
+  .prd-help-action .prd-btn{width:100%}
+  .prd-help-action{justify-self:stretch;width:100%}
+  .mats-card-desc,
+  .prd-help-body,
+  .mats-note,
+  .prd-hero-note{max-width:none}
+}
+
+/* ---------- Reduced motion ----------
+   The site-wide block near the top of this file already flattens every transition
+   and animation to nothing. What is left for this register are the states that
+   are transforms rather than motion over time — a plate's slow push-in, the
+   arrows' travel, and the hero mosaic's settled offset — and they are dropped
+   outright. */
+@media (prefers-reduced-motion: reduce){
+  .pdc:hover .pdc-media img{transform:none}
+  .prd-btn:hover .prd-btn-arrow,
+  .mats-all:hover .mats-all-arrow,
+  .mats-card-link:hover .mats-card-arrow,
+  .pdc-cta:hover .pdc-cta-arrow{transform:none}
+  .prd-hero-plate:nth-child(2),
+  .prd-hero-plate:nth-child(4){transform:none}
+}
+
+
+
+
+
