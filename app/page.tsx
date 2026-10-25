@@ -27,8 +27,9 @@ export default function Page() {
             grows, filters and re-orders without anything here changing. */}
         <MicrocementSamples />
         <Articles />
-        <AcademyPromo />
+      
         <Craftsman />
+        <AcademyPromo />
         <Contact />
         <InstagramShowcase />
       </main>
