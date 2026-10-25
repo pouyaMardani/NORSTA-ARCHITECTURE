@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import InstagramShowcase from "@/components/InstagramShowcase";
 import Lightbox from "@/components/Lightbox";
+import MicrocementSamples from "@/components/MicrocementSamples";
 import Nav from "@/components/Nav";
 import Services from "@/components/Services";
 import SiteInteractions from "@/components/SiteInteractions";
@@ -21,6 +22,10 @@ export default function Page() {
         <Services />
         <About />
         <Work />
+        {/* The material library: the finishes behind the selected work, hung as
+            framed samples. It reads the records in `content/samples`, so the wall
+            grows, filters and re-orders without anything here changing. */}
+        <MicrocementSamples />
         <Articles />
         <AcademyPromo />
         <Craftsman />
@@ -33,3 +38,4 @@ export default function Page() {
     </>
   );
 }
+

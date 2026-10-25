@@ -349,14 +349,14 @@ for (const vp of VIEWPORTS) {
 }
 
 // ---- dense section sweep on the reference mobile width ----
-// The four sections below are the home page's; a route such as `/academy` or
+// The five sections below are the home page's; a route such as `/academy` or
 // `/articles` has none of them, so the sweep reports what it actually found
-// rather than photographing the top of the page four times.
+// rather than photographing the top of the page five times.
 await cdp.send("Emulation.setDeviceMetricsOverride", {
   width: 390, height: 844, deviceScaleFactor: 2, mobile: true,
 });
 await goto();
-const sweepIds = ["services", "about", "work", "contact"];
+const sweepIds = ["services", "about", "work", "materials", "contact"];
 const presentIds = await cdp.eval(
   `(() => ${JSON.stringify(sweepIds)}.filter((id) => document.getElementById(id)))()`
 );

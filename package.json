@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "audit:responsive": "node scripts/responsive-audit.mjs",
+    "audit:mfc": "node scripts/mfc-audit.mjs",
     "verify:academy": "node scripts/verify-academy.mjs",
     "verify:fa": "node scripts/verify-fa.mjs"
   },

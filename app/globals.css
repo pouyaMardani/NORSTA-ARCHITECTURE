@@ -2979,3 +2979,586 @@ body.lb-open .to-top{
 
 
 
+
+/* =====================================================================
+   MATERIAL LIBRARY  (the home page's microcement samples)
+
+   Layout contract
+   ──────────────
+   • `.mfc`       the home-page section (below the selected work)
+   • `.mfc-head`  the studio head: eyebrow, display title, Latin ornament, lede
+   • `.mfw`       the wall: the filter row, the wall's caption and the frame grid
+   • `.mf`        one framed sample      — owned by `components/SampleFrame.tsx`
+   • `.mv`        the deep-zoom viewer   — owned by `components/SampleViewer.tsx`
+
+   The wall is the site's second dark ground, in the same warm charcoal as `.art`
+   but re-declared here as `--mfc-*`, so this section can be re-toned on its own.
+   The frames are the only light in it: wood, bevel, mat, glass and the spotlight
+   above each plate are all CSS, which is what lets a record re-point at a real
+   photograph later and still hang exactly as it does today.
+
+   Reduced motion is handled twice, on purpose. The global block above kills
+   every transition; the block at the end of this section also drops the frame's
+   lift and the viewer's entrance, because those belong to elements that are
+   created *after* that first pass — when a filter re-flows the wall, and when a
+   viewer is opened.
+   ===================================================================== */
+
+.mfc{
+  --mfc-bg:#100e0b;                        /* deep warm charcoal            */
+  --mfc-bg-2:#171310;                      /* the wall's raised surface      */
+  --mfc-surface:#1d1915;
+  --mfc-ink:#f3e9de;                       /* the site's ivory, as type      */
+  --mfc-ink-soft:rgba(243,233,222,.74);
+  --mfc-muted:rgba(243,233,222,.5);
+  --mfc-hair:rgba(243,233,222,.14);
+  --mfc-hair-2:rgba(243,233,222,.3);
+  --mfc-accent:#c9ab84;                    /* muted beige, used sparingly    */
+  --mfc-radius:clamp(18px,1.8vw,28px) 2px clamp(18px,1.8vw,28px) 2px;
+  --mfc-pad-y:clamp(96px,9.6vw,150px);
+  --mfc-gap:clamp(18px,2vw,30px);
+  /* The wall's plaster grain: one tiny inline turbulence tile, turned into pure
+     black noise by its alpha channel — `feColorMatrix` maps luminance onto
+     alpha, so the grain darkens the wall like raking light on plaster instead of
+     veiling it grey. It carries no colour of its own. */
+  --mfc-grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .2 .2 .2 0 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+
+  position:relative;
+  padding:var(--mfc-pad-y) var(--pad-x);
+  background:var(--mfc-bg);
+  color:var(--mfc-ink);
+  overflow:hidden;
+}
+
+/* The light the wall is hung under, and the plaster it is hung on, in one layer
+   painted before `.mfc-inner` — so neither can ever veil a frame, and the wall
+   needs no `z-index` of its own. That matters: anything with a `z-index` here
+   would create a stacking context, and the viewer opened from this section would
+   then be trapped inside it, under the site's own navigation. */
+.mfc::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:
+    radial-gradient(120% 62% at 50% -12%, rgba(243,233,222,.1), transparent 62%),
+    radial-gradient(90% 46% at 50% 122%, rgba(201,171,132,.06), transparent 62%),
+    var(--mfc-grain);
+  background-size:auto,auto,160px 160px;
+}
+.mfc-inner{position:relative;max-width:1560px;margin-inline:auto}
+
+/* ---------- Section head ---------- */
+.mfc-head{
+  display:grid;grid-template-columns:1.05fr .95fr;
+  gap:clamp(28px,4vw,84px);align-items:end;
+  padding-bottom:clamp(30px,3.4vw,52px);
+  border-bottom:1px solid var(--mfc-hair);
+  margin-bottom:clamp(34px,3.8vw,58px);
+}
+/* The title column is a grid item holding a `mask-title`: it must be allowed to
+   shrink, and its lines are clipped by `clip-path`, never by layout. */
+.mfc-head-title{min-width:0}
+.mfc-eyebrow{color:var(--mfc-accent)}
+.mfc-title{
+  margin-top:18px;
+  font-family:var(--fa);font-weight:600;letter-spacing:0;
+  font-size:clamp(32px,4.6vw,66px);
+  line-height:var(--lh-heading);color:var(--mfc-ink);
+}
+/* The Latin material word: the brand's micro-label treatment, kept as an
+   ornament beside the heading rather than as a second claim. */
+.mfc-latin{
+  margin-top:14px;
+  font-family:var(--sans);font-size:11px;letter-spacing:.34em;
+  text-transform:uppercase;color:var(--mfc-muted);
+}
+.mfc-head-copy{display:flex;flex-direction:column;align-items:flex-start;gap:clamp(18px,2vw,26px)}
+.mfc-lede{max-width:56ch;font-size:clamp(16px,1.15vw,19px);line-height:1.95;color:var(--mfc-ink-soft)}
+.mfc-hint{display:flex;align-items:center;gap:.7em;font-size:var(--fs-meta);color:var(--mfc-muted)}
+.mfc-hint-glyph{display:inline-flex;width:1.15em;height:1.15em;color:var(--mfc-accent)}
+.mfc-hint-glyph svg{width:100%;height:100%}
+
+/* ---------- The wall ----------
+   A raised surface with its own top light and a hairline edge, standing on the
+   plaster: the frames hang inside it, so the wall reads as an object in the room
+   rather than as a full-bleed backdrop. */
+.mfw{
+  position:relative;
+  padding:clamp(18px,2.2vw,30px) clamp(18px,2.2vw,30px) clamp(26px,3vw,42px);
+  background:
+    linear-gradient(180deg, rgba(243,233,222,.045), rgba(243,233,222,0) 34%),
+    var(--mfc-bg-2);
+  border:1px solid var(--mfc-hair);
+  border-radius:var(--mfc-radius);
+  box-shadow:0 40px 80px -56px rgba(0,0,0,.95), inset 0 1px 0 rgba(243,233,222,.06);
+}
+.mfw-bar{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  gap:14px 22px;
+  padding-bottom:clamp(14px,1.6vw,20px);
+  border-bottom:1px solid var(--mfc-hair);
+  margin-bottom:clamp(22px,2.6vw,38px);
+}
+
+/* The row is a fieldset, so the family it filters by is announced with it; its
+   legend is the accessible name and takes no space. */
+.mfw-filters{
+  display:flex;flex-wrap:wrap;gap:8px;
+  min-width:0;border:0;padding:0;margin:0;
+}
+.mfw-legend{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);
+  white-space:nowrap;border:0;
+}
+.mfw-chip{
+  display:inline-flex;align-items:center;gap:.55em;
+  padding:.55em 1em;
+  border:1px solid var(--mfc-hair);border-radius:999px;
+  background:transparent;color:var(--mfc-ink-soft);
+  font-family:var(--fa);font-size:var(--fs-meta);
+  cursor:pointer;
+  transition:background-color .35s ease,border-color .35s ease,color .35s ease;
+}
+.mfw-chip-count{font-size:var(--fs-caption);opacity:.6}
+/* A chip is a pill: its label must never break inside it, or the pill turns into
+   a rounded rectangle two lines tall. */
+.mfw-chip-name{white-space:nowrap}
+.mfw-chip:hover{border-color:var(--mfc-hair-2);color:var(--mfc-ink)}
+/* `aria-pressed` is the state, so the selected chip is styled from the attribute
+   the assistive layer already reads. */
+.mfw-chip[aria-pressed="true"]{
+  background:var(--mfc-accent);border-color:var(--mfc-accent);color:#161310;
+}
+.mfw-chip[aria-pressed="true"] .mfw-chip-count{opacity:.72}
+.mfw-chip:focus-visible{outline:2px solid var(--mfc-accent);outline-offset:3px}
+
+.mfw-note{
+  display:inline-flex;align-items:center;gap:.7em;
+  font-size:var(--fs-caption);color:var(--mfc-muted);
+}
+.mfw-note-rule{display:block;width:38px;height:1px;background:var(--mfc-hair-2)}
+
+/* Four frames to a row on desktop: wide enough for the wood, the mat and the
+   grain of the plate to read as one object. Narrower viewports step down to
+   three, then two — never one, because a single column stops reading as a wall. */
+.mfw-grid{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:var(--mfc-gap);list-style:none;
+}
+/* A grid stamp, so a cell with a longer label is still stretched to its row. */
+.mfw-cell{display:grid}
+
+/* ---------- One frame ----------
+   Four nested boxes, one job each: `.mf-wood` is the moulding, `.mf-mount` the
+   bevel and the mat, `.mf-window` the opening, and the two layers inside it the
+   glass. `data-wood` chooses the timber and `data-mount` the depth of the mat —
+   both come from the record and both have a fallback, so a record that names
+   neither still hangs an ordinary oak frame.
+
+   The whole frame is one `<button>`, so the button is reset to a plain block and
+   the wood is what the visitor sees. */
+
+.mf{
+  position:relative;
+  display:flex;flex-direction:column;gap:clamp(12px,1.1vw,16px);
+  width:100%;padding:0;border:0;background:none;
+  color:var(--mfc-ink);font-family:var(--fa);text-align:start;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.mf:focus{outline:none}
+.mf:focus-visible{outline:2px solid var(--mfc-accent);outline-offset:6px;border-radius:4px}
+
+/* The spotlight falling on the frame from the lamp above it. It belongs to the
+   wall, not to the frame, so it is painted before the wood and never occludes
+   it: the band's bottom edge sits exactly on the moulding's top edge. */
+.mf-light{
+  position:absolute;left:50%;top:0;
+  width:160%;height:clamp(52px,5.4vw,80px);
+  transform:translate(-50%,-100%);
+  background:radial-gradient(58% 100% at 50% 100%, rgba(243,233,222,.2), rgba(243,233,222,0) 72%);
+  opacity:.4;transition:opacity .6s ease;pointer-events:none;
+}
+.mf:hover .mf-light,.mf:focus-visible .mf-light{opacity:1}
+
+/* The moulding. Timber is one gradient and one grain pass on the wood itself —
+   not on a pseudo-element — because a pseudo-element would paint over the mat
+   and the photograph; `background-blend-mode` keeps the grain inside the wood. */
+.mf-wood{
+  position:relative;display:block;
+  padding:clamp(8px,.85vw,13px);
+  border-radius:3px;
+  background-color:#8b6a44;
+  background-image:
+    repeating-linear-gradient(58deg, rgba(0,0,0,.14) 0 1px, rgba(255,255,255,.05) 1px 3px, rgba(0,0,0,0) 3px 7px),
+    var(--mf-timber,linear-gradient(148deg,#c79a63 0%,#a97e4d 26%,#d8b483 48%,#9a7245 72%,#b98f5e 100%));
+  background-blend-mode:overlay,normal;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),
+    inset 0 -2px 3px rgba(0,0,0,.45),
+    inset 0 0 0 1px rgba(0,0,0,.28),
+    0 22px 36px -24px rgba(0,0,0,.9);
+  transition:transform .6s cubic-bezier(.22,.61,.36,1),box-shadow .6s cubic-bezier(.22,.61,.36,1);
+}
+
+/* Three timbers, one shape. */
+.mf[data-wood="oak"] .mf-wood{
+  --mf-timber:linear-gradient(148deg,#c79a63 0%,#a97e4d 26%,#d8b483 48%,#9a7245 72%,#b98f5e 100%);
+}
+.mf[data-wood="walnut"] .mf-wood{
+  --mf-timber:linear-gradient(148deg,#6d4a2e 0%,#54371f 30%,#835c37 52%,#48301b 76%,#6a472a 100%);
+}
+.mf[data-wood="smoked"] .mf-wood{
+  --mf-timber:linear-gradient(148deg,#463a30 0%,#2f2721 32%,#5a4a3c 54%,#28211c 78%,#3d332b 100%);
+}
+
+/* The mount: the ivory lip between the wood and the photograph, lit from above
+   and shadowed by the moulding on all four sides. */
+.mf-mount{
+  position:relative;display:block;
+  background:linear-gradient(168deg,#f4ece0,#e2d5c1);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.75),
+    inset 0 0 0 1px rgba(122,99,70,.28),
+    inset 0 -2px 6px rgba(90,70,45,.22);
+}
+.mf[data-mount="slim"] .mf-mount{padding:clamp(5px,.5vw,7px)}
+.mf[data-mount="wide"] .mf-mount{padding:clamp(10px,1vw,15px)}
+/* `double` keeps the depth of `wide` and adds the second lip to the opening
+   itself, three pixels inside the mat. */
+.mf[data-mount="double"] .mf-mount{padding:clamp(10px,1vw,15px)}
+.mf[data-mount="double"] .mf-window{outline:1px solid rgba(122,99,70,.32);outline-offset:3px}
+
+/* The opening: the 4/5 the plates and the photographs are cut for, so `cover`
+   never crops one. The dark ground behind the image is the frame's interior. */
+.mf-window{
+  position:relative;display:block;
+  aspect-ratio:4/5;overflow:hidden;background:#0d0b09;
+}
+.mf-window img{transition:transform .9s cubic-bezier(.22,.61,.36,1)}
+
+/* Glass, and the shadow the mount casts into the picture. Fixed layers over the
+   photograph, both transparent to the pointer. */
+.mf-glass{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(124deg,
+    rgba(255,255,255,.2) 0%,
+    rgba(255,255,255,.06) 22%,
+    rgba(255,255,255,0) 44%,
+    rgba(255,255,255,0) 68%,
+    rgba(255,255,255,.09) 100%);
+  opacity:.7;transition:opacity .6s ease;
+}
+.mf-inset{
+  position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 2px 14px rgba(0,0,0,.45), inset 0 0 0 1px rgba(0,0,0,.3);
+}
+
+/* ---------- The label under the frame ----------
+   Three lines: the number and the name, the finish and its colour chip, and the
+   family with the invitation to open the sample. Every line is optional in the
+   record, so the block shrinks to whatever the sample actually claims. */
+.mf-meta{display:flex;flex-direction:column;gap:7px;padding-inline:2px}
+.mf-head{display:flex;align-items:baseline;gap:.6em}
+.mf-no{
+  flex:none;
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  color:var(--mfc-accent);
+}
+.mf-name{
+  font-size:clamp(15px,1.05vw,17px);font-weight:600;line-height:1.6;
+  color:var(--mfc-ink);
+}
+.mf-line{
+  display:flex;align-items:center;gap:.6em;
+  font-size:var(--fs-meta);color:var(--mfc-muted);
+}
+/* The finish is the sample's own name for its surface, so it reads a step
+   brighter than the colour that follows it. */
+.mf-finish{color:var(--mfc-ink-soft);white-space:nowrap}
+.mf-color{display:inline-flex;align-items:center;gap:.45em}
+.mf-sep{display:block;flex:none;width:1px;height:11px;background:var(--mfc-hair-2)}
+/* The colour chip carries the record's own `colorHex` inline; the ring keeps a
+   pale colour visible against the charcoal wall. */
+.mf-chip{
+  display:block;width:11px;height:11px;border-radius:50%;
+  box-shadow:0 0 0 1px rgba(0,0,0,.4), 0 0 0 3px rgba(243,233,222,.1);
+}
+.mf-foot{display:flex;align-items:center;justify-content:space-between;gap:.8em}
+.mf-tag{
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  color:var(--mfc-accent);
+}
+.mf-open{
+  display:inline-flex;align-items:center;gap:.45em;
+  font-size:var(--fs-caption);color:var(--mfc-muted);
+  opacity:.75;
+  transition:opacity .45s ease,transform .45s cubic-bezier(.22,.61,.36,1);
+}
+.mf-open svg{width:13px;height:13px;flex:none}
+
+/* ---------- The frame at rest, and under the cursor ---------- */
+.mf:hover .mf-wood,.mf:focus-visible .mf-wood{
+  transform:translate3d(0,-6px,0);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.28),
+    inset 0 -2px 3px rgba(0,0,0,.45),
+    inset 0 0 0 1px rgba(0,0,0,.28),
+    0 34px 52px -26px rgba(0,0,0,.95);
+}
+.mf:hover .mf-window img,.mf:focus-visible .mf-window img{transform:scale(1.04)}
+.mf:hover .mf-glass,.mf:focus-visible .mf-glass{opacity:1}
+
+/* Only a device with a real cursor hides the invitation: on touch there is no
+   hover to reveal it, so it stays where it is. */
+@media (hover:hover){
+  .mf-open{opacity:0;transform:translate3d(0,4px,0)}
+  .mf:hover .mf-open,.mf:focus-visible .mf-open{opacity:1;transform:none}
+}
+
+/* ---------- The viewer ----------
+   A full-screen dialog that is rendered inside the section rather than in a
+   portal, which means nothing between it and `<body>` may create a stacking
+   context: `.mfc`, `.mfc-inner` and `.mfw` are positioned but carry no
+   `z-index`, no `transform`, no `filter` and no `isolation`. That is deliberate —
+   it is what lets this dialog's `z-index` beat the site navigation's, and what
+   keeps it out of the section's `overflow: hidden`. Nothing in here is worth a
+   `will-change` on an ancestor. */
+
+.mv{
+  position:fixed;inset:0;z-index:120;
+  display:grid;place-items:center;
+  padding:clamp(12px,2.4vw,32px);
+}
+.mv-scrim{
+  position:absolute;inset:0;
+  background:rgba(10,9,7,.93);
+  -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+  animation:mv-fade .3s ease both;
+}
+.mv-dialog{
+  position:relative;
+  display:grid;grid-template-rows:auto minmax(0,1fr) auto;
+  width:min(1560px,100%);
+  height:min(100%,calc(100vh - clamp(24px,4.8vw,64px)));
+  overflow:hidden;
+  background:var(--mfc-bg-2);
+  border:1px solid var(--mfc-hair);
+  border-radius:var(--mfc-radius);
+  box-shadow:0 60px 120px -50px rgba(0,0,0,.95), inset 0 1px 0 rgba(243,233,222,.06);
+  animation:mv-rise .42s cubic-bezier(.22,.61,.36,1) both;
+}
+@keyframes mv-fade{from{opacity:0}}
+@keyframes mv-rise{from{opacity:0;transform:translate3d(0,16px,0) scale(.99)}}
+/* `dvh` where the browser has it: a mobile URL bar that slides away must not
+   leave the dialog taller than the window it is centred in. */
+@supports (height:100dvh){
+  .mv-dialog{height:min(100%,calc(100dvh - clamp(24px,4.8vw,64px)))}
+}
+
+/* ---------- Toolbar ---------- */
+.mv-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:clamp(12px,1.4vw,16px) clamp(14px,1.8vw,22px);
+  border-bottom:1px solid var(--mfc-hair);
+}
+.mv-position{
+  font-family:var(--fa);font-size:var(--fs-caption);
+  letter-spacing:var(--track-meta);color:var(--mfc-muted);
+}
+.mv-tools{display:flex;align-items:center;gap:8px}
+.mv-tool{
+  display:inline-flex;align-items:center;gap:.5em;
+  min-height:38px;padding:.5em .85em;
+  border:1px solid var(--mfc-hair);border-radius:999px;
+  background:transparent;color:var(--mfc-ink-soft);
+  font-family:var(--fa);font-size:var(--fs-caption);
+  cursor:pointer;
+  transition:background-color .25s ease,border-color .25s ease,color .25s ease;
+}
+.mv-tool svg{width:1.15em;height:1.15em;flex:none}
+.mv-tool:hover:not(:disabled){
+  background:rgba(243,233,222,.08);border-color:var(--mfc-hair-2);color:var(--mfc-ink);
+}
+/* At `1×` there is nothing to zoom out of, and the button says so. */
+.mv-tool:disabled{opacity:.32;cursor:default}
+.mv-tool:focus-visible{outline:2px solid var(--mfc-accent);outline-offset:3px}
+.mv-zoom{
+  min-width:4.4em;text-align:center;
+  font-size:var(--fs-caption);color:var(--mfc-accent);
+  font-variant-numeric:tabular-nums;
+}
+/* The close control keeps the round shape of the site's lightbox, at this
+   dialog's own scale. */
+.mv-close{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:42px;height:42px;flex:none;
+  border:1px solid var(--mfc-hair);border-radius:50%;
+  background:transparent;color:var(--mfc-ink);
+  cursor:pointer;
+  transition:background-color .25s ease,border-color .25s ease,transform .25s ease;
+}
+.mv-close svg{width:19px;height:19px}
+.mv-close:hover{background:rgba(243,233,222,.1);border-color:var(--mfc-hair-2);transform:scale(1.05)}
+.mv-close:focus-visible{outline:2px solid var(--mfc-accent);outline-offset:3px}
+
+/* ---------- Stage and plate ----------
+   The stage is the window; the plate inside it is letterboxed by `object-fit`
+   and then transformed as one layer. `touch-action: none` is what makes the
+   pinch and the drag ours instead of the page's — the browser's own zooming and
+   panning are switched off here and nowhere else. */
+.mv-body{
+  display:grid;grid-template-columns:minmax(0,1fr) clamp(264px,24vw,340px);
+  min-height:0;
+}
+.mv-stage{
+  position:relative;overflow:hidden;
+  background:#0c0a08;
+  touch-action:none;
+  cursor:default;
+  user-select:none;-webkit-user-select:none;
+}
+.mv[data-zoom="true"] .mv-stage{cursor:grab}
+.mv[data-drag="true"] .mv-stage{cursor:grabbing}
+.mv-frame{
+  position:absolute;inset:0;
+  transform-origin:center center;
+  will-change:transform;
+  transition:transform .34s cubic-bezier(.22,.61,.36,1);
+}
+/* While a finger is down the transform has to track it exactly, so the easing is
+   dropped for the length of the gesture and restored when it ends. */
+.mv[data-drag="true"] .mv-frame{transition:none}
+
+/* The honesty label: this plate is a stand-in, and it says so over the sample
+   rather than only in the panel. */
+.mv-badge{
+  position:absolute;inset-block-start:14px;inset-inline-start:14px;
+  padding:.35em .8em;border-radius:999px;
+  background:rgba(243,233,222,.92);color:#171310;
+  font-family:var(--fa);font-size:var(--fs-caption);
+  letter-spacing:var(--track-meta);
+}
+.mv-hints{
+  position:absolute;inset-block-end:16px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:14px;
+  padding:.55em 1em;border-radius:999px;
+  background:rgba(12,10,8,.62);
+  font-family:var(--fa);font-size:var(--fs-caption);color:var(--mfc-muted);
+  white-space:nowrap;
+  transition:opacity .7s ease;
+}
+/* The hints have done their job the moment the plate has been touched. */
+.mv[data-touched="true"] .mv-hints{opacity:0}
+/* The two halves of the hint are single phrases: they stay whole, and the pill
+   wraps as a unit if it ever has to. */
+.mv-hint{white-space:nowrap}
+.mv-hint-sep{display:block;flex:none;width:1px;height:12px;background:var(--mfc-hair-2)}
+
+/* ---------- The sample's own panel ---------- */
+.mv-panel{
+  display:flex;flex-direction:column;gap:clamp(14px,1.4vw,20px);
+  padding:clamp(20px,2.2vw,32px);
+  border-inline-start:1px solid var(--mfc-hair);
+  overflow-y:auto;overscroll-behavior:contain;
+}
+.mv-name{
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(23px,2.3vw,34px);line-height:var(--lh-heading);
+  color:var(--mfc-ink);
+}
+.mv-desc{font-size:clamp(15px,1.02vw,17px);line-height:1.95;color:var(--mfc-ink-soft)}
+/* The specification list is pushed to the bottom of the panel, so the name and
+   the description own the top of it however long the copy runs. */
+.mv-specs{margin-top:auto;border-top:1px solid var(--mfc-hair)}
+.mv-spec{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:11px 0;border-bottom:1px solid var(--mfc-hair);
+  font-family:var(--fa);font-size:var(--fs-meta);
+}
+.mv-spec dt{color:var(--mfc-muted)}
+.mv-spec dd{display:inline-flex;align-items:center;gap:.5em;color:var(--mfc-ink)}
+.mv-chip{
+  display:block;width:13px;height:13px;border-radius:50%;
+  box-shadow:0 0 0 1px rgba(0,0,0,.4), 0 0 0 3px rgba(243,233,222,.1);
+}
+
+/* ---------- Walking the wall ---------- */
+.mv-foot{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:clamp(12px,1.4vw,16px) clamp(14px,1.8vw,22px);
+  border-top:1px solid var(--mfc-hair);
+}
+.mv-nav{
+  display:inline-flex;align-items:center;gap:.6em;
+  min-height:42px;padding:.5em .4em;
+  border:0;background:transparent;color:var(--mfc-ink-soft);
+  font-family:var(--fa);font-size:var(--fs-meta);
+  cursor:pointer;
+  transition:color .25s ease,transform .35s cubic-bezier(.22,.61,.36,1);
+}
+.mv-nav svg{width:19px;height:19px;flex:none}
+.mv-nav-text{white-space:nowrap}
+.mv-nav:hover{color:var(--mfc-accent)}
+.mv-nav:focus-visible{outline:2px solid var(--mfc-accent);outline-offset:4px}
+
+/* The page behind the viewer does not scroll while it is open — the same lock
+   the site's lightbox takes under `lb-open`. */
+body.mv-open{overflow:hidden}
+
+/* ---------- Responsive ----------
+   Three steps, in the order this layout actually gives way: the wall drops to
+   three frames a row while the viewer's panel moves under the plate; then the
+   section head stacks; then the wall drops to two. Two columns is the floor —
+   a single column of frames stops reading as a wall. */
+@media (max-width:1180px){
+  .mfw-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .mv-body{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
+  .mv-panel{
+    border-inline-start:0;border-top:1px solid var(--mfc-hair);
+    max-height:44vh;
+  }
+  /* Stacked, the specification list follows the copy instead of being pushed to
+     the bottom of a tall panel. */
+  .mv-specs{margin-top:6px}
+}
+@media (max-width:960px){
+  .mfc-head{grid-template-columns:1fr;gap:26px;align-items:start}
+  .mfc-lede{max-width:64ch}
+}
+@media (max-width:860px){
+  .mfw-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  /* The zoom controls go icon-only: their labels are the accessible names either
+     way, and the plate needs the width more than the toolbar does. */
+  .mv-tool-text{display:none}
+  .mv-tool{padding:.5em .7em}
+  .mv-hints{gap:10px;padding:.45em .8em;font-size:11px}
+}
+@media (max-width:640px){
+  /* Full-bleed on a phone: a dialog inset by 12px on every side leaves too
+     little plate left to explore at the zoom levels this viewer offers. */
+  .mv{padding:0}
+  .mv-dialog{width:100%;height:100%;border:0;border-radius:0}
+  .mv-bar,.mv-foot{padding-inline:16px}
+  .mv-panel{padding:20px 16px;max-height:48vh}
+  .mf-light{opacity:.25}
+}
+@media (max-width:420px){
+  .mfw{padding:14px 14px 22px}
+  .mfw-grid{gap:16px}
+  .mf-wood{padding:7px}
+  .mf-name{font-size:14px}
+}
+
+/* ---------- Reduced motion ----------
+   The site-wide block near the top of this file already flattens every
+   transition and animation to nothing. What is left for this section is the two
+   states that are transforms rather than motion over time — the frame's lift and
+   its slow push-in — plus the dialog's entrance, which is an animation on an
+   element that does not exist until it is opened. */
+@media (prefers-reduced-motion: reduce){
+  .mf:hover .mf-wood,
+  .mf:focus-visible .mf-wood{transform:none}
+  .mf:hover .mf-window img,
+  .mf:focus-visible .mf-window img{transform:none}
+  .mv-scrim,.mv-dialog{animation:none}
+  .mv-frame{transition:none}
+}
