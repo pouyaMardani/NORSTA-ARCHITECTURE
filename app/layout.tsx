@@ -45,6 +45,32 @@ export const metadata: Metadata = {
   title: "NORSTA HOME",
   description:
     "معماری‌ای که با سکوت، وزن و گذرِ آرام نور در فضا شکل می‌گیرد.",
+
+  /* The mark: a drawn `N` sealed in a circle — an ink medallion with an ivory
+     rim and letter. Cut by `scripts/make-favicon.mjs` (run it after touching
+     the geometry there), served from `public/`, and inherited by every route
+     through this root layout.
+
+     Order matters only as a tie-break, so the two vectors come last and win:
+     `/favicon.svg` for light chrome, `/favicon-dark.svg` — the same drawing
+     inverted, ivory medallion — behind a `prefers-color-scheme: dark` media
+     query. The PNGs and the ICO are the exact-pixel and legacy fallbacks, and
+     Safari, which ignores SVG favicons, gets the charcoal medallion from
+     `/favicon.ico` — legible on a dark tab because of its ivory rim. */
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any", type: "image/x-icon" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      {
+        url: "/favicon-dark.svg",
+        type: "image/svg+xml",
+        media: "(prefers-color-scheme: dark)",
+      },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
 };
 
 export const viewport: Viewport = {

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="NORSTA">
+  <style>
+    .disc{fill:#1d1c18}
+    .field{fill:#f3e9de}
+    .mark{fill:#1d1c18}
+  </style>
+  <circle class="disc" cx="256" cy="256" r="236"/>
+  <circle class="field" cx="256" cy="256" r="200"/>
+  <path class="mark" fill-rule="nonzero" d="M157 125L211 125L211 387L157 387Z M301 125L355 125L355 387L301 387Z M211 125L265 125L355 387L301 387Z"/>
+</svg>
