@@ -8,6 +8,8 @@
  * `records.ts` to change what it teaches.
  */
 
+import { SITE_INSTAGRAM_URL } from "@/lib/site";
+
 import type {
   AcademyCopy,
   AcademyImage,
@@ -125,10 +127,11 @@ export const ACADEMY_INSTRUCTOR: AcademyInstructorDTO = {
  * here states a price, a discount, a guarantee, a lesson count, a certificate or
  * a course length, because none of those has been supplied.
  *
- * `instagramUrl` is where the purchase enquiry goes: the studio's own profile —
- * the same one the home page's showcase links to, because that is the only
- * handle this project has. Point it at a dedicated academy account here if one
- * is ever created; nothing else has to change.
+ * `instagramUrl` is where the purchase enquiry goes: the studio's own profile,
+ * read from `lib/site.ts` rather than written out here, so the showcase on the
+ * home page, the contact block and the `Organization` node cannot drift away
+ * from the academy. Point it at a dedicated academy account in `lib/site.ts` if
+ * one is ever created; nothing else has to change.
  */
 export const TRAINING_COLLECTION: TrainingCollectionDTO = {
   name: "مجموعهی کامل آموزش میکروسمنت",
@@ -147,7 +150,7 @@ export const TRAINING_COLLECTION: TrainingCollectionDTO = {
   ctaLabel: "دریافت اطلاعات خرید",
   ctaNote:
     "خرید مجموعهی کامل از طریق دایرکت اینستاگرام نورستا انجام میشود؛ پرسشهای شما دربارهی محتوا، شرایط و نحوهی دسترسی همانجا پاسخ داده میشود.",
-  instagramUrl: "https://www.instagram.com/norsta.home/",
+  instagramUrl: SITE_INSTAGRAM_URL,
   images: [ACADEMY_IMAGES.culturalCenter, ACADEMY_IMAGES.microcementDetail],
 };
 

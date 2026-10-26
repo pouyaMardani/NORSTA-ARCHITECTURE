@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import JsonLd from "@/components/JsonLd";
 import ProjectCard from "@/components/ProjectCard";
 import {
   formatProjectCounter,
@@ -12,6 +13,8 @@ import {
   getRelatedProjects,
   PROJECT_CONFIG,
 } from "@/content/projects";
+import { detailMetadata } from "@/lib/seo";
+import { projectJsonLd } from "@/lib/structured-data";
 
 /**
  * One project.
@@ -47,16 +50,12 @@ export async function generateMetadata({
 
   if (!project) return { title: PROJECT_CONFIG.labels.notFoundTitle };
 
-  return {
+  return detailMetadata({
+    path: `/projects/${project.slug}`,
     title: project.seoTitle,
     description: project.seoDescription,
-    openGraph: {
-      type: "article",
-      title: project.seoTitle,
-      description: project.seoDescription,
-      images: [{ url: project.coverImage.src, alt: project.coverImage.alt }],
-    },
-  };
+    image: project.coverImage,
+  });
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
@@ -86,6 +85,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   return (
     <article className="pj" dir="rtl">
+      {/* The project as structured data: its name, summary, photographs and the
+          facts its record actually carries. Inert markup. */}
+      <JsonLd data={projectJsonLd(project)} />
       <header className="pj-hero">
         <div className="pj-hero-media" data-reveal="image-reveal">
           <Image

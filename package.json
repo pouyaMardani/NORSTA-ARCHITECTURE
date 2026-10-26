@@ -1,8 +1,8 @@
 {
-  "name": "monolith-atelier",
+  "name": "norsta",
   "version": "1.0.0",
   "private": true,
-  "description": "Faithful Next.js + React + TypeScript recreation of architecture-showcase.verdent.app (Monolith Atelier).",
+  "description": "Norsta — the Persian (fa-IR) website of the microcement and patina studio: Instagram showcase, project gallery, magazine and academy. Next.js (App Router) + React + TypeScript.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

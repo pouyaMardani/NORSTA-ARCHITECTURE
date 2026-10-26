@@ -1,11 +1,16 @@
-# Monolith Atelier — Next.js recreation
+# NORSTA — the studio's website
 
-A standalone **Next.js (App Router) + React + TypeScript** project that faithfully
-recreates the single-page reference site **https://architecture-showcase.verdent.app/**.
+The website of **Norsta**, a microcement and patina studio: an Instagram
+showcase, a project gallery, a Persian magazine and a microcement academy. It is
+a standalone **Next.js (App Router) + React + TypeScript** project, written in
+Persian (`fa-IR`), served from **https://norsta.ir**.
 
-This is a reference-reconstruction, not a redesign: the layout, type scale, colour
-tokens, copy, section order, imagery, transitions and responsive behaviour are all
-ported from the original page.
+Its visual language began as a faithful reconstruction of the single-page
+reference site **https://architecture-showcase.verdent.app/** — layout, type
+scale, colour tokens, section order, imagery, transitions and responsive
+behaviour were ported from it — and the site has since been re-branded and
+localised: the copy, the contact block, the structured data, the package name and
+the Instagram links all name Norsta.
 
 ---
 
@@ -43,6 +48,35 @@ npm run typecheck  # tsc --noEmit
 
 ---
 
+## Brand and deployment
+
+| fact | value |
+| --- | --- |
+| Brand | `NORSTA` (the wordmark stays `NORSTA HOME`) |
+| Production origin | `https://norsta.ir` |
+| Language | Persian, `fa-IR`, in an LTR shell |
+| Instagram | `@norsta.home` — https://www.instagram.com/norsta.home/ |
+
+The origin is one fact in one place: `lib/site.ts` reads `NEXT_PUBLIC_SITE_URL`
+at **build** time (see `.env.example`), and every canonical link, `og:url`,
+`twitter:image`, JSON-LD `@id`, sitemap entry and `robots.txt` sitemap line is
+written against it. Set it to `https://norsta.ir` in the production environment
+before the build; left unset, a build falls back to that same origin, and only
+`next dev` falls back to `http://localhost:3000`.
+
+The Instagram handle is named once too — `SITE_INSTAGRAM_HANDLE` and
+`SITE_INSTAGRAM_URL` in `lib/site.ts`. The showcase, the contact block, the
+academy's purchase enquiry and the `Organization` node all read it, so the site
+cannot end up pointing at two different accounts.
+
+That account is Norsta's only published contact route. The reference studio's
+Copenhagen address and its e-mail were removed rather than re-pointed, because no
+street address, telephone number or e-mail for Norsta has been supplied — and
+inventing one is not an option. `components/Contact.tsx` and
+`lib/structured-data.ts` are the two places that would state them.
+
+---
+
 ## Project structure
 
 ```
@@ -56,7 +90,7 @@ components/
   Services.tsx        “PRACTICE / Areas of Work” numbered list + edge image
   About.tsx           “STUDIO / Matter & Silence” + animated metrics
   Work.tsx            “SELECTED WORKS / Recent Projects” grid
-  Contact.tsx         “GET IN TOUCH / Begin a Quiet Project” + address
+  Contact.tsx         The contact block: copy, the Instagram account, the CTA
   Footer.tsx          Footer rule + studio cities
   Lightbox.tsx        Markup for the project image viewer
   SiteInteractions.tsx  Client component: the port of the reference script.js

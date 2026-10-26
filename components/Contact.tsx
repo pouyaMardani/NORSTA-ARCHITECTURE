@@ -1,5 +1,31 @@
 import Image from "next/image";
 
+import { SITE_INSTAGRAM_HANDLE, SITE_INSTAGRAM_URL } from "@/lib/site";
+
+/**
+ * Contact — how to reach the studio, and nothing else.
+ *
+ * The reference composition carried the *reference studio's* own details: a
+ * Copenhagen street address behind a Google Maps link, and a `mailto:` address
+ * on another studio's domain. Both were removed rather than re-pointed: they
+ * name a business that is not Norsta, and no replacement street address,
+ * telephone number or e-mail has ever been supplied, so inventing one is not an
+ * option. `lib/structured-data.ts` states no `address`, `telephone` or `email`
+ * for exactly the same reason, so the page and the structured data cannot
+ * disagree about how to reach the studio.
+ *
+ * What is left is the route that does exist. Instagram is where Norsta answers —
+ * the showcase on the home page and the academy's purchase enquiry already link
+ * there — so the contact line names the account and the CTA opens it. The handle
+ * is the address, the CTA is the invitation, and both are live links to the same
+ * profile: the block keeps its shape with no broken link, no dead `mailto:` and
+ * no empty placeholder standing where the old details used to be.
+ *
+ * The layout is untouched: eyebrow, heading, rule, contact line, note and CTA —
+ * the same six elements in the same order, under the same `.contact` rules. The
+ * glyph on the contact line is the account's own mark, the drawing the showcase
+ * CTA already uses, drawn at the 18 px the pin occupied.
+ */
 export default function Contact() {
   return (
     <section id="contact" className="contact">
@@ -23,15 +49,12 @@ export default function Contact() {
             strokeWidth="1.4"
             aria-hidden="true"
           >
-            <path d="M12 22s7-7.58 7-13a7 7 0 1 0-14 0c0 5.42 7 13 7 13z" />
-            <circle cx="12" cy="9" r="2.4" />
+            <rect x="3" y="3" width="18" height="18" rx="5.2" />
+            <circle cx="12" cy="12" r="4.2" />
+            <circle cx="17.1" cy="6.9" r="1.05" fill="currentColor" stroke="none" />
           </svg>
-          <a
-            href="https://maps.google.com/?q=Bredgade+47,+1260+Copenhagen,+Denmark"
-            target="_blank"
-            rel="noopener"
-          >
-            خیابان بردگید 47، 1260 کپنهاگ، دانمارک
+          <a href={SITE_INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
+            {`@${SITE_INSTAGRAM_HANDLE}`}
           </a>
         </p>
         <p className="note">
@@ -40,7 +63,9 @@ export default function Contact() {
           پروژه‌هایی که برای عمق، بستر و نیتِ مشترکشان برگزیده می‌شوند.
         </p>
         <a
-          href="mailto:studio@monolithatelier.com"
+          href={SITE_INSTAGRAM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
           className="link-underline strong"
         >
           آغاز گفت‌وگو &nbsp;→

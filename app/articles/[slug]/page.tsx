@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 
 import ArticleBody from "@/components/ArticleBody";
 import ArticleCard from "@/components/ArticleCard";
+import JsonLd from "@/components/JsonLd";
 import {
   ARTICLE_CONFIG,
   formatArticleDate,
@@ -13,6 +14,8 @@ import {
   getRelatedArticles,
   readingTimeLabel,
 } from "@/content/articles";
+import { detailMetadata } from "@/lib/seo";
+import { articleJsonLd } from "@/lib/structured-data";
 
 /**
  * One article.
@@ -44,16 +47,13 @@ export async function generateMetadata({
     return { title: "مقاله پیدا نشد" };
   }
 
-  return {
+  return detailMetadata({
+    path: `/articles/${article.slug}`,
     title: article.seoTitle,
     description: article.seoDescription,
-    openGraph: {
-      type: "article",
-      title: article.seoTitle,
-      description: article.seoDescription,
-      publishedTime: article.publishedAt,
-    },
-  };
+    image: article.coverImage,
+    publishedTime: article.publishedAt,
+  });
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
@@ -67,6 +67,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
   return (
     <article className="post" dir="rtl">
+      {/* The article as structured data: its headline, summary, cover, date and
+          byline, as the page itself states them. Inert markup. */}
+      <JsonLd data={articleJsonLd(article)} />
       <header className="post-head">
         <div className="post-cover" data-reveal="image-reveal">
           <Image

@@ -18,7 +18,6 @@ const ALLOW = [
   /^NORSTA$/,
   /^NORSTA HOME$/,
   /^© NORSTA HOME$/,
-  /^studio@monolithatelier\.com$/,
   /^https?:\/\//,
   /^mailto:/,
   /^\/images\//,

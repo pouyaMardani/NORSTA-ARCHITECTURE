@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
 import SiteInteractions from "@/components/SiteInteractions";
 import { ACADEMY_CONFIG } from "@/content/academy";
+import { SITE_LOCALE, SITE_NAME } from "@/lib/site";
 
 /**
  * Shell for every academy route.
@@ -20,13 +21,36 @@ import { ACADEMY_CONFIG } from "@/content/academy";
  * `title.template` gives every lesson page a consistent, unique document title:
  * the page sets its own `title` and the academy's name is appended to it.
  */
+/** This segment's own summary line: the document description and the share card's text. */
+const SECTION_DESCRIPTION =
+  "آکادمی میکروسمنت نورستا: آموزش گامبهگام میکروسمنت از شناخت متریال و ابزار تا آمادهسازی زیرکار و اجرای سطحهای دکوراتیو.";
+
 export const metadata: Metadata = {
   title: {
     default: ACADEMY_CONFIG.copy.name,
     template: `%s | ${ACADEMY_CONFIG.copy.name}`,
   },
-  description:
-    "آکادمی میکروسمنت نورستا: آموزش گامبهگام میکروسمنت از شناخت متریال و ابزار تا آمادهسازی زیرکار و اجرای سطحهای دکوراتیو.",
+
+  description: SECTION_DESCRIPTION,
+
+  /* The academy's own canonical address: `/academy` is the one landing page of
+     this segment, and every lesson below it states its own. */
+  alternates: { canonical: "/academy" },
+
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: SITE_LOCALE,
+    url: "/academy",
+    title: ACADEMY_CONFIG.copy.name,
+    description: SECTION_DESCRIPTION,
+  },
+
+  twitter: {
+    card: "summary",
+    title: ACADEMY_CONFIG.copy.name,
+    description: SECTION_DESCRIPTION,
+  },
 };
 
 export default function AcademyLayout({

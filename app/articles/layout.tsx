@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
 import SiteInteractions from "@/components/SiteInteractions";
 import { ARTICLE_CONFIG } from "@/content/articles";
+import { SITE_LOCALE, SITE_NAME } from "@/lib/site";
 
 /**
  * Shell for every magazine route.
@@ -16,13 +17,37 @@ import { ARTICLE_CONFIG } from "@/content/articles";
  * `title.template` gives every article page a consistent, unique document title:
  * a page sets its own `title` and the magazine's name is appended to it.
  */
+/** This segment's own summary line: the document description and the share card's text. */
+const SECTION_DESCRIPTION =
+  "یادداشت‌های استودیو نورستا درباره‌ی میکروسمنت، پتینه، مصالح و اجرای سطح‌های معماری.";
+
 export const metadata: Metadata = {
   title: {
     default: ARTICLE_CONFIG.magazine.name,
     template: `%s | ${ARTICLE_CONFIG.magazine.name}`,
   },
-  description:
-    "یادداشت‌های استودیو نورستا درباره‌ی میکروسمنت، پتینه، مصالح و اجرای سطح‌های معماری.",
+
+  description: SECTION_DESCRIPTION,
+
+  /* The archive's canonical address, declared on the segment because the
+     filtered views (`/articles?category=…`) are this same page and must point at
+     the unfiltered address rather than compete with it for the same words. */
+  alternates: { canonical: "/articles" },
+
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: SITE_LOCALE,
+    url: "/articles",
+    title: ARTICLE_CONFIG.magazine.name,
+    description: SECTION_DESCRIPTION,
+  },
+
+  twitter: {
+    card: "summary",
+    title: ARTICLE_CONFIG.magazine.name,
+    description: SECTION_DESCRIPTION,
+  },
 };
 
 export default function ArticlesLayout({

@@ -3,7 +3,21 @@ import { Cormorant_Garamond, Inter } from "next/font/google";
 import localFont from "next/font/local";
 
 import BackToTop from "@/components/BackToTop";
+import JsonLd from "@/components/JsonLd";
 import PageTransition from "@/components/PageTransition";
+
+import {
+  SITE_LOCALE,
+  SITE_NAME,
+  SITE_TAGLINE,
+  SITE_TITLE,
+  SITE_URL,
+} from "@/lib/site";
+import {
+  graphJsonLd,
+  organizationJsonLd,
+  websiteJsonLd,
+} from "@/lib/structured-data";
 
 import "./globals.css";
 
@@ -42,9 +56,8 @@ const vazirmatn = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "NORSTA HOME",
-  description:
-    "معماری‌ای که با سکوت، وزن و گذرِ آرام نور در فضا شکل می‌گیرد.",
+  title: SITE_TITLE,
+  description: SITE_TAGLINE,
 
   /* The mark: a drawn `N` sealed in a circle — an ink medallion with an ivory
      rim and letter. Cut by `scripts/make-favicon.mjs` (run it after touching
@@ -57,6 +70,28 @@ export const metadata: Metadata = {
      query. The PNGs and the ICO are the exact-pixel and legacy fallbacks, and
      Safari, which ignores SVG favicons, gets the charcoal medallion from
      `/favicon.ico` — legible on a dark tab because of its ivory rim. */
+  /* ── The absolute address, and the share card's own defaults ──────────────
+     `metadataBase` is what turns every relative URL in this metadata into the
+     absolute one a crawler needs: the canonical link, the Open Graph image and
+     the structured data all name one address instead of the localhost fallback.
+     A page that states its own `openGraph` replaces the object below wholesale,
+     which is why the three detail routes repeat `siteName` and `locale`. */
+  metadataBase: new URL(SITE_URL),
+
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: SITE_LOCALE,
+    url: "/",
+    title: SITE_TITLE,
+    description: SITE_TAGLINE,
+  },
+
+  /* Without a share image, `summary_large_image` would render an empty
+     half-card, so the default is the honest small one; the pages that do have a
+     photograph ask for the large card themselves. */
+  twitter: { card: "summary" },
+
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any", type: "image/x-icon" },
@@ -88,6 +123,10 @@ export default function RootLayout({
     >
       {/* No `dir` attribute is set: the page intentionally stays LTR. */}
       <body>
+        {/* The studio and the site, as structured data: the same facts the page
+            states, in the form a search engine can read without guessing at
+            them. Inert markup — it paints nothing and reaches no network. */}
+        <JsonLd data={graphJsonLd([organizationJsonLd(), websiteJsonLd()])} />
         {children}
 
         {/* Site-wide floating controls, mounted once here so every route — the

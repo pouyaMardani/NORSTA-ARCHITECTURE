@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import JsonLd from "@/components/JsonLd";
 import LessonCard from "@/components/LessonCard";
 import LessonNav from "@/components/LessonNav";
 import LessonPlayer from "@/components/LessonPlayer";
@@ -16,6 +17,8 @@ import {
   lessonNumberLabel,
   type LessonDTO,
 } from "@/content/academy";
+import { detailMetadata } from "@/lib/seo";
+import { lessonJsonLd } from "@/lib/structured-data";
 
 /**
  * One lesson.
@@ -55,16 +58,12 @@ export async function generateMetadata({
     return { title: ACADEMY_CONFIG.labels.notFoundTitle };
   }
 
-  return {
+  return detailMetadata({
+    path: `/academy/${lesson.slug}`,
     title: lesson.seoTitle,
     description: lesson.seoDescription,
-    openGraph: {
-      type: "article",
-      title: lesson.seoTitle,
-      description: lesson.seoDescription,
-      images: [{ url: lesson.coverImage.src, alt: lesson.coverImage.alt }],
-    },
-  };
+    image: lesson.coverImage,
+  });
 }
 
 /** The small facts row under the title: instructor, position, runtime. */
@@ -111,6 +110,9 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   return (
     <article className="aca-post" dir="rtl">
+      {/* The lesson as structured data: what it teaches, its cover, its access
+          line and the studio that publishes it. Inert markup. */}
+      <JsonLd data={lessonJsonLd(lesson)} />
       <header className="aca-post-head">
         <div className="aca-post-cover" data-reveal="image-reveal">
           <Image

@@ -1,5 +1,7 @@
 import Image from "next/image";
 
+import { SITE_INSTAGRAM_URL } from "@/lib/site";
+
 /**
  * Instagram showcase.
  *
@@ -16,6 +18,10 @@ import Image from "next/image";
  * The plate is never cropped on desktop (`.ig-stage` keeps its 1312x793 aspect
  * ratio), so the percentages in `globals.css` — measured against the reference
  * pixels — land on the wall exactly where the reference put them at any width.
+ *
+ * The account the CTA opens is named once, in `lib/site.ts` — the same profile
+ * the contact block, the academy's purchase enquiry and the `Organization` node
+ * point at — so no component writes the handle out again.
  */
 export default function InstagramShowcase() {
   return (
@@ -42,7 +48,7 @@ export default function InstagramShowcase() {
 
         <a
           className="ig-cta"
-          href="https://www.instagram.com/norsta.home/"
+          href={SITE_INSTAGRAM_URL}
           target="_blank"
           rel="noopener noreferrer"
           data-reveal="fade-up"

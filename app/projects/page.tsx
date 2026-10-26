@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 /**
  * `/projects` has no page of its own.
@@ -9,5 +9,5 @@ import { redirect } from "next/navigation";
  * anchor is the section's own id, so the header keeps working from here too.
  */
 export default function ProjectsIndex(): never {
-  redirect("/#work");
+  permanentRedirect("/#work");
 }
