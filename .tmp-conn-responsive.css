@@ -1,0 +1,46 @@
+/* ---------- Norsta Connection ----------
+   Two steps. Below 960px the stage can no longer carry the device over the
+   plate's edge, so the phone moves to a row of its own; below 680px the whole
+   composition falls to one column. */
+
+/* ---------- ≤960px : the stage gives the device its own row ---------- */
+@media (max-width: 960px){
+  /* The statement and the standfirst each take the full measure: at this width
+     eight columns of heading beside four of lede would break both. */
+  .conn-head{grid-template-columns:minmax(0,1fr);row-gap:clamp(22px,3.2vw,34px)}
+  .conn-head-main,.conn-head-aside{grid-column:1/-1}
+  .conn-head-aside{padding-block-end:0}
+  .conn-lede{max-width:58ch}
+
+  /* The plate is the full measure here, and it still has to hold both chips:
+     the material one hangs off its lower corner and the surface study off its
+     upper one. A phone overlapping the plate at this width would sit on the
+     material chip — the overlap is structural, not a nudge — so the device
+     takes the next row, under the plate's own leading edge, where the spare
+     width beside it is simply left as air. */
+  .conn-plate{grid-column:1/-1}
+  .conn-phone{
+    grid-column:1/-1;grid-row:2;
+    justify-self:start;
+    inline-size:clamp(196px,24vw,236px);
+    margin-block-start:clamp(56px,7vw,72px);
+  }
+
+  /* One channel under the other, each the full measure. */
+  .conn-path--instagram,.conn-path--whatsapp{grid-column:1/-1}
+  .conn-path--whatsapp{margin-block-start:clamp(34px,4.6vw,52px)}
+}
+
+/* ---------- ≤680px : the stage becomes a single column ---------- */
+@media (max-width: 680px){
+  /* The device, at a width a phone screen actually has — and low enough to
+     clear the material chip hanging under the plate above it. */
+  .conn-phone{inline-size:clamp(196px,52vw,236px);margin-block-start:clamp(60px,15vw,78px)}
+  /* The display step would clamp up to 52px here, which is wider than the
+     measure the page's own phone step leaves the heading; the scale the rest
+     of the page sets at this width is the one that fits. */
+  .conn-title{font-size:clamp(32px,9.6vw,52px)}
+  .conn-lede,.conn-path-copy,.conn-pending{max-width:none}
+  /* Three frames and two gaps still have to fit inside the entry. */
+  .conn-strip-frame{inline-size:clamp(58px,17vw,74px)}
+}

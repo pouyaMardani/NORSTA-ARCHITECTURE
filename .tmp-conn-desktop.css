@@ -1,0 +1,368 @@
+/* ============== NORSTA CONNECTION ============== */
+/*
+ * The closing act: the studio's two channels, composed rather than carded.
+ *
+ * The previous version of this section laid Persian type over one photographic
+ * plate. This one builds its own stage out of the studio's own stills — an
+ * architectural photograph, a material chip hung off its lower corner, a narrow
+ * surface study off its upper one, and a phone holding the studio's own feed —
+ * and then states the two ways to reach the studio: the Instagram profile
+ * (`lib/site.ts`) and the WhatsApp line (`lib/contact.ts`).
+ *
+ * ── WHY THE STAGE IS A GRID ────────────────────────────────────────────────
+ * The phone overlaps the photograph by exactly one column at every desktop
+ * width, because the two are grid items on the same row: the plate spans `1/9`
+ * and the phone `8/13`, so they share column 8. An overlap written as a
+ * hand-tuned nudge would drift as the viewport narrowed; this one cannot.
+ *
+ * ── WHY THE CHIPS ARE ABSOLUTE ─────────────────────────────────────────────
+ * Both small photographs hang past the big one's corners. They are positioned
+ * inside its own box, which reserves nothing, because a tile that hangs must
+ * not be able to widen the page or open a gap in the row — the section's own
+ * padding is what keeps them inside the viewport, and `overflow:hidden` is what
+ * keeps them from ever opening a horizontal scrollbar.
+ *
+ * ── WHY THE TWO CHANNELS ARE NOT CARDS ─────────────────────────────────────
+ * Each is an entry in the composition — hairline, index, title, action — and
+ * the two are told apart by more than colour: an image-led entry closed by a
+ * solid pill against a panel-led entry closed by an outlined one, numbered ۰۱
+ * and ۰۲, under a camera mark and a speech bubble. The WhatsApp entry is honest
+ * about the state of the line: until `lib/contact.ts` holds a real number it
+ * says so, and names the live route instead of rendering a link that cannot be
+ * answered.
+ *
+ * ── MOTION ─────────────────────────────────────────────────────────────────
+ * Entrances come from `SiteInteractions` (`data-reveal`); everything reactive
+ * is a hover, and every hover is inside `@media (hover:hover)`. The phone's
+ * screen is measured in `cqw` off its own width, so its type stays in
+ * proportion at every breakpoint — the device the previous plate used, kept.
+ */
+.conn{
+  --conn-radius:clamp(22px,2.4vw,40px) 2px clamp(16px,1.9vw,30px) 2px;
+  --conn-offset:clamp(10px,1.1vw,18px);
+  position:relative;
+  padding:clamp(96px,10vw,164px) var(--pad-x) clamp(88px,8vw,140px);
+  background:var(--bg);overflow:hidden;
+}
+
+/* Light on plaster: two warm washes and a hairline striation, every one of them
+   under 3% ink, so the section reads as this page with the light falling across
+   it rather than as a different surface. Drawn, not photographed. */
+.conn-ground{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(118% 78% at 88% -14%, rgba(255,248,238,.9), rgba(255,248,238,0) 60%),
+    radial-gradient(92% 66% at 3% 106%, rgba(203,188,166,.32), rgba(203,188,166,0) 64%);
+}
+.conn-ground::after{
+  content:"";position:absolute;inset:0;opacity:.5;
+  background-image:repeating-linear-gradient(96deg,rgba(29,28,24,.03) 0 1px,rgba(29,28,24,0) 1px 7px);
+}
+
+.conn-head,.conn-stage,.conn-paths{position:relative;z-index:1}
+
+/* ---------- the head: a statement, and the standfirst that answers it ------ */
+.conn-head{
+  display:grid;grid-template-columns:repeat(12,minmax(0,1fr));
+  column-gap:clamp(16px,2vw,34px);
+  align-items:end;
+  margin-block-end:clamp(48px,6vw,96px);
+}
+.conn-head-main{grid-column:1/8}
+.conn-head-aside{grid-column:9/13;padding-block-end:clamp(0px,.7vw,12px)}
+.conn-eyebrow{display:block;margin-block-end:clamp(16px,1.8vw,26px)}
+.conn-title{font-size:var(--fs-display)}
+.conn-lede{
+  font-family:var(--fa);font-size:var(--fs-lede);
+  line-height:1.62;color:var(--ink);max-width:32ch;
+}
+/* The studio's own address, as a printed line rather than a link: this section
+   is already the page itself. */
+.conn-domain{
+  display:flex;align-items:baseline;flex-wrap:wrap;gap:.35em .8em;
+  margin-block-start:clamp(22px,2.6vw,36px);
+  padding-block-start:clamp(14px,1.5vw,20px);
+  border-top:1px solid var(--hair);
+}
+.conn-domain-label{font-size:var(--fs-caption);letter-spacing:var(--track-meta);color:var(--ink-soft)}
+.conn-domain-value{font-size:var(--fs-ui);color:var(--ink);unicode-bidi:isolate}
+
+/* ---------- the stage: one photograph, two chips, one phone --------------- */
+.conn-stage{
+  display:grid;grid-template-columns:repeat(12,minmax(0,1fr));
+  align-items:start;
+}
+.conn-plate{
+  grid-column:1/9;grid-row:1;position:relative;
+  margin-block-start:clamp(24px,3.2vw,64px);
+  padding-inline-end:var(--conn-offset);padding-block-end:var(--conn-offset);
+}
+/* The matt is static, so the plate keeps only its fade and the photograph
+   settles in place through its own `image-reveal` scale. */
+.conn-plate[data-reveal="image-reveal"]{transform:none}
+
+/* The plate's own silhouette, displaced behind it — the studio's ghost frame. */
+.conn-plate-ghost{
+  position:absolute;pointer-events:none;
+  inset-block-start:var(--conn-offset);inset-block-end:0;
+  inset-inline-start:var(--conn-offset);inset-inline-end:0;
+  border:1px solid var(--hair);border-radius:var(--conn-radius);
+  transition:transform 1.6s cubic-bezier(.22,.61,.36,1);
+}
+
+/* The matt the photograph is mounted on. */
+.conn-plate-matt{
+  position:relative;padding:clamp(10px,1.1vw,17px);
+  background:var(--bg-2);border:1px solid var(--hair);
+  border-radius:var(--conn-radius);
+}
+.conn-plate-frame{
+  position:relative;aspect-ratio:4/3;overflow:hidden;background:#d9d3c5;
+  border-radius:clamp(13px,1.5vw,24px) 2px clamp(9px,1.2vw,18px) 2px;
+}
+.conn-plate-frame img{transition:transform 1.6s cubic-bezier(.22,.61,.36,1)}
+
+/* Mounted label: its centre sits on the rule under the picture, so the hairline
+   runs into the label instead of around it — the studio block's own device. */
+.conn-plate-caption{
+  position:relative;display:block;
+  margin-block-start:clamp(13px,1.4vw,19px);
+  padding-inline:clamp(10px,1.1vw,17px) 0;
+  block-size:clamp(22px,2vw,28px);
+  border-top:1px solid var(--hair);
+}
+.conn-plate-label{
+  position:absolute;inset-block-start:0;inset-inline-start:clamp(6px,.7vw,12px);
+  transform:translateY(-50%);
+  display:inline-flex;align-items:center;gap:.7em;
+  padding:.6em 1em;
+  background:var(--bg);border:1px solid var(--hair);border-radius:2px;
+  font-family:var(--fa);font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  color:var(--ink-soft);white-space:nowrap;unicode-bidi:isolate;
+}
+
+/* The two chips. Each is the size of a sample, hung off a corner of the plate:
+   the material at its lower end, the surface study at its upper start. */
+.conn-tile{
+  position:absolute;overflow:hidden;background:var(--bg-2);
+  border:1px solid var(--hair);
+  box-shadow:0 18px 38px -30px rgba(29,28,24,.75);
+  transition:transform 1s cubic-bezier(.22,.61,.36,1);
+}
+.conn-tile img{object-fit:cover}
+.conn-tile--materials{
+  inline-size:clamp(104px,9.6vw,152px);aspect-ratio:1/1;
+  inset-block-end:clamp(-40px,-2.6vw,-16px);
+  inset-inline-end:clamp(-36px,-2.4vw,-14px);
+  border-radius:clamp(10px,1.1vw,16px) 2px clamp(8px,1vw,14px) 2px;
+  z-index:3;
+}
+.conn-tile--surface{
+  inline-size:clamp(92px,8.4vw,134px);aspect-ratio:2/3;
+  inset-block-start:clamp(-46px,-3vw,-18px);
+  inset-inline-start:clamp(-34px,-2.2vw,-13px);
+  border-radius:clamp(9px,1vw,15px) 2px clamp(7px,.9vw,12px) 2px;
+  z-index:3;
+}
+
+/* ---------- the phone ---------- */
+.conn-phone{
+  grid-column:8/13;grid-row:1;z-index:2;
+  inline-size:clamp(184px,17.4vw,248px);
+  justify-self:start;
+  container-type:inline-size;
+  transition:transform 1s cubic-bezier(.22,.61,.36,1);
+}
+/* The device is drawn at a phone's own proportion — 9 to 17 — and everything
+   inside it is measured in `cqw` off the phone's width, so the whole object,
+   bezel to tile, scales as one piece at every width. A floor under the type
+   keeps the smallest setting legible. */
+.conn-phone-body{
+  position:relative;aspect-ratio:9/17;
+  border-radius:9cqw;
+  background:linear-gradient(168deg,#26241f,#141310 62%,#232119);
+  border:1px solid #3b3830;
+  box-shadow:0 42px 70px -48px rgba(29,28,24,.95);
+}
+/* The camera: one lens, not a notch — this is a phone, not a screen recording. */
+.conn-phone-cam{
+  position:absolute;z-index:2;
+  inset-block-start:3.4cqw;inset-inline-start:50%;
+  transform:translateX(50%);
+  inline-size:26cqw;block-size:1.5cqw;border-radius:1cqw;
+  background:#0c0b09;
+}
+/* The screen sits inside the bezel and clips its own feed: the grid's last row
+   is meant to run past the bottom edge, the way a real grid does, rather than
+   stopping short and leaving a band of nothing under it. */
+.conn-phone-screen{
+  position:absolute;inset:1.9cqw;
+  display:flex;flex-direction:column;overflow:hidden;
+  border-radius:7.2cqw;
+  background:var(--bg);
+  padding:4.4cqw 3.6cqw 2.4cqw;
+}
+.conn-screen-head{
+  display:flex;align-items:baseline;justify-content:space-between;gap:2cqw;
+  padding-block-end:2.4cqw;border-bottom:1px solid var(--hair);
+}
+.conn-screen-mark{
+  font-family:var(--sans);font-size:max(7px,3.5cqw);line-height:1;
+  letter-spacing:.3em;color:var(--ink);
+}
+.conn-screen-handle{
+  font-size:max(7px,3.2cqw);line-height:1;
+  color:var(--ink-soft);
+  /* `@norsta.home` is a Latin run: isolate alone still takes the page's RTL
+     base direction and prints «norsta.home@». Same trick as the gallery count. */
+  direction:ltr;unicode-bidi:isolate;
+}
+/* The profile row: an avatar and the two names the rest of this site already
+   uses — `نورستا` at the head of its sections, the practice on the line below. */
+.conn-screen-id{
+  display:flex;align-items:center;gap:2.6cqw;
+  margin-block:3cqw 2.6cqw;
+}
+.conn-screen-avatar{
+  position:relative;flex:none;
+  inline-size:14cqw;block-size:14cqw;
+  overflow:hidden;border-radius:50%;
+  background:#d9d3c5;border:1px solid var(--hair);
+}
+.conn-screen-names{display:flex;flex-direction:column;gap:.9cqw;min-inline-size:0}
+.conn-screen-name{font-size:max(7px,3.4cqw);line-height:1.3;color:var(--ink)}
+.conn-screen-craft{font-size:max(7px,2.9cqw);line-height:1.4;color:var(--ink-soft)}
+/* One tab, marked as the page the grid below it is showing. */
+.conn-screen-tabs{
+  display:flex;gap:2cqw;
+  padding-block-end:2.2cqw;border-bottom:1px solid var(--hair);
+  margin-block-end:2.4cqw;
+}
+.conn-screen-tab{
+  font-size:max(7px,2.8cqw);line-height:1;
+  color:var(--ink);border-block-end:2px solid var(--ink);
+  padding-block-end:2.2cqw;
+}
+/* A 4/5 grid, the measure the site's own project plates are cut to, so the
+   three portrait stills drop into it almost uncropped. */
+.conn-screen-grid{
+  display:grid;flex:none;grid-template-columns:repeat(3,1fr);gap:1.5cqw;
+}
+.conn-screen-tile{
+  position:relative;aspect-ratio:4/5;overflow:hidden;
+  border-radius:1.6cqw;background:#d9d3c5;
+}
+.conn-screen-tile img{object-fit:cover}
+
+/* Restrained movement, and only where a cursor can actually hover. */
+@media (hover:hover){
+  .conn-plate:hover .conn-plate-frame img{transform:scale(1.035)}
+  .conn-plate:hover .conn-plate-ghost{transform:translate3d(-6px,6px,0)}
+  .conn-plate:hover .conn-tile--materials{transform:translate3d(-6px,6px,0)}
+  .conn-phone:hover{transform:translate3d(0,-6px,0)}
+  .conn-path--instagram:hover .conn-strip-frame img{transform:scale(1.06)}
+  .conn-path--instagram:hover .conn-cta-arrow,
+  .conn-path--whatsapp:hover .conn-cta-arrow{transform:translate3d(-3px,-3px,0)}
+  .conn-path--instagram:hover .conn-path-title,
+  .conn-path--whatsapp:hover .conn-path-title{opacity:.72}
+}
+
+/* ---------- the two channels ---------- */
+.conn-paths{
+  display:grid;grid-template-columns:repeat(12,minmax(0,1fr));
+  column-gap:clamp(16px,2vw,34px);
+  align-items:start;
+}
+.conn-path{
+  position:relative;
+  padding-block-start:clamp(22px,2.6vw,38px);
+  border-top:1px solid var(--hair);
+}
+.conn-path--instagram{grid-column:1/8}
+.conn-path--whatsapp{grid-column:9/13;margin-block-start:clamp(0px,3.4vw,56px)}
+/* The index rides the rule, so the hairline reads as a numbered measure rather
+   than as a divider between two cards. The padding box starts just below the
+   border, so `0` plus the half-height lift lands the number on the hairline —
+   the opaque background then opens the gap it sits in. */
+.conn-path-index{
+  position:absolute;inset-block-start:0;
+  inset-inline-start:0;transform:translateY(-50%);
+  padding-inline-end:.9em;background:var(--bg);
+  font-family:var(--fa);font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  color:var(--ink-soft);
+}
+.conn-path-kicker{
+  display:flex;align-items:center;gap:.6em;flex-wrap:wrap;
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);color:var(--ink-soft);
+}
+.conn-path-glyph{inline-size:1.35em;block-size:1.35em;flex:none;color:var(--ink)}
+/* The status is a word, not a colour: the two entries must stay distinguishable
+   without relying on hue. */
+.conn-status{
+  padding:.35em .7em;border:1px solid var(--hair);border-radius:2px;
+  color:var(--ink);background:var(--bg-2);
+}
+.conn-path-title{
+  margin-block:clamp(12px,1.4vw,20px) clamp(10px,1.1vw,16px);
+  font-family:var(--fa);font-weight:600;font-size:var(--fs-title);
+  line-height:var(--lh-heading);color:var(--ink);
+  transition:opacity .4s ease;
+}
+.conn-path-copy{
+  font-size:var(--fs-body);line-height:var(--lh-body);
+  color:var(--ink-soft);max-width:44ch;
+}
+.conn-handle{
+  margin-block-start:clamp(14px,1.6vw,22px);
+  font-family:var(--sans);font-size:var(--fs-meta);letter-spacing:.08em;
+  color:var(--ink);
+}
+/* The handle carries `dir="ltr"` from the markup (it is one Latin run inside an
+   RTL block); the isolate keeps it from picking up the surrounding direction. */
+.conn-handle span{unicode-bidi:isolate}
+
+/* The actions. Solid for the profile that exists, outlined for the line that
+   will — and never a third shape for a channel that is not open. */
+.conn-cta{
+  display:inline-flex;align-items:center;gap:.9em;
+  margin-block-start:clamp(18px,2vw,28px);
+  padding:.82em 1.15em;border-radius:3px;
+  font-family:var(--fa);font-size:var(--fs-ui);line-height:1.3;
+  unicode-bidi:isolate;
+  transition:background-color .45s ease,border-color .45s ease,color .45s ease;
+}
+.conn-cta-arrow{inline-size:.85em;block-size:.85em;flex:none;transition:transform .5s cubic-bezier(.22,.61,.36,1)}
+.conn-cta--solid{background:var(--ink);color:var(--bg)}
+.conn-cta--solid:hover{background-color:#0f0e0b}
+.conn-cta--outline{border:1px solid var(--ink);color:var(--ink)}
+.conn-cta--outline:hover{background:var(--ink);color:var(--bg)}
+.conn-cta:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+
+/* The slot the number will be published in. A dashed hairline, not a disabled
+   button: nothing here invites a click that cannot be answered. */
+.conn-pending{
+  margin-block-start:clamp(18px,2vw,28px);
+  padding:clamp(14px,1.5vw,20px) clamp(16px,1.7vw,22px);
+  border:1px dashed var(--hair);border-radius:3px;
+  background:var(--bg-2);
+  font-size:var(--fs-meta);line-height:1.9;color:var(--ink-soft);
+  max-width:44ch;
+}
+
+/* The strip that closes the Instagram entry: three 4/5 frames of the feed. */
+.conn-strip{display:flex;gap:clamp(8px,.9vw,14px);margin-block-start:clamp(24px,2.8vw,40px)}
+.conn-strip-frame{
+  position:relative;inline-size:clamp(62px,5.6vw,88px);aspect-ratio:4/5;
+  overflow:hidden;background:#d9d3c5;
+  border-radius:clamp(8px,.9vw,14px) 2px clamp(6px,.8vw,11px) 2px;
+}
+.conn-strip-frame img{transition:transform 1.2s cubic-bezier(.22,.61,.36,1)}
+
+/* The WhatsApp entry, one register warmer than the one beside it. */
+.conn-path-panel{
+  padding:clamp(22px,2.4vw,34px);
+  background:var(--bg-2);
+  border:1px solid var(--hair);
+  border-radius:calc(var(--conn-radius) * .8);
+}
+.conn-path-panel .conn-path-index{inset-inline-start:clamp(22px,2.4vw,34px)}

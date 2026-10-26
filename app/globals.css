@@ -336,7 +336,7 @@ a{color:inherit;text-decoration:none}
 .craft-copy h2,
 .work h2,
 .contact h2,
-.ig-copy h2{
+.conn-title{
   font-family:var(--fa);font-weight:600;letter-spacing:0;color:var(--ink);
   line-height:var(--lh-heading);
 }
@@ -649,64 +649,374 @@ a{color:inherit;text-decoration:none}
 /* The footer wordmark stays on the Latin brand face. */
 .foot span:first-child{font-family:var(--sans);letter-spacing:.22em}
 
-/* ============== INSTAGRAM SHOWCASE ============== */
+/* ============== NORSTA CONNECTION ============== */
 /*
- * `public/images/instagram-scene.png` already holds the whole photograph — the
- * phone, the wall, the stone slab and the contact shadow — with the reference's
- * own baked-in copy painted out. So this section is only type laid over that
- * plate, and the plate is never cropped.
+ * The closing act: the studio's two channels, composed rather than carded.
  *
- * The stage therefore keeps the plate's own 1312x793 aspect ratio, which makes
- * every offset below a straight reading of the reference (see
- * `scripts/make-instagram-assets.mjs --boxes`): the copy sits in the same place
- * on the wall at any width. `cqw` is the plate's width — the cross-section
- * container on `.ig` makes 1cqw exactly 1% of those 1312 reference pixels, so
- * the type scale travels with the composition instead of the viewport.
+ * The previous version of this section laid Persian type over one photographic
+ * plate. This one builds its own stage out of the studio's own stills — an
+ * architectural photograph, a material chip hung off its lower corner, a narrow
+ * surface study off its upper one, and a phone holding the studio's own feed —
+ * and then states the two ways to reach the studio: the Instagram profile
+ * (`lib/site.ts`) and the WhatsApp line (`lib/contact.ts`).
+ *
+ * ── WHY THE STAGE IS A GRID ────────────────────────────────────────────────
+ * The phone overlaps the photograph by exactly one column at every desktop
+ * width, because the two are grid items on the same row: the plate spans `1/9`
+ * and the phone `8/13`, so they share column 8. An overlap written as a
+ * hand-tuned nudge would drift as the viewport narrowed; this one cannot.
+ *
+ * ── WHY THE CHIPS ARE ABSOLUTE ─────────────────────────────────────────────
+ * Both small photographs hang past the big one's corners. They are positioned
+ * inside its own box, which reserves nothing, because a tile that hangs must
+ * not be able to widen the page or open a gap in the row — the section's own
+ * padding is what keeps them inside the viewport, and `overflow:hidden` is what
+ * keeps them from ever opening a horizontal scrollbar.
+ *
+ * ── WHY THE TWO CHANNELS ARE NOT CARDS ─────────────────────────────────────
+ * Each is an entry in the composition — hairline, index, title, action — and
+ * the two are told apart by more than colour: an image-led entry closed by a
+ * solid pill against a panel-led entry closed by an outlined one, numbered ۰۱
+ * and ۰۲, under a camera mark and a speech bubble. The WhatsApp entry is honest
+ * about the state of the line: until `lib/contact.ts` holds a real number it
+ * says so, and names the live route instead of rendering a link that cannot be
+ * answered.
+ *
+ * ── MOTION ─────────────────────────────────────────────────────────────────
+ * Entrances come from `SiteInteractions` (`data-reveal`); everything reactive
+ * is a hover, and every hover is inside `@media (hover:hover)`. The phone's
+ * screen is measured in `cqw` off its own width, so its type stays in
+ * proportion at every breakpoint — the device the previous plate used, kept.
  */
-.ig{position:relative;background:var(--bg);container-type:inline-size}
+.conn{
+  --conn-radius:clamp(22px,2.4vw,40px) 2px clamp(16px,1.9vw,30px) 2px;
+  --conn-offset:clamp(10px,1.1vw,18px);
+  position:relative;
+  padding:clamp(96px,10vw,164px) var(--pad-x) clamp(88px,8vw,140px);
+  background:var(--bg);overflow:hidden;
+}
 
-.ig-stage{position:relative;width:100%;aspect-ratio:1312/793;overflow:hidden}
-.ig-plate{position:absolute;inset:0}
+/* Light on plaster: two warm washes and a hairline striation, every one of them
+   under 3% ink, so the section reads as this page with the light falling across
+   it rather than as a different surface. Drawn, not photographed. */
+.conn-ground{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(118% 78% at 88% -14%, rgba(255,248,238,.9), rgba(255,248,238,0) 60%),
+    radial-gradient(92% 66% at 3% 106%, rgba(203,188,166,.32), rgba(203,188,166,0) 64%);
+}
+.conn-ground::after{
+  content:"";position:absolute;inset:0;opacity:.5;
+  background-image:repeating-linear-gradient(96deg,rgba(29,28,24,.03) 0 1px,rgba(29,28,24,0) 1px 7px);
+}
 
-/* Reference: copy ink spans x 902..1222 of 1312 and y 173..566 of 793. */
-.ig-copy{
+.conn-head,.conn-stage,.conn-paths{position:relative;z-index:1}
+
+/* ---------- the head: a statement, and the standfirst that answers it ------ */
+.conn-head{
+  display:grid;grid-template-columns:repeat(12,minmax(0,1fr));
+  column-gap:clamp(16px,2vw,34px);
+  align-items:end;
+  margin-block-end:clamp(48px,6vw,96px);
+}
+.conn-head-main{grid-column:1/8}
+.conn-head-aside{grid-column:9/13;padding-block-end:clamp(0px,.7vw,12px)}
+.conn-eyebrow{display:block;margin-block-end:clamp(16px,1.8vw,26px)}
+.conn-title{font-size:var(--fs-display)}
+.conn-lede{
+  font-family:var(--fa);font-size:var(--fs-lede);
+  line-height:1.62;color:var(--ink);max-width:32ch;
+}
+/* The studio's own address, as a printed line rather than a link: this section
+   is already the page itself. */
+.conn-domain{
+  display:flex;align-items:baseline;flex-wrap:wrap;gap:.35em .8em;
+  margin-block-start:clamp(22px,2.6vw,36px);
+  padding-block-start:clamp(14px,1.5vw,20px);
+  border-top:1px solid var(--hair);
+}
+.conn-domain-label{font-size:var(--fs-caption);letter-spacing:var(--track-meta);color:var(--ink-soft)}
+.conn-domain-value{font-size:var(--fs-ui);color:var(--ink);unicode-bidi:isolate}
+
+/* ---------- the stage: one photograph, two chips, one phone --------------- */
+.conn-stage{
+  display:grid;grid-template-columns:repeat(12,minmax(0,1fr));
+  align-items:start;
+}
+.conn-plate{
+  grid-column:1/9;grid-row:1;position:relative;
+  margin-block-start:clamp(24px,3.2vw,64px);
+  padding-inline-end:var(--conn-offset);padding-block-end:var(--conn-offset);
+}
+/* The matt is static, so the plate keeps only its fade and the photograph
+   settles in place through its own `image-reveal` scale. */
+.conn-plate[data-reveal="image-reveal"]{transform:none}
+
+/* The plate's own silhouette, displaced behind it — the studio's ghost frame. */
+.conn-plate-ghost{
+  position:absolute;pointer-events:none;
+  inset-block-start:var(--conn-offset);inset-block-end:0;
+  inset-inline-start:var(--conn-offset);inset-inline-end:0;
+  border:1px solid var(--hair);border-radius:var(--conn-radius);
+  transition:transform 1.6s cubic-bezier(.22,.61,.36,1);
+}
+
+/* The matt the photograph is mounted on. */
+.conn-plate-matt{
+  position:relative;padding:clamp(10px,1.1vw,17px);
+  background:var(--bg-2);border:1px solid var(--hair);
+  border-radius:var(--conn-radius);
+}
+.conn-plate-frame{
+  position:relative;aspect-ratio:4/3;overflow:hidden;background:#d9d3c5;
+  border-radius:clamp(13px,1.5vw,24px) 2px clamp(9px,1.2vw,18px) 2px;
+}
+.conn-plate-frame img{transition:transform 1.6s cubic-bezier(.22,.61,.36,1)}
+
+/* Mounted label: its centre sits on the rule under the picture, so the hairline
+   runs into the label instead of around it — the studio block's own device. */
+.conn-plate-caption{
+  position:relative;display:block;
+  margin-block-start:clamp(13px,1.4vw,19px);
+  padding-inline:clamp(10px,1.1vw,17px) 0;
+  block-size:clamp(22px,2vw,28px);
+  border-top:1px solid var(--hair);
+}
+.conn-plate-label{
+  position:absolute;inset-block-start:0;inset-inline-start:clamp(6px,.7vw,12px);
+  transform:translateY(-50%);
+  display:inline-flex;align-items:center;gap:.7em;
+  padding:.6em 1em;
+  background:var(--bg);border:1px solid var(--hair);border-radius:2px;
+  font-family:var(--fa);font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  color:var(--ink-soft);white-space:nowrap;unicode-bidi:isolate;
+}
+
+/* The two chips. Each is the size of a sample, hung off a corner of the plate:
+   the material at its lower end, the surface study at its upper start. */
+.conn-tile{
+  position:absolute;overflow:hidden;background:var(--bg-2);
+  border:1px solid var(--hair);
+  box-shadow:0 18px 38px -30px rgba(29,28,24,.75);
+  transition:transform 1s cubic-bezier(.22,.61,.36,1);
+}
+.conn-tile img{object-fit:cover}
+.conn-tile--materials{
+  inline-size:clamp(104px,9.6vw,152px);aspect-ratio:1/1;
+  inset-block-end:clamp(-40px,-2.6vw,-16px);
+  inset-inline-end:clamp(-36px,-2.4vw,-14px);
+  border-radius:clamp(10px,1.1vw,16px) 2px clamp(8px,1vw,14px) 2px;
+  z-index:3;
+}
+.conn-tile--surface{
+  inline-size:clamp(92px,8.4vw,134px);aspect-ratio:2/3;
+  inset-block-start:clamp(-46px,-3vw,-18px);
+  inset-inline-start:clamp(-34px,-2.2vw,-13px);
+  border-radius:clamp(9px,1vw,15px) 2px clamp(7px,.9vw,12px) 2px;
+  z-index:3;
+}
+
+/* ---------- the phone ---------- */
+.conn-phone{
+  grid-column:8/13;grid-row:1;z-index:2;
+  inline-size:clamp(184px,17.4vw,248px);
+  justify-self:start;
+  container-type:inline-size;
+  transition:transform 1s cubic-bezier(.22,.61,.36,1);
+}
+/* The device is drawn at a phone's own proportion — 9 to 17 — and everything
+   inside it is measured in `cqw` off the phone's width, so the whole object,
+   bezel to tile, scales as one piece at every width. A floor under the type
+   keeps the smallest setting legible. */
+.conn-phone-body{
+  position:relative;aspect-ratio:9/17;
+  border-radius:9cqw;
+  background:linear-gradient(168deg,#26241f,#141310 62%,#232119);
+  border:1px solid #3b3830;
+  box-shadow:0 42px 70px -48px rgba(29,28,24,.95);
+}
+/* The camera: one lens, not a notch — this is a phone, not a screen recording. */
+.conn-phone-cam{
   position:absolute;z-index:2;
-  inset-block:13% 20%;inset-inline:56% 6.9%;   /* right edge 1222 = ·93.1% */
-  display:flex;flex-direction:column;align-items:flex-end;justify-content:center;
-  text-align:right;                            /* the reference sets the copy flush right */
+  inset-block-start:3.4cqw;inset-inline-start:50%;
+  transform:translateX(50%);
+  inline-size:26cqw;block-size:1.5cqw;border-radius:1cqw;
+  background:#0c0b09;
 }
-.ig-copy h2{
-  font-size:clamp(30px,3.66cqw,88px);          /* 48px on the plate */
-  line-height:1.5;                             /* 72px between the reference's two lines */
-  margin-block:.32em .75em;
+/* The screen sits inside the bezel and clips its own feed: the grid's last row
+   is meant to run past the bottom edge, the way a real grid does, rather than
+   stopping short and leaving a band of nothing under it. */
+.conn-phone-screen{
+  position:absolute;inset:1.9cqw;
+  display:flex;flex-direction:column;overflow:hidden;
+  border-radius:7.2cqw;
+  background:var(--bg);
+  padding:4.4cqw 3.6cqw 2.4cqw;
 }
-.ig-note{
-  max-width:23.5cqw;                           /* 308px on the plate */
-  font-size:clamp(15px,1.37cqw,33px);          /* 18px on the plate */
-  line-height:var(--lh-body);
+.conn-screen-head{
+  display:flex;align-items:baseline;justify-content:space-between;gap:2cqw;
+  padding-block-end:2.4cqw;border-bottom:1px solid var(--hair);
+}
+.conn-screen-mark{
+  font-family:var(--sans);font-size:max(7px,3.5cqw);line-height:1;
+  letter-spacing:.3em;color:var(--ink);
+}
+.conn-screen-handle{
+  font-size:max(7px,3.2cqw);line-height:1;
+  color:var(--ink-soft);
+  /* `@norsta.home` is a Latin run: isolate alone still takes the page's RTL
+     base direction and prints «norsta.home@». Same trick as the gallery count. */
+  direction:ltr;unicode-bidi:isolate;
+}
+/* The profile row: an avatar and the two names the rest of this site already
+   uses — `نورستا` at the head of its sections, the practice on the line below. */
+.conn-screen-id{
+  display:flex;align-items:center;gap:2.6cqw;
+  margin-block:3cqw 2.6cqw;
+}
+.conn-screen-avatar{
+  position:relative;flex:none;
+  inline-size:14cqw;block-size:14cqw;
+  overflow:hidden;border-radius:50%;
+  background:#d9d3c5;border:1px solid var(--hair);
+}
+.conn-screen-names{display:flex;flex-direction:column;gap:.9cqw;min-inline-size:0}
+.conn-screen-name{font-size:max(7px,3.4cqw);line-height:1.3;color:var(--ink)}
+.conn-screen-craft{font-size:max(7px,2.9cqw);line-height:1.4;color:var(--ink-soft)}
+/* One tab, marked as the page the grid below it is showing. */
+.conn-screen-tabs{
+  display:flex;gap:2cqw;
+  padding-block-end:2.2cqw;border-bottom:1px solid var(--hair);
+  margin-block-end:2.4cqw;
+}
+.conn-screen-tab{
+  font-size:max(7px,2.8cqw);line-height:1;
+  color:var(--ink);border-block-end:2px solid var(--ink);
+  padding-block-end:2.2cqw;
+}
+/* A 4/5 grid, the measure the site's own project plates are cut to, so the
+   three portrait stills drop into it almost uncropped. */
+.conn-screen-grid{
+  display:grid;flex:none;grid-template-columns:repeat(3,1fr);gap:1.5cqw;
+}
+.conn-screen-tile{
+  position:relative;aspect-ratio:4/5;overflow:hidden;
+  border-radius:1.6cqw;background:#d9d3c5;
+}
+.conn-screen-tile img{object-fit:cover}
+
+/* Restrained movement, and only where a cursor can actually hover. */
+@media (hover:hover){
+  .conn-plate:hover .conn-plate-frame img{transform:scale(1.035)}
+  .conn-plate:hover .conn-plate-ghost{transform:translate3d(-6px,6px,0)}
+  .conn-plate:hover .conn-tile--materials{transform:translate3d(-6px,6px,0)}
+  .conn-phone:hover{transform:translate3d(0,-6px,0)}
+  .conn-path--instagram:hover .conn-strip-frame img{transform:scale(1.06)}
+  .conn-path--instagram:hover .conn-cta-arrow,
+  .conn-path--whatsapp:hover .conn-cta-arrow{transform:translate3d(-3px,-3px,0)}
+  .conn-path--instagram:hover .conn-path-title,
+  .conn-path--whatsapp:hover .conn-path-title{opacity:.72}
+}
+
+/* ---------- the two channels ---------- */
+.conn-paths{
+  display:grid;grid-template-columns:repeat(12,minmax(0,1fr));
+  column-gap:clamp(16px,2vw,34px);
+  align-items:start;
+}
+.conn-path{
+  position:relative;
+  padding-block-start:clamp(22px,2.6vw,38px);
+  border-top:1px solid var(--hair);
+}
+.conn-path--instagram{grid-column:1/8}
+.conn-path--whatsapp{grid-column:9/13;margin-block-start:clamp(0px,3.4vw,56px)}
+/* The index rides the rule, so the hairline reads as a numbered measure rather
+   than as a divider between two cards. The padding box starts just below the
+   border, so `0` plus the half-height lift lands the number on the hairline —
+   the opaque background then opens the gap it sits in. */
+.conn-path-index{
+  position:absolute;inset-block-start:0;
+  inset-inline-start:0;transform:translateY(-50%);
+  padding-inline-end:.9em;background:var(--bg);
+  font-family:var(--fa);font-size:var(--fs-caption);letter-spacing:var(--track-meta);
   color:var(--ink-soft);
 }
-.ig-cta{
-  display:inline-flex;align-items:center;gap:1em;
-  margin-block-start:1.4em;
-  padding:.78em .92em;                         /* the reference pill is 218x50 */
-  border-radius:clamp(2px,.4cqw,6px);
-  background:var(--ink);color:var(--bg);
-  font-size:clamp(15px,1.37cqw,33px);line-height:1.3;
-  unicode-bidi:isolate;                        /* keeps glyph, label, arrow in reference order */
-  /* Re-declares the reveal transition, so the hover state below cannot cancel it. */
-  transition:opacity 1.1s cubic-bezier(.22,.61,.36,1),
-             transform 1.1s cubic-bezier(.22,.61,.36,1),
-             background-color .45s ease;
+.conn-path-kicker{
+  display:flex;align-items:center;gap:.6em;flex-wrap:wrap;
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);color:var(--ink-soft);
 }
-.ig-cta-glyph{width:1.05em;height:1.05em}
-.ig-cta-arrow{
-  width:.9em;height:.9em;
-  transition:transform .5s cubic-bezier(.22,.61,.36,1);
+.conn-path-glyph{inline-size:1.35em;block-size:1.35em;flex:none;color:var(--ink)}
+/* The status is a word, not a colour: the two entries must stay distinguishable
+   without relying on hue. */
+.conn-status{
+  padding:.35em .7em;border:1px solid var(--hair);border-radius:2px;
+  color:var(--ink);background:var(--bg-2);
 }
-.ig-cta:hover{background-color:#0f0e0b}
-.ig-cta:hover .ig-cta-arrow{transform:translate3d(3px,-3px,0)}
-.ig-cta:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+.conn-path-title{
+  margin-block:clamp(12px,1.4vw,20px) clamp(10px,1.1vw,16px);
+  font-family:var(--fa);font-weight:600;font-size:var(--fs-title);
+  line-height:var(--lh-heading);color:var(--ink);
+  transition:opacity .4s ease;
+}
+.conn-path-copy{
+  font-size:var(--fs-body);line-height:var(--lh-body);
+  color:var(--ink-soft);max-width:44ch;
+}
+.conn-handle{
+  margin-block-start:clamp(14px,1.6vw,22px);
+  font-family:var(--sans);font-size:var(--fs-meta);letter-spacing:.08em;
+  color:var(--ink);
+}
+/* The handle carries `dir="ltr"` from the markup (it is one Latin run inside an
+   RTL block); the isolate keeps it from picking up the surrounding direction. */
+.conn-handle span{unicode-bidi:isolate}
+
+/* The actions. Solid for the profile that exists, outlined for the line that
+   will — and never a third shape for a channel that is not open. */
+.conn-cta{
+  display:inline-flex;align-items:center;gap:.9em;
+  margin-block-start:clamp(18px,2vw,28px);
+  padding:.82em 1.15em;border-radius:3px;
+  font-family:var(--fa);font-size:var(--fs-ui);line-height:1.3;
+  unicode-bidi:isolate;
+  transition:background-color .45s ease,border-color .45s ease,color .45s ease;
+}
+.conn-cta-arrow{inline-size:.85em;block-size:.85em;flex:none;transition:transform .5s cubic-bezier(.22,.61,.36,1)}
+.conn-cta--solid{background:var(--ink);color:var(--bg)}
+.conn-cta--solid:hover{background-color:#0f0e0b}
+.conn-cta--outline{border:1px solid var(--ink);color:var(--ink)}
+.conn-cta--outline:hover{background:var(--ink);color:var(--bg)}
+.conn-cta:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+
+/* The slot the number will be published in. A dashed hairline, not a disabled
+   button: nothing here invites a click that cannot be answered. */
+.conn-pending{
+  margin-block-start:clamp(18px,2vw,28px);
+  padding:clamp(14px,1.5vw,20px) clamp(16px,1.7vw,22px);
+  border:1px dashed var(--hair);border-radius:3px;
+  background:var(--bg-2);
+  font-size:var(--fs-meta);line-height:1.9;color:var(--ink-soft);
+  max-width:44ch;
+}
+
+/* The strip that closes the Instagram entry: three 4/5 frames of the feed. */
+.conn-strip{display:flex;gap:clamp(8px,.9vw,14px);margin-block-start:clamp(24px,2.8vw,40px)}
+.conn-strip-frame{
+  position:relative;inline-size:clamp(62px,5.6vw,88px);aspect-ratio:4/5;
+  overflow:hidden;background:#d9d3c5;
+  border-radius:clamp(8px,.9vw,14px) 2px clamp(6px,.8vw,11px) 2px;
+}
+.conn-strip-frame img{transition:transform 1.2s cubic-bezier(.22,.61,.36,1)}
+
+/* The WhatsApp entry, one register warmer than the one beside it. */
+.conn-path-panel{
+  padding:clamp(22px,2.4vw,34px);
+  background:var(--bg-2);
+  border:1px solid var(--hair);
+  border-radius:calc(var(--conn-radius) * .8);
+}
+.conn-path-panel .conn-path-index{inset-inline-start:clamp(22px,2.4vw,34px)}
 
 
 /* ============== RESPONSIVE ============== */
@@ -1027,39 +1337,51 @@ body.menu-open{overflow:hidden}
 }
 
 
-/* ---------- ≤960px : the showcase reflows to copy-then-scene ---------- */
+/* ---------- Norsta Connection ----------
+   Two steps. Below 960px the stage can no longer carry the device over the
+   plate's edge, so the phone moves to a row of its own; below 680px the whole
+   composition falls to one column. */
+
+/* ---------- ≤960px : the stage gives the device its own row ---------- */
 @media (max-width: 960px){
-  /* The wall beside the phone is no longer wide enough to hold an overlay, so
-     the copy leaves the plate and the scene follows it full-bleed, still at its
-     own uncropped ratio. */
-  .ig-copy{
-    position:static;inset:auto;
-    padding:100px var(--pad-x) 56px;
+  /* The statement and the standfirst each take the full measure: at this width
+     eight columns of heading beside four of lede would break both. */
+  .conn-head{grid-template-columns:minmax(0,1fr);row-gap:clamp(22px,3.2vw,34px)}
+  .conn-head-main,.conn-head-aside{grid-column:1/-1}
+  .conn-head-aside{padding-block-end:0}
+  .conn-lede{max-width:58ch}
+
+  /* The plate is the full measure here, and it still has to hold both chips:
+     the material one hangs off its lower corner and the surface study off its
+     upper one. A phone overlapping the plate at this width would sit on the
+     material chip — the overlap is structural, not a nudge — so the device
+     takes the next row, under the plate's own leading edge, where the spare
+     width beside it is simply left as air. */
+  .conn-plate{grid-column:1/-1}
+  .conn-phone{
+    grid-column:1/-1;grid-row:2;
+    justify-self:start;
+    inline-size:clamp(196px,24vw,236px);
+    margin-block-start:clamp(56px,7vw,72px);
   }
-  .ig-copy h2{font-size:clamp(34px,9.8vw,56px);margin-block:.34em .8em}
-  .ig-note{max-width:none;font-size:1rem}
-  .ig-cta{font-size:var(--fs-ui);padding:13px 20px;gap:14px}
-  /* The arrow only travels where the cursor does. */
-  .ig-cta:hover .ig-cta-arrow{transform:none}
+
+  /* One channel under the other, each the full measure. */
+  .conn-path--instagram,.conn-path--whatsapp{grid-column:1/-1}
+  .conn-path--whatsapp{margin-block-start:clamp(34px,4.6vw,52px)}
 }
 
-/* ---------- ≤680px : the scene re-frames onto the phone ---------- */
+/* ---------- ≤680px : the stage becomes a single column ---------- */
 @media (max-width: 680px){
-  /* The whole plate on a phone would draw the subject ~150px wide, so the stage
-     goes portrait and the plate is scaled up inside it rather than re-cropped:
-     the phone stays exactly over the one in the photograph, only the framing
-     changes. */
-  .ig-stage{aspect-ratio:4/5}
-  .ig-plate{
-    inset:auto;
-    inset-inline-start:-56.1%;
-    inset-block-start:-12.3%;
-    width:260%;
-    aspect-ratio:1312/793;
-  }
-  /* At this width the copy is no longer laid over the plate, so it centres as
-     its own column: eyebrow, heading, note and CTA share one centre line. */
-  .ig-copy{padding:88px var(--pad-x) 48px;align-items:center;text-align:center}
+  /* The device, at a width a phone screen actually has — and low enough to
+     clear the material chip hanging under the plate above it. */
+  .conn-phone{inline-size:clamp(196px,52vw,236px);margin-block-start:clamp(60px,15vw,78px)}
+  /* The display step would clamp up to 52px here, which is wider than the
+     measure the page's own phone step leaves the heading; the scale the rest
+     of the page sets at this width is the one that fits. */
+  .conn-title{font-size:clamp(32px,9.6vw,52px)}
+  .conn-lede,.conn-path-copy,.conn-pending{max-width:none}
+  /* Three frames and two gaps still have to fit inside the entry. */
+  .conn-strip-frame{inline-size:clamp(58px,17vw,74px)}
 }
 
 /* =====================================================================
