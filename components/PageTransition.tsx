@@ -22,7 +22,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
  *      phase) sees every internal navigation before it starts. That is the
  *      signal to raise the cover.
  *   2. **`usePathname()` changing** — the hook updates when the new route is
- *      committed and on screen. That is the signal to drop the cover.
+ *      committed. The cover is then dropped on the *next* frame, so what gets
+ *      uncovered is the new page's own first paint rather than one last look at
+ *      the page the reader has already left.
  *
  * `app/layout.tsx` mounts this once, above every route, so the home page, the
  * magazine, the project gallery and each of their detail pages are all covered
@@ -39,13 +41,21 @@ import { useCallback, useEffect, useRef, useState } from "react";
  *   · It never traps focus and is `aria-hidden`, so assistive technology and
  *     the keyboard are unaffected; the destination page stays fully usable.
  *
- * Staleness
+ * When the cover comes down
  * ─────────
- * The cover is bounded by two independent mechanisms: it is dropped the instant
- * the pathname commits, and it is force-dropped by a hard ceiling so a
- * navigation that is cancelled, interrupted or superseded cannot leave an
- * overlay on screen. Back/forward and `pageshow` (bfcache restores) also force
- * it down, so a restored page can never inherit one from an earlier click.
+ * The cover ends for one of exactly two reasons: the router committed the new
+ * route (the effect below, one painted frame after the commit), or a navigation
+ * was *shown* to have ended without one — back/forward, a bfcache restore, the
+ * document going away, or the connection dropping. Nothing ends it because a
+ * certain number of milliseconds have passed, which is what used to cut a slow
+ * navigation short; the only clock left is the short on-screen floor that stops
+ * an instant navigation from reading as a flicker.
+ *
+ * That leaves one invariant to keep, and it lives outside this file: a click
+ * that passes the test below must genuinely become a navigation — the router's
+ * own client transition (which commits) or the browser's (which unloads the
+ * document). No handler may `preventDefault` an internal route link; a control
+ * that does needs `data-no-transition` so this component never claims it.
  */
 
 /** A short on-screen floor, so an instant navigation reads as a transition rather than a flicker. */

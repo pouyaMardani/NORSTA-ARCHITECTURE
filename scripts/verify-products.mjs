@@ -7,8 +7,10 @@
  *
  *   · the home page really carries the materials & tools showcase, its four
  *     shelves and the links into the catalogue;
- *   · the header carries the «محصولات» item, pointing at `/products` on the home
- *     page and never at `//products` away from it;
+ *   · the header carries the «محصولات» item, pointing at the home page's own
+ *     showcase (`#products`) on the home page — and at `/#products` away from it,
+ *     never at `//products` — where the section's own link leads on into the
+ *     catalogue;
  *   · `/products` renders the hero, the filter row and every product record, with
  *     no claim that does not exist yet (no price, no cart, no checkout, no form);
  *   · each shelf's filtered view shows exactly that shelf's products, marks the
@@ -134,12 +136,19 @@ check(
 
 /* -- B. the header --------------------------------------------------------- */
 check("header: the catalogue item is present", has(home, "محصولات"));
-check("header: home links straight to the catalogue", home.raw.includes('href="/products"'));
 check(
-  "header: away from home the item stays a route",
-  magazine.raw.includes('href="/products"') && !magazine.raw.includes('href="//products"')
+  "header: home jumps to the page's own showcase",
+  home.raw.includes('href="#products"'),
+  "the nav entry is the home page's materials section, not the catalogue route"
 );
-check("header: no doubled slash anywhere", !home.raw.includes('href="//products"'));
+check(
+  "header: away from home the item points back at that section",
+  magazine.raw.includes('href="/#products"') && !magazine.raw.includes('href="//#products"')
+);
+check(
+  "header: no doubled slash anywhere",
+  !home.raw.includes('href="//products"') && !home.raw.includes('href="//#products"')
+);
 
 /* -- C. the catalogue ------------------------------------------------------ */
 check("catalogue: RTL register", catalog.raw.includes('dir="rtl"'));

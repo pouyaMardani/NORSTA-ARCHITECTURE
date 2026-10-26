@@ -27,12 +27,17 @@ import { useEffect, useState } from "react";
  * from the home page (`/#top` in `NAV_LINKS_FROM_HOME`).
  *
  * ── TWO KINDS OF ENTRY ─────────────────────────────────────────────────────
- * `#...` is a section of the home page; a `/...` value is a route of its own.
- * The catalogue — the only route here — sits where the catalogue sits on the
- * home page (after the selected work and the magazine, before the sections below
- * them), so the row keeps reading as the page it maps. The two are told apart by
- * the leading `#` (`isAnchor` below), because a route prefixed with `/` like an
- * anchor would become `//products`.
+ * Every entry below is a section of the home page — `«محصولات»` included. The
+ * showcase that owns `id="products"` (`MaterialsShowcase`, stacked after the
+ * selected work) is where a reader looking for materials wants to land, and that
+ * section carries the one link on into the full `/products` catalogue. The row
+ * therefore stays a map of the page rather than a second copy of its structure,
+ * and the catalogue keeps a single deliberate entrance instead of competing with
+ * the section it belongs to.
+ *
+ * The two kinds are told apart by the leading `#` (`isAnchor` below), because a
+ * route prefixed with `/` like an anchor would become `//products`. That
+ * mechanism is kept for the day a route entry is wanted here again.
  */
 const LINKS = [
   { href: "#instagram", label: "اینستاگرام" },
@@ -40,7 +45,7 @@ const LINKS = [
   { href: "#craft", label: "استادکار" },
   { href: "#academy", label: "آموزش میکروسمنت" },
   { href: "#journal", label: "مجله" },
-  { href: "/products", label: "محصولات" },
+  { href: "#products", label: "محصولات" },
   { href: "#work", label: "پروژه‌ها" },
   { href: "#about", label: "درباره ما" },
   { href: "#services", label: "خدمات" },
@@ -53,7 +58,7 @@ type NavLink = { href: string; label: string };
 /** A section of the home page (`#work`) as opposed to a route of its own. */
 const isAnchor = (href: string) => href.startsWith("#");
 
-/** On the home page the ten labels are the page's own anchors and routes. */
+/** On the home page the ten labels are the page's own anchors. */
 const NAV_LINKS: NavLink[] = LINKS.map((link) => ({
   href: link.href,
   label: link.label,
@@ -62,8 +67,8 @@ const NAV_LINKS: NavLink[] = LINKS.map((link) => ({
 /**
  * On every other route the section labels point back at the home page, so the
  * header stays useful on `/articles` — an anchor without a `/` would simply do
- * nothing away from the home page. A route entry is already absolute (`/products`)
- * and is left exactly as it is.
+ * nothing away from the home page. A route entry would already be absolute
+ * (`/products`) and is left exactly as it is; today the list holds none.
  */
 const NAV_LINKS_FROM_HOME: NavLink[] = LINKS.map((link) => ({
   href: isAnchor(link.href) ? `/${link.href}` : link.href,

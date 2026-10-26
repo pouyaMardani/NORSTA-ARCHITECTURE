@@ -59,17 +59,19 @@ export const metadata: Metadata = {
   title: SITE_TITLE,
   description: SITE_TAGLINE,
 
-  /* The mark: a drawn `N` sealed in a circle — an ink medallion with an ivory
-     rim and letter. Cut by `scripts/make-favicon.mjs` (run it after touching
-     the geometry there), served from `public/`, and inherited by every route
-     through this root layout.
+  /* The mark: a carved `N` on a warm-stone plaque — the studio's own two
+     colours as one full-bleed square tile, a charcoal monogram whose spine is
+     a single curved wall. Cut by `scripts/make-favicon.mjs` (run it after
+     touching the geometry there), served from `public/`, and inherited by
+     every route through this root layout.
 
      Order matters only as a tie-break, so the two vectors come last and win:
      `/favicon.svg` for light chrome, `/favicon-dark.svg` — the same drawing
-     inverted, ivory medallion — behind a `prefers-color-scheme: dark` media
+     inverted, a charcoal plaque — behind a `prefers-color-scheme: dark` media
      query. The PNGs and the ICO are the exact-pixel and legacy fallbacks, and
-     Safari, which ignores SVG favicons, gets the charcoal medallion from
-     `/favicon.ico` — legible on a dark tab because of its ivory rim. */
+     Safari, which ignores SVG favicons, gets the stone plaque from
+     `/favicon.ico` — the charcoal monogram on it reads on a light tab, and the
+     stone tile itself reads on a dark one. */
   /* ── The absolute address, and the share card's own defaults ──────────────
      `metadataBase` is what turns every relative URL in this metadata into the
      absolute one a crawler needs: the canonical link, the Open Graph image and
