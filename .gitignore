@@ -23,6 +23,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# one-off scratch files written next to the app (root-level `.tmp-*` only)
+/.tmp-*
+
 # env files
 .env*
 !.env.example
