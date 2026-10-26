@@ -103,7 +103,7 @@ The harness is two passes per route:
 | F2 | **P0** | **No canonical link on any route** (`0/11`). Duplicate-host, `www`/non-`www`, trailing-slash and `?category=` variants had nothing telling a search engine which address is the page. | **Fixed** — canonical per route; the archive canonicalises the filtered views to `/articles`; the 404 deliberately has none. |
 | F3 | **P1** | **No `og:*` tags at all on `/`, `/articles` and `/academy`** (0 tags), and no `og:url`, `og:site_name` or `og:locale` anywhere in the site. Article pages carried only `og:title`, `og:description`, `og:type` and `article:published_time` — **no `og:image`** — so the magazine's shares showed a bare link. | **Fixed** — 6 `og:*` tags on index pages, 8 on every article / lesson / project page (including `og:image` + `og:image:alt`). |
 | F4 | **P1** | **No JSON-LD anywhere** (0 blocks on all 11 routes): no publisher identity, no `WebSite`, no `Article`, no `LearningResource`, no `CreativeWork`. | **Fixed** — `Organization` + `WebSite` site-wide, plus one page node per article / lesson / project (see §F). |
-| F5 | **P1** | **`/robots.txt` and `/sitemap.xml` both answered 404.** A crawler had no declared entry point and no sitemap. | **Fixed** — `app/robots.ts` (allow all; `Disallow: /` on Vercel previews) and `app/sitemap.ts` (22 URLs, generated from the content modules). |
+| F5 | **P1** | **`/robots.txt` and `/sitemap.xml` both answered 404.** A crawler had no declared entry point and no sitemap. | **Fixed** — `app/robots.ts` (allow all; `Disallow: /` on Vercel previews) and `app/sitemap.ts` (generated from the content modules — 22 URLs when this was written, 23 since §F6). |
 | F6 | **P1** | **`twitter:card=summary` was emitted on article pages even though a cover image existed**, which renders a small square card instead of the wide one. | **Fixed** — `summary_large_image` wherever an image exists, `summary` where none does. |
 | F7 | **P2** | **`/projects` answered 307** (temporary) although the relocation to the home page's gallery is permanent — a temporary hop invites crawlers to keep the segment in the index. | **Fixed** (behavioural, one word: `redirect` → `permanentRedirect`, now 308 — revert by restoring the import). |
 | F8 | **P2** | **There is no `app/not-found.tsx` at the root**, so the site's 404 is Next's default: an English `404: This page could not be found.` body with no header, footer, `main` landmark or `dir`. The three segments each have a styled 404 and the three detail pages know a missing slug. The response already carries `404` + `noindex`, so this is a brand/UX gap rather than an indexing one. | **Reported** — a new page is a design and copy decision; sketch in §H. |
@@ -229,7 +229,7 @@ only by crawlers and link previews), a response header, or a status code.
 | `lib/seo.ts` | `detailMetadata()` — the canonical + OpenGraph + Twitter block that the article, lesson and project pages had been writing three slightly different versions of. One function, so the three cannot drift. |
 | `lib/structured-data.ts` | The JSON-LD builders: `Organization`, `WebSite`, and one node per article (`Article`), lesson (`LearningResource`) and project (`CreativeWork`), each cross-referencing the site by `@id`. |
 | `components/JsonLd.tsx` | Renders one `application/ld+json` block, escaping `<` so the payload cannot end the script early. Server-rendered, so no JavaScript is needed to see it. |
-| `app/sitemap.ts` | `/sitemap.xml` — 22 URLs generated from `content/articles`, `content/academy` and `content/projects`. Excludes `/projects` (a redirect) and the `?category=` views (canonicalised to `/articles`). |
+| `app/sitemap.ts` | `/sitemap.xml` — 23 URLs generated from `content/articles`, `content/academy`, `content/projects` and `content/products`. Excludes `/projects` (a redirect) and the `?category=` views on `/articles` and `/products` (each canonicalised to its own index). |
 | `app/robots.ts` | `/robots.txt` — allow everything, point at the sitemap, and `Disallow: /` when `VERCEL_ENV === "preview"` so a preview deployment never becomes a second indexed copy of the site. |
 | `.env.example` | Documents the one variable a deploy has to set, and why. |
 
@@ -281,6 +281,50 @@ CTA. The origin default was verified by reading the served HTML of a build made
 with the variable unset and with it set to `https://norsta.ir` — both emit
 `https://norsta.ir/...` and neither emits `localhost`.
 
+### F6. The products catalogue merged in (2026-10-26)
+
+`origin/main` had grown a shop-style catalogue while this audit was being written —
+`/products`, eight product records, shelf filters, its own plates and a
+`verify-products.mjs` harness. The merge was textually clean: no conflict markers in
+any file, and every change this audit made survived it. It left one real
+inconsistency, though — **`app/sitemap.ts` did not know about `/products`** — and
+that is the thing this section records fixing.
+
+The catalogue declares `https://norsta.ir/products` as its canonical address
+(`app/products/layout.tsx`), so the merged tree held an indexable page that no
+sitemap declared, which the file's own contract forbids: it builds the list from
+the same content modules the pages render, so a record cannot be missing from the
+map. `/products` is now listed once, `weekly`, priority `0.8`, and the comment
+above the list records the third deliberate omission: the shelf views
+(`/products?category=...`) stay out because the catalogue's layout canonicalises
+them onto `/products`, the same way the magazine's category views consolidate onto
+`/articles`. `app/robots.ts` changed only in prose — it promised "the twenty-two
+pages", a count a merge can silently falsify, and now promises "every page".
+
+Numbers after the merge, on a default-state build of the merged tree (29 routes, no
+`NEXT_PUBLIC_SITE_URL`, compiled in 10.0 s):
+
+| check | result |
+|---|---|
+| `_ref/audit/verify.mjs http://127.0.0.1:3100` | **`✓ no failures`** on 12 paths — the 11 above plus `/products`, added to the sweep's list here |
+| `npm run verify:products` | **58/58** |
+| `npm run verify:academy` | **62/62** |
+| `npm run audit:responsive` | exit 0 — 7 viewports `overflow=no`, 0 console errors, with `products` now one of the swept sections |
+| `npm run audit:mfc` | exit 0 — 0 console errors, 0 bad responses |
+| `npm run typecheck`, `npx eslint app components lib` | clean |
+| `npm run verify:fa` | 55 files scanned (48 before), the same 3 accepted candidates |
+| `/sitemap.xml` | **23 `<loc>`** (22 before), 3646 bytes, 130 lines, `https://norsta.ir/products` present, `localhost` **0** |
+| `/robots.txt` | 63 bytes, 4 lines, `Sitemap: https://norsta.ir/sitemap.xml` |
+
+Two things this section deliberately does not claim. The catalogue's canonical is
+written out in `content/products/config.ts` (`SITE_ORIGIN`) instead of being read
+through `lib/site.ts`, so it stays on `https://norsta.ir` even in a deployment that
+points `NEXT_PUBLIC_SITE_URL` elsewhere — the catalogue author's own decision, and a
+harmless one while preview deployments are disallowed in `robots.txt`, so this audit
+left it alone. And the catalogue's Persian copy sits in `content/products/`, which
+`verify-fa.mjs` does not walk (its scope is `app` and `components`), so that copy is
+not covered by the localisation gate.
+
 ## G. Before / after
 
 ### G1. The crawler's view
@@ -296,7 +340,7 @@ with the variable unset and with it set to `https://norsta.ir` — both emit
 | `/projects` | — | 0 → 6 (never served; it redirects) | 0 | 308 → `/#work` |
 | any 404 | — (correctly none) | 0 → 6 | 0 → 1 | `robots: noindex` |
 | `/robots.txt` | 404 → **200** | — | — | — |
-| `/sitemap.xml` | 404 → **200**, 22 URLs | — | — | — |
+| `/sitemap.xml` | 404 → **200**, 22 URLs (23 since §F6) | — | — | — |
 
 With `NEXT_PUBLIC_SITE_URL` set at build time, every URL in the block above is
 emitted against that origin and **no `localhost` string appears anywhere in the
@@ -440,8 +484,9 @@ bandwidth.
 
 | harness | result |
 |---|---|
-| `npm run verify:fa` | 48 source files scanned under `app`, `components`: **3 candidates, all pre-existing** and all in files this audit never touched (`Hero.tsx` "Scroll", `InstagramShowcase.tsx` "NORSTA به دنیای…", `PageTransition.tsx` "Norsta"). The new files add none. |
+| `npm run verify:fa` | 55 source files scanned under `app`, `components`: **3 candidates, all pre-existing** and all in files this audit never touched (`Hero.tsx` "Scroll", `InstagramShowcase.tsx` "NORSTA به دنیای…", `PageTransition.tsx` "Norsta"). The new files add none. (55 files is the count after §F6 merged the catalogue in; it was 48 before. Note the gate's scope: it walks `app` and `components` only, so Persian copy held in `content/` is outside what it can see.) |
 | `npm run verify:academy` | **62/62 checks passed** against the build on `:3100` — including "no player is rendered", "no runtime is claimed", "fully crawlable without scripting" and "unknown lesson answers 404 with the academy's own not-found copy". |
+| `npm run verify:products` | **58/58 checks passed** against the same build — the header item and the link behind it, the hero, the filter row, every record in `content/products/records.ts`, the catalogue's canonical `https://norsta.ir/products`, and the unknown-shelf fallback. This harness arrived with the merge recorded in §F6. |
 | `npm run audit:mfc` | 0 console errors, 0 bad responses; at both viewports the wall opened the viewer, zoomed to the 6× ceiling and clamped, stepped back, reset to 1×, kept Tab inside the dialog, closed on Escape with focus returned, and re-flowed on a finish filter. |
 | `npm run audit:responsive` | 7 viewports (320 / 375 / 390 / 430 / 768 / 1280 / 1440): **no horizontal overflow anywhere** (`docScrollWidth === viewport`), 0 console errors, and open → Escape → close verified on the four phone widths. |
 | `npm run typecheck` | clean (`tsc --noEmit`). |
@@ -471,7 +516,8 @@ results; the raw outputs are the `*-default-final` files listed in §I5.
 * `/robots.txt` → 200, four lines: `User-Agent: *` · `Allow: /` · blank ·
   `Sitemap: https://dev.example/sitemap.xml` (that run's stand-in origin; the same
   file now writes `Sitemap: https://norsta.ir/sitemap.xml`);
-* `/sitemap.xml` → 200, 3582 bytes, 125 lines, first `<loc>` the origin itself.
+* `/sitemap.xml` → 200, 3646 bytes, 130 lines, first `<loc>` the origin itself
+  (3582 bytes and 125 lines before §F6 added the catalogue's entry).
 
 The same sweep against **the same build with `NEXT_PUBLIC_SITE_URL` unset** prints
 **`✗ 24 failure(s)`**, and every one of them is the localhost check
@@ -590,6 +636,8 @@ lives in `_ref/audit/` and is re-runnable at any time.
 | `_ref/audit/verify-default-final.txt` | the metadata sweep against *that* build: `✓ no failures` — the exact opposite of `_ref/verify-default-build.txt`, which is why §I2 carries a correction |
 | `_ref/audit/verify-academy-default-final.txt` | `verify-academy` on that build: **62/62** |
 | `_ref/audit/responsive-default-final.txt`, `_ref/audit/mfc-default-final.txt` | the responsive (7 viewports, `overflow=no`, 0 console errors) and material-library (0 console errors, 0 bad responses) audits on that build |
+| `_ref/audit/verify-merged-final.txt, verify-products-merged-final.txt, verify-academy-merged-final.txt` | the same three harnesses on the **merged** tree of §F6: sweep `✓ no failures` over 12 paths, products 58/58, academy 62/62 |
+| `_ref/audit/responsive-merged-final.txt`, `_ref/audit/mfc-merged-final.txt` | the two browser audits on that merged build: both exit 0, 0 console errors |
 | `_ref/audit/probe-origin.mjs` | the two-line probe used above, added by this audit |
 | `_ref/audit/measure.mjs`, `seo-table.mjs`, `img-table.mjs` | the measurement passes that produced §D |
 | `_ref/audit/verify.mjs`, `compare.mjs`, `headers.mjs` | the metadata sweep, the before/after diff and the header check |

@@ -8,7 +8,7 @@ import { absoluteUrl } from "@/lib/site";
  * The whole site is meant to be crawled: there is no account area, no search
  * result page, no cart and no filter that generates an unbounded number of
  * addresses, so nothing needs a `Disallow` rule. What the file does carry is the
- * sitemap's address, which is how a crawler finds the twenty-two pages without
+ * sitemap's address, which is how a crawler finds every page without
  * having to walk the links.
  *
  * One exception is built in: a Vercel *preview* deployment is served from its own

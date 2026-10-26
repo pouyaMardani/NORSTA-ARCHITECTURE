@@ -9,11 +9,11 @@ import { absoluteUrl } from "@/lib/site";
  * `/sitemap.xml`.
  *
  * The list is generated from the same content modules the pages render, so a new
- * article, lesson or project appears here the moment it appears in the site — no
- * second list to keep in step, and no URL in the sitemap that has no record
- * behind it.
+ * article, lesson, project or product appears here the moment it appears in the
+ * site — no second list to keep in step, and no URL in the sitemap that has no
+ * record behind it.
  *
- * Two deliberate omissions:
+ * Three deliberate omissions:
  *
  *   · `/projects` is not listed. It is a redirect to the home page's gallery
  *     (see `app/projects/page.tsx`), and a sitemap may only hold the canonical
@@ -21,6 +21,9 @@ import { absoluteUrl } from "@/lib/site";
  *   · The magazine's category views (`/articles?category=…`) are not listed
  *     separately: they are the same page with a filter, and they declare
  *     `/articles` as their canonical address.
+ *   · The catalogue's shelf views (`/products?category=...`) are not listed either,
+ *     for the same reason: `app/products/layout.tsx` declares `/products` as their
+ *     canonical address.
  *
  * `lastModified` is stated only where the content actually dates itself — an
  * article's publication day. Lessons and projects carry no editorially approved
@@ -60,6 +63,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "yearly" as const,
       priority: 0.6,
     })),
+    {
+      url: absoluteUrl("/products"),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
     ...getAllProjects().map((project) => ({
       url: absoluteUrl(`/projects/${project.slug}`),
       changeFrequency: "yearly" as const,
