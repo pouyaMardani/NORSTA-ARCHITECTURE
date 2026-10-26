@@ -333,6 +333,7 @@ a{color:inherit;text-decoration:none}
 .section-head{margin-bottom:96px}
 .section-head h2,
 .about-copy h2,
+.about-compare-title,
 .craft-copy h2,
 .work h2,
 .contact h2,
@@ -395,11 +396,38 @@ a{color:inherit;text-decoration:none}
  * block is unmixed Persian prose, so the paragraphs, the alignment and the
  * reading order of the metric pair are RTL. Tablet and phone centre the column.
  */
+/*
+ * The studio block, in two modes. Mode A is the block as it has always been —
+ * the photograph on one side, the studio's words on the other. Mode B is the
+ * same section showing its own work: a selector of comparisons and one frame
+ * holding two photographs of a space with a divider between them.
+ *
+ * The section is therefore only the block's own ground: its padding, its
+ * background and one positioned box for the two mode arrows. The two-column
+ * measure belongs to the panel, because the showcase below is a single centred
+ * column rather than a split.
+ */
 .about{
   --about-radius:clamp(24px,2.6vw,46px) 2px clamp(18px,2.1vw,34px) 2px;
   --about-offset:clamp(10px,1.1vw,18px);
-  display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(48px,6vw,120px);
+  --about-nav-size:clamp(30px,3.2vw,42px);
+  position:relative;
   padding:140px var(--pad-x) 180px;background:var(--bg);
+}
+
+/* Which panel is on screen is the mode itself, so the swap carries no second
+   piece of state: the studio panel is taken out of the flow while the showcase
+   is showing. It is hidden rather than unmounted, because its reveal hooks have
+   been revealed once and a fresh copy of that markup would arrive in its hidden
+   state — this way, returning to it is immediate and shows exactly what was
+   there. (The showcase panel needs no matching rule: it is mounted only in its
+   own mode.) */
+.about[data-mode="compare"] .about-panel--studio{display:none}
+
+/* The measure both modes share: Mode A's two-column split, which the showcase
+   panel releases for its own single column. */
+.about-panel{
+  display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(48px,6vw,120px);
   align-items:center;
 }
 
@@ -428,18 +456,18 @@ a{color:inherit;text-decoration:none}
    of the box it is matted into. */
 .about-visual [data-reveal="image-reveal"]{transform:none}
 
-/* Mounted label: its centre sits on the rule under the picture, so the hairline
-   runs into the label instead of around it — the project cards' own device, a
-   size smaller. The band it is mounted in is what holds the plate's lower
-   margin, which keeps the label clear of the photograph. */
+/* The band the label is mounted in. It is what holds the plate's lower margin,
+   which keeps the label clear of the photograph. */
 .about-caption{
   position:relative;margin-top:clamp(14px,1.5vw,20px);
   height:clamp(24px,2.2vw,30px);
   border-top:1px solid var(--hair);
 }
+/* Mounted label: its centre sits on the rule it is mounted on, so the hairline
+   runs into the label instead of around it — the project cards' own device, a
+   size smaller. It is the studio plate's own label; the comparison's two badges
+   sit on the pictures themselves and wear the frame's pill skin, further down. */
 .about-label{
-  position:absolute;left:clamp(6px,.7vw,12px);top:0;
-  transform:translateY(-50%);
   display:inline-flex;align-items:center;gap:.7em;
   padding:.6em 1em;
   background:var(--bg-2);border:1px solid var(--hair);border-radius:2px;
@@ -447,6 +475,8 @@ a{color:inherit;text-decoration:none}
   letter-spacing:.14em;color:var(--ink-soft);
   white-space:nowrap;unicode-bidi:isolate;
 }
+/* The studio's own label stands at the leading end of its rule. */
+.about-label{position:absolute;left:clamp(6px,.7vw,12px);top:0;transform:translateY(-50%)}
 .about-label i{display:block;width:6px;height:6px;background:var(--ink);opacity:.5}
 
 /* Restrained movement, and only where a cursor can actually hover. */
@@ -475,6 +505,301 @@ a{color:inherit;text-decoration:none}
 .metrics .label{
   display:block;margin-top:18px;font-size:var(--fs-caption);letter-spacing:var(--track-meta);
   color:var(--ink-soft);
+}
+
+/* ---------- Studio: the mode row, the arrows, and the showcase they open ---------- */
+
+/*
+ * The mode row. The section's own switch, standing at the top of the block before
+ * either panel, so it is the first thing read in the block and the first thing
+ * reached after the header's own jump. It is the same device as the showcase's
+ * sample chips below: buttons marked with `aria-current`, which is what this rule
+ * keys on, so no second class has to be kept in step with the mode. The track is
+ * the block's own ground a shade deeper, inside a hairline, and the tab in hand is
+ * inked the way every other current item on the page is — charcoal ground, ivory
+ * label.
+ *
+ * Being an inline-level box, the row stands on the content's own start edge, lined
+ * up with the plate below it wherever this block is a two-column split. At ≤960px,
+ * where the block becomes one centred column, it centres with it.
+ */
+.about-modes{
+  display:inline-flex;flex-wrap:wrap;gap:4px;
+  max-width:100%;
+  margin-bottom:clamp(26px,3vw,46px);padding:5px;
+  background:var(--bg-2);border:1px solid var(--hair);border-radius:999px;
+}
+/* 44px is the tap target, the gap between glyph and name is the chips' own, and
+   `nowrap` stops a name ever breaking mid-word. */
+.about-mode{
+  display:inline-flex;align-items:center;justify-content:center;gap:.6em;
+  min-height:44px;padding:.5em 1.15em;
+  background:none;border:0;border-radius:999px;
+  font-family:var(--fa);font-size:var(--fs-ui);line-height:1.2;
+  color:var(--ink-soft);white-space:nowrap;cursor:pointer;
+  transition:background-color .4s ease,color .4s ease,box-shadow .4s ease;
+}
+.about-mode svg{width:1.15em;height:1.15em;flex:none;opacity:.85}
+.about-mode[aria-current="true"]{
+  background:var(--ink);color:var(--bg);
+  box-shadow:0 2px 14px rgba(29,28,24,.18);
+}
+.about-mode[aria-current="true"] svg{opacity:1}
+.about-mode:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+@media (hover:hover){
+  .about-mode:not([aria-current="true"]):hover{background:rgba(29,28,24,.05);color:var(--ink)}
+}
+
+/*
+ * The two arrows are the second way between the modes — the row above is the
+ * section's own switch — and each is a leaf circle sitting in the gutter the
+ * block already reserves, inside the section's own top band. `max()` keeps a
+ * narrow gutter from pushing a button past the viewport edge, where it would
+ * give the page a horizontal scroll.
+ *
+ * The band, and not the block's vertical middle, is deliberate: a stacked panel
+ * and the showcase's 88vw frame both make the block taller than a viewport, and
+ * an arrow at the block's middle would be below the fold exactly when the
+ * header's `#about` jump arrives at the section's top edge. Held near that edge,
+ * the two are on screen the moment the section is, in either mode.
+ *
+ * Both do the same thing — swap the mode — and differ only in the side they sit
+ * on and the side the arriving panel travels from, so the arrow pressed and the
+ * movement seen agree.
+ */
+.about-nav{
+  position:absolute;z-index:4;
+  top:clamp(44px,4.6vw,76px);
+  left:max(6px,calc((var(--pad-x) - var(--about-nav-size)) / 2));
+  width:var(--about-nav-size);height:var(--about-nav-size);
+  display:grid;place-items:center;padding:0;
+  background:var(--bg);border:1px solid var(--hair);border-radius:50%;
+  color:var(--ink-soft);font-size:clamp(16px,1.5vw,21px);line-height:1;
+  cursor:pointer;
+  transition:color .45s ease,border-color .45s ease,transform .45s cubic-bezier(.22,.61,.36,1);
+}
+.about-nav--next{left:auto;right:max(6px,calc((var(--pad-x) - var(--about-nav-size)) / 2))}
+.about-nav:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+@media (hover:hover){
+  .about-nav:hover{color:var(--ink);border-color:var(--ink);transform:scale(1.08)}
+}
+
+/*
+ * Mode B is one centred column — head, selector, frame — and it is capped at the
+ * same measure as Mode A's copy so the frame never runs wider than a comfortable
+ * line on a large screen. The studio split is released here: this panel is not
+ * two columns of anything.
+ */
+.about-panel--compare{display:block}
+.about-compare-head{max-width:760px;margin-inline:auto;text-align:center}
+.about-compare-title{font-size:var(--fs-subdisplay);margin:20px 0 22px}
+.about-compare-lede{
+  font-family:var(--fa);font-weight:400;
+  font-size:var(--fs-lede);line-height:1.7;color:var(--ink);
+}
+
+/* The selector: a row of chips rather than a box of tabs, each naming the space
+   it shows, with the current one inked. Its own accessible name comes from the
+   data module, and the current chip is marked with `aria-current` in the markup,
+   which is what this rule styles — there is no separate class to keep in step. */
+.about-samples{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:10px;
+  margin-top:clamp(26px,3vw,40px);
+}
+.about-sample{
+  display:inline-flex;align-items:center;gap:.7em;
+  padding:.7em 1.1em;
+  background:var(--bg-2);border:1px solid var(--hair);border-radius:2px;
+  font-family:var(--fa);font-size:var(--fs-caption);letter-spacing:.1em;
+  color:var(--ink-soft);
+  cursor:pointer;
+  transition:color .4s ease,background-color .4s ease,border-color .4s ease;
+}
+.about-sample-index{
+  font-size:.85em;letter-spacing:.06em;opacity:.6;
+  font-variant-numeric:tabular-nums;
+}
+.about-sample[aria-current="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.about-sample[aria-current="true"] .about-sample-index{opacity:.8}
+.about-sample:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+/*
+ * The frame. `--about-pos` is one number with one meaning: the share of the frame
+ * the original side occupies, measured from the right edge — the side whose label
+ * stands first in this RTL block. Everything that has to agree with it is derived
+ * from it: the mask on the original layer, the seam, and the handle. They are
+ * addressed with physical edges on purpose, because the measure itself is
+ * physical (the pointer's own x, with the right-hand edge as zero); a logical
+ * edge here would put the seam on the opposite side of the mask.
+ *
+ * The frame is also the control's surface: the whole picture answers a press, so
+ * a visitor never has to catch the handle. `touch-action: pan-y` leaves a
+ * vertical swipe scrolling the page, and `pan-y` alone means a horizontal drag
+ * belongs to the comparison rather than to the browser. The picture box keeps its
+ * own aspect ratio at every width, so the photographs never shift the page as
+ * they arrive.
+ */
+/* The band under the frame is the room the stand-in badge hangs in, on the wrap's
+   lower rule, clear of the pictures: it is the only label this pair keeps outside
+   the frame. */
+.about-compare-wrap{
+  --about-label-band:clamp(16px,1.8vw,22px);
+  position:relative;margin-top:clamp(30px,3.4vw,54px);
+  padding-bottom:var(--about-label-band);
+}
+/* The frame itself does not clip: the handle rides over its outer edge at either
+   end of the measure, and a clipping frame would slice it in half at ۰٪ and
+   ۱۰۰٪. The two pictures are held inside their own layers instead, each carrying
+   the frame's radius, so nothing of a photograph ever escapes the plate. */
+.about-compare{
+  position:relative;aspect-ratio:3/2;
+  background:#d9d3c5;border:1px solid var(--hair);border-radius:var(--about-radius);
+  cursor:ew-resize;touch-action:pan-y;
+  user-select:none;-webkit-user-select:none;
+}
+.about-compare.is-dragging{cursor:grabbing}
+.about-compare-layer{position:absolute;inset:0;overflow:hidden;border-radius:inherit}
+/* The pictures are inert: a press belongs to the frame, which is the control, and
+   a native image drag would fight the pointer drag the frame runs. */
+.about-compare-layer img{pointer-events:none}
+/* The original is masked rather than moved: the same number that pins the seam
+   decides how much of it shows, so the two can never disagree. */
+.about-compare-layer--before{clip-path:inset(0 0 0 calc(100% - var(--about-pos,50%)))}
+
+/* The seam: the hairline the two layers meet on, drawn just inside the original's
+   edge and lit so it reads against either photograph. */
+.about-compare-seam{
+  position:absolute;top:0;bottom:0;right:calc(var(--about-pos,50%) - 1px);
+  width:1px;pointer-events:none;
+  background:rgba(243,233,222,.92);
+  box-shadow:0 0 18px rgba(29,28,24,.4);
+}
+
+/* The handle. It is the keyboard and screen-reader entry point into the measure —
+   a slider, in the markup — and the visible grip for a visitor who would rather
+   aim at it than press the picture. `transform` is deliberately absent from its
+   transition list: during a drag the handle must sit on the seam, not ease
+   towards it. */
+.about-compare-handle{
+  position:absolute;top:50%;left:calc(100% - var(--about-pos,50%));
+  transform:translate(-50%,-50%);
+  width:clamp(34px,3.2vw,44px);height:clamp(34px,3.2vw,44px);
+  display:grid;place-items:center;
+  border-radius:50%;
+  background:rgba(243,233,222,.94);border:1px solid rgba(29,28,24,.14);
+  color:#171310;
+  cursor:ew-resize;touch-action:none;
+  box-shadow:0 6px 26px rgba(29,28,24,.24);
+  transition:background-color .4s ease,box-shadow .4s ease;
+}
+.about-compare-handle:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.about-compare.is-dragging .about-compare-handle{background:rgba(243,233,222,1)}
+.about-compare-grip{display:flex;align-items:center;gap:5px}
+.about-compare-grip i{display:block;width:1px;height:13px;background:currentColor;opacity:.7}
+
+/* The two side badges ride the pictures themselves, one in the top corner of each
+   half of the measure: the original space in the corner of the half it owns — the
+   half `--about-pos` measures, from this block's right edge — and the finished one
+   in the other, each a shade inside the frame's own edge so neither crowds it.
+   They wear the pill the stand-in badge wears, one weight up from it: over a
+   photograph the cream needs the hairline and the soft shadow to hold its edge,
+   where the same pill on the block's own ground does not.
+
+   Their pointer events belong to the frame they sit on, so a press that starts on
+   a badge still moves the divider and the badge can never be in the way of the
+   measure it names.
+
+   Near the ends of that measure one of the two has nothing left to stand on: at
+   ۰٪ the frame is all "after", and a «قبل اجرا» badge in that corner would be
+   naming the other photograph. So each badge fades out as its own half narrows —
+   ۱۶٪ to ۲۴٪ of the frame for the original side, and mirrored for the finished
+   one. A share, so the same two numbers hold at every width, and ۲۴٪ is where
+   that half is reliably wider than the badge itself on a phone.
+
+   The arithmetic reads `--about-pos-n`, the unitless twin `--about-pos` is always
+   written beside: a percentage cannot be compared to a length, so the one number
+   the measure is made of is written twice, from one value, in `paint` and in the
+   frame's own style. */
+.about-compare-side{
+  position:absolute;
+  top:clamp(10px,1.2vw,18px);
+  inset-inline-start:clamp(10px,1.2vw,18px);
+  display:inline-flex;align-items:center;
+  padding:.42em .9em;border-radius:999px;
+  background:rgba(243,233,222,.92);border:1px solid rgba(29,28,24,.08);
+  color:#171310;
+  font-family:var(--fa);font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  white-space:nowrap;unicode-bidi:isolate;
+  pointer-events:none;
+  box-shadow:0 2px 14px rgba(29,28,24,.16);
+  transition:opacity .4s ease;
+}
+.about-compare-side--after{inset-inline-start:auto;inset-inline-end:clamp(10px,1.2vw,18px)}
+/* Each badge stands while its own half of the measure is wide enough to hold it. */
+.about-compare-side--before{opacity:clamp(0,calc((var(--about-pos-n,50) - 16) / 8),1)}
+.about-compare-side--after{opacity:clamp(0,calc((84 - var(--about-pos-n,50)) / 8),1)}
+
+/* The honesty label: this pair is a stand-in, and it says so on the frame — the
+   same pill the product and sample plates already carry, mounted on the lower
+   rule the way the craftsman's plate badge is. */
+.about-compare-badge{
+  position:absolute;bottom:var(--about-label-band);
+  transform:translateY(50%);
+  inset-inline-start:clamp(6px,.8vw,14px);
+  padding:.34em .8em;border-radius:999px;
+  background:rgba(243,233,222,.94);color:#171310;
+  font-family:var(--fa);font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  white-space:nowrap;unicode-bidi:isolate;
+}
+
+/* What the divider currently reads, and how it is moved. The readout is written
+   by the drag itself, in the same frame as the pictures, so it can never lag
+   behind them; the handle's own value is what assistive layers read. */
+.about-compare-meta{
+  display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px;
+  margin-top:clamp(4px,1vw,10px);
+  font-family:var(--fa);font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  color:var(--ink-soft);
+}
+.about-compare-value{color:var(--ink);font-variant-numeric:tabular-nums}
+/* The instruction is meant to be read once, so it stays quiet rather than
+   competing with what the divider reads. */
+.about-compare-hint{max-width:52ch;color:var(--muted)}
+
+/* The full disclosure, printed only while a stand-in pair is on screen. */
+.about-compare-note{
+  max-width:760px;margin:clamp(20px,2.2vw,28px) auto 0;
+  padding-top:clamp(14px,1.6vw,20px);border-top:1px solid var(--hair);
+  font-family:var(--fa);font-size:var(--fs-body);line-height:var(--lh-body);
+  color:var(--ink-soft);
+}
+
+/*
+ * Arrival. The showcase panel is mounted when the mode changes, so its entrance
+ * needs no trigger to manage: it runs once, on the way in, travelling from the
+ * side the pressed arrow points away from. `both` is deliberately not used — the
+ * resting state is the visible one, which is also where a collapsed animation
+ * lands, so the panel can never stall off-screen.
+ *
+ * Mode A is never remounted: its reveal hooks are revealed once, and a fresh copy
+ * of that markup would arrive in its hidden state. Returning to it is therefore
+ * an immediate swap — the studio view is simply there, as it was left.
+ */
+@keyframes about-panel-in{
+  from{opacity:0;transform:translate3d(var(--about-entry,26px),0,0)}
+  to{opacity:1;transform:none}
+}
+.about[data-entry] .about-panel--compare{
+  animation:about-panel-in .62s cubic-bezier(.22,.61,.36,1);
+}
+.about[data-entry="next"]{--about-entry:26px}
+.about[data-entry="prev"]{--about-entry:-26px}
+
+/* The entrance is the only travel this block adds, and where a visitor asked for
+   less motion it is dropped outright; the arrows keep their colour change. */
+@media (prefers-reduced-motion: reduce){
+  .about[data-entry] .about-panel--compare{animation:none}
+  .about-nav:hover{transform:none}
 }
 
 /* ============== SELECTED WORK ============== */
@@ -1049,7 +1374,11 @@ a{color:inherit;text-decoration:none}
   .service-list li{grid-template-columns:64px 1fr;row-gap:14px}
   .service-list li p{grid-column:2/-1;max-width:none}
   .services-edge{display:none}
-  .about{grid-template-columns:1fr;padding-top:100px;padding-bottom:120px}
+  .about{padding-top:100px;padding-bottom:120px}
+  .about-panel{grid-template-columns:1fr}
+  /* One centred column here, so the mode row centres with it instead of keeping
+     the start edge it shares with the plate in the two-column split. */
+  .about-modes{display:flex;width:fit-content;margin-inline:auto}
   /* Stacked, the plate and the copy share one full measure and the copy reads
      as a single centred column: the 4% inset belongs to the desktop two-column
      split, and the capped intro blocks centre through auto margins. */
@@ -1262,7 +1591,25 @@ body.menu-open{overflow:hidden}
   .service-list p br{display:none}
 
   /* Studio */
-  .about{padding-top:96px;padding-bottom:110px;gap:44px}
+  .about{padding-top:96px;padding-bottom:110px}
+  .about-panel{gap:44px}
+  /* The mode row takes the phone's measure: the two tabs share the row while both
+     names fit beside each other, and stand one above the other — each at the row's
+     own width — when they do not, which is how a 320px screen shows both names in
+     full without clipping either. 46px is the tap target. */
+  .about-modes{padding:4px;gap:3px}
+  .about-mode{flex:1 1 auto;min-height:46px;padding:.5em .9em;font-size:var(--fs-meta)}
+  /* The arrows keep the inset the shared rule already resolves to — a phone's
+     gutter is narrow, and the `max()` there lands on 6px — but they ride higher
+     in the band, which is shorter with the section's own top padding. */
+  .about-nav{top:24px}
+  /* The showcase takes the phone's measure: a taller frame, the heading at the
+     phone's own display size, and a handle sized for a thumb. The two badges keep
+     their corners of the pictures, a shade inside the frame's own edges. */
+  .about-compare-title{font-size:clamp(36px,10.2vw,58px);margin:16px 0 18px}
+  .about-compare-lede{font-size:clamp(19px,4.8vw,23px);line-height:1.65}
+  .about-compare{aspect-ratio:5/4}
+  .about-compare-handle{width:38px;height:38px}
   /* The centred column and the centred metric rule are set at ≤960px; on a phone
      only the display sizes and the label's own placement change. */
   .about-copy h2{font-size:clamp(36px,10.2vw,58px);margin:18px 0 30px}
