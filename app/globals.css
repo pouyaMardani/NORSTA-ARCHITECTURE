@@ -402,15 +402,13 @@ a{color:inherit;text-decoration:none}
  * same section showing its own work: a selector of comparisons and one frame
  * holding two photographs of a space with a divider between them.
  *
- * The section is therefore only the block's own ground: its padding, its
- * background and one positioned box for the two mode arrows. The two-column
- * measure belongs to the panel, because the showcase below is a single centred
- * column rather than a split.
+ * The section is therefore only the block's own ground: its padding and its
+ * background. The two-column measure belongs to the panel, because the showcase
+ * below is a single centred column rather than a split.
  */
 .about{
   --about-radius:clamp(24px,2.6vw,46px) 2px clamp(18px,2.1vw,34px) 2px;
   --about-offset:clamp(10px,1.1vw,18px);
-  --about-nav-size:clamp(30px,3.2vw,42px);
   position:relative;
   padding:140px var(--pad-x) 180px;background:var(--bg);
 }
@@ -507,7 +505,7 @@ a{color:inherit;text-decoration:none}
   color:var(--ink-soft);
 }
 
-/* ---------- Studio: the mode row, the arrows, and the showcase they open ---------- */
+/* ---------- Studio: the mode row and the showcase it opens ---------- */
 
 /*
  * The mode row. The section's own switch, standing at the top of the block before
@@ -519,14 +517,16 @@ a{color:inherit;text-decoration:none}
  * inked the way every other current item on the page is — charcoal ground, ivory
  * label.
  *
- * Being an inline-level box, the row stands on the content's own start edge, lined
- * up with the plate below it wherever this block is a two-column split. At ≤960px,
- * where the block becomes one centred column, it centres with it.
+ * It is the section's only switch, so it stands on the block's centre line rather
+ * than on the content's start edge: a control on the middle axis belongs to both
+ * panels at once, where one pinned to the plate's start edge read as a label for
+ * the plate alone. `fit-content` keeps the track only as wide as its two tabs, so
+ * the auto margins are measuring the row and not the section.
  */
 .about-modes{
-  display:inline-flex;flex-wrap:wrap;gap:4px;
+  display:flex;width:fit-content;flex-wrap:wrap;gap:4px;
   max-width:100%;
-  margin-bottom:clamp(26px,3vw,46px);padding:5px;
+  margin-inline:auto;margin-bottom:clamp(26px,3vw,46px);padding:5px;
   background:var(--bg-2);border:1px solid var(--hair);border-radius:999px;
 }
 /* 44px is the tap target, the gap between glyph and name is the chips' own, and
@@ -551,38 +551,15 @@ a{color:inherit;text-decoration:none}
 }
 
 /*
- * The two arrows are the second way between the modes — the row above is the
- * section's own switch — and each is a leaf circle sitting in the gutter the
- * block already reserves, inside the section's own top band. `max()` keeps a
- * narrow gutter from pushing a button past the viewport edge, where it would
- * give the page a horizontal scroll.
- *
- * The band, and not the block's vertical middle, is deliberate: a stacked panel
- * and the showcase's 88vw frame both make the block taller than a viewport, and
- * an arrow at the block's middle would be below the fold exactly when the
- * header's `#about` jump arrives at the section's top edge. Held near that edge,
- * the two are on screen the moment the section is, in either mode.
- *
- * Both do the same thing — swap the mode — and differ only in the side they sit
- * on and the side the arriving panel travels from, so the arrow pressed and the
- * movement seen agree.
+ * The mode row needs no companion at the section's edges. There were two leaf
+ * circles there once — one per gutter, both doing exactly what the row does —
+ * and they cost more than they gave: two more tap targets competing with the
+ * plate's own, a second answer to "which mode am I in" that a screen reader had
+ * to walk past, and a pair of absolutely positioned boxes whose placement had to
+ * be re-reasoned at every breakpoint. The row is the switch; it stays the only
+ * one, and it now sits centred (see the rule above) so it reads as the control
+ * for both panels rather than as a tag on the plate.
  */
-.about-nav{
-  position:absolute;z-index:4;
-  top:clamp(44px,4.6vw,76px);
-  left:max(6px,calc((var(--pad-x) - var(--about-nav-size)) / 2));
-  width:var(--about-nav-size);height:var(--about-nav-size);
-  display:grid;place-items:center;padding:0;
-  background:var(--bg);border:1px solid var(--hair);border-radius:50%;
-  color:var(--ink-soft);font-size:clamp(16px,1.5vw,21px);line-height:1;
-  cursor:pointer;
-  transition:color .45s ease,border-color .45s ease,transform .45s cubic-bezier(.22,.61,.36,1);
-}
-.about-nav--next{left:auto;right:max(6px,calc((var(--pad-x) - var(--about-nav-size)) / 2))}
-.about-nav:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
-@media (hover:hover){
-  .about-nav:hover{color:var(--ink);border-color:var(--ink);transform:scale(1.08)}
-}
 
 /*
  * Mode B is one centred column — head, selector, frame — and it is capped at the
@@ -796,10 +773,9 @@ a{color:inherit;text-decoration:none}
 .about[data-entry="prev"]{--about-entry:-26px}
 
 /* The entrance is the only travel this block adds, and where a visitor asked for
-   less motion it is dropped outright; the arrows keep their colour change. */
+   less motion it is dropped outright. */
 @media (prefers-reduced-motion: reduce){
   .about[data-entry] .about-panel--compare{animation:none}
-  .about-nav:hover{transform:none}
 }
 
 /* ============== SELECTED WORK ============== */
@@ -1449,9 +1425,21 @@ a{color:inherit;text-decoration:none}
 .lb-nav:hover{transform:translateY(-50%) scale(1.06)}
 body.lb-open{overflow:hidden}
 @media (max-width:760px){
+  /* The two stepping controls leave the picture on a phone. Floating at the
+     plate's own vertical middle they sat on the photograph — at this width the
+     plate is the full measure of the screen less 16px, so there is no gutter left
+     for a 40px circle to live in. Instead the padding reserves a band at the foot
+     of the overlay and both controls stand in it, as a pair either side of the
+     centre line: close at the top where it has always been, «قبلی» and «بعدی»
+     below the caption, and nothing on top of the image itself. */
+  .lightbox{padding:clamp(54px,13vw,68px) 16px 88px}
   .lb-cap{flex-direction:column;gap:6px}
-  .lb-nav{width:40px;height:40px}
-  .lb-img{max-height:calc(100vh - 200px)}
+  .lb-nav{top:auto;bottom:18px;transform:none;width:48px;height:48px}
+  .lb-prev{left:calc(50% - 56px)}
+  .lb-next{right:calc(50% - 56px)}
+  .lb-nav:hover{transform:none}
+  .lb-close{top:14px;right:14px}
+  .lb-img{max-height:calc(100vh - 248px)}
 }
 
 /* =====================================================================
@@ -1599,10 +1587,6 @@ body.menu-open{overflow:hidden}
      full without clipping either. 46px is the tap target. */
   .about-modes{padding:4px;gap:3px}
   .about-mode{flex:1 1 auto;min-height:46px;padding:.5em .9em;font-size:var(--fs-meta)}
-  /* The arrows keep the inset the shared rule already resolves to — a phone's
-     gutter is narrow, and the `max()` there lands on 6px — but they ride higher
-     in the band, which is shorter with the section's own top padding. */
-  .about-nav{top:24px}
   /* The showcase takes the phone's measure: a taller frame, the heading at the
      phone's own display size, and a handle sized for a thumb. The two badges keep
      their corners of the pictures, a shade inside the frame's own edges. */
@@ -1702,12 +1686,13 @@ body.menu-open{overflow:hidden}
      the material one hangs off its lower corner and the surface study off its
      upper one. A phone overlapping the plate at this width would sit on the
      material chip — the overlap is structural, not a nudge — so the device
-     takes the next row, under the plate's own leading edge, where the spare
-     width beside it is simply left as air. */
+     takes the next row, and takes the middle of it: on the stage's own centre
+     line it reads as part of the composition, where pinned to the start edge it
+     read as an object left beside the plate's lower corner. */
   .conn-plate{grid-column:1/-1}
   .conn-phone{
     grid-column:1/-1;grid-row:2;
-    justify-self:start;
+    justify-self:center;
     inline-size:clamp(196px,24vw,236px);
     margin-block-start:clamp(56px,7vw,72px);
   }
@@ -2086,9 +2071,11 @@ body.menu-open{overflow:hidden}
 .post-sep{width:18px;height:1px;background:currentColor;opacity:.5}
 
 /* The reading column: one measure for the lede, the body, the lists and any
-   inline figure. */
+   inline figure. Wider than it was on a desktop, where the column used to stop
+   at 780px: the body copy now runs justified, and a justified measure wants to
+   be wide enough that the lines do not have to be stretched to reach it. */
 .post-wrap{
-  max-width:780px;margin-inline:auto;
+  max-width:820px;margin-inline:auto;
   padding:clamp(44px,5vw,80px) var(--pad-x) 0;
 }
 .post-lede{
@@ -2101,6 +2088,13 @@ body.menu-open{overflow:hidden}
   margin-top:24px;
   font-size:clamp(17px,1.15vw,19px);line-height:1.95;
   color:var(--art-ink-soft);
+  /* Justified: the reading column is wide enough that the rag of a long Persian
+     paragraph is what breaks the passage into a shape, and joined letterforms
+     take the stretching far better than a Latin line does. `text-align-last`
+     keeps the closing line flush with the edge it started from, so the last line
+     of a paragraph is not a single stretched word. */
+  text-align:justify;
+  text-align-last:start;
 }
 .post-h2{
   margin-top:clamp(42px,4.4vw,66px);
@@ -2195,6 +2189,11 @@ body.menu-open{overflow:hidden}
   .post-meta{gap:10px;font-size:var(--fs-caption)}
   .post-author{flex-direction:column;align-items:flex-start;gap:.2em}
   .post-wrap{padding-top:clamp(32px,8vw,48px)}
+  /* Justification is a desktop measure's device. On a phone the column is a few
+     words wide, so a justified line is spread until the words no longer read as
+     a sentence — the body goes back to the register's own ragged start edge
+     (right, when the article is in Persian). */
+  .post-p{text-align:start}
   .post-related{padding-top:clamp(52px,12vw,72px)}
   .post-related-title{font-size:clamp(22px,6.6vw,30px)}
 }
@@ -2328,10 +2327,18 @@ body.menu-open{overflow:hidden}
   font-size:clamp(21px,1.7vw,31px);line-height:var(--lh-heading);
   color:var(--mrq-ink);
   text-shadow:0 2px 24px rgba(17,15,12,.45);
+  /* Normalised to two lines. A longer project name used to push the location
+     and the arrow down and make one plate taller than its neighbours in the
+     same row — the same reason the magazine and academy cards clamp. */
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  line-clamp:2;overflow:hidden;
 }
 .pcard-loc{
   grid-column:2;justify-self:end;
   font-size:var(--fs-meta);color:var(--mrq-ink-soft);unicode-bidi:isolate;
+  /* One line, clipped rather than wrapped: the location is a label beside the
+     plate number, not a second line of copy. */
+  max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .pcard-arrow{
   grid-column:1;justify-self:start;align-self:end;
@@ -2367,6 +2374,11 @@ body.menu-open{overflow:hidden}
      and leaving the row standing still. */
   animation:mrq-drift 160s linear infinite;
   animation-duration:var(--mrq-duration, 160s);
+  /* Where a hand-driven drag left the loop. The fraction of a cycle is handed
+     over as a negative delay, and a negative delay starts an animation already
+     in progress — so releasing the row resumes the drift from the very frame the
+     drag stopped on instead of snapping back to the start. */
+  animation-delay:calc(-1 * var(--mrq-phase, 0) * var(--mrq-duration, 160s));
   will-change:transform;
 }
 @keyframes mrq-drift{
@@ -2401,6 +2413,13 @@ body.menu-open{overflow:hidden}
 .mrq:focus-within .mrq-track,
 .mrq[data-paused="true"] .mrq-track{animation-play-state:paused}
 
+/* A hand on the row owns the loop outright. The drag writes the same property
+   the animation writes, so the animation is dropped (not paused — a paused one
+   would still be holding the transform it had) for as long as the gesture lasts.
+   `ProjectMarquee` folds the offset into a single step while it does, which is
+   how the seam is kept off screen. */
+.mrq[data-drag="true"] .mrq-track{animation:none}
+
 @media (hover:hover){
   .mrq-card:hover{transform:translate3d(0,-10px,0);box-shadow:0 34px 70px -34px rgba(29,28,24,.62)}
   .mrq-card:hover .pcard-media img{transform:scale(1.05)}
@@ -2412,13 +2431,10 @@ body.menu-open{overflow:hidden}
   }
 }
 
-/* Touch: the drift keeps running, and the row can also be pushed by hand. While
-   a finger is down the drift pauses (the component sets `data-paused`), so the
-   two motions never fight over the same gesture. Keyed to the header's
-   breakpoint as well as to a hoverless pointer: a width is something every
-   engine reports reliably, and a narrow desktop window can scroll the row just
-   as harmlessly as a phone can. */
-@media (max-width: 860px), (hover:none) and (pointer:coarse){
+/* A narrow window on a fine pointer: the row is a native scroller, as it always
+   was. Nothing is folded here — a trackpad or a mouse wheel has no grab to fold
+   — and the drift simply keeps running underneath the scroll. */
+@media (max-width: 860px) and (pointer:fine){
   .mrq-viewport{
     overflow-x:auto;overflow-y:hidden;
     -webkit-overflow-scrolling:touch;
@@ -2427,6 +2443,20 @@ body.menu-open{overflow:hidden}
   }
   .mrq-viewport::-webkit-scrollbar{display:none}
   .mrq-item{scroll-snap-align:center}
+}
+
+/* A touchscreen: the row is dragged, never scrolled. The two mechanisms used to
+   be one — a native scroller under a drifting track — and they fought over the
+   same axis: the drift shifts the whole track by one copy's width, so a row that
+   had also been scrolled by hand could be pushed past its own last copy and open
+   a gap at the row's end. With the drag folded into the loop there is only ever
+   one coordinate, so the native scroll is handed back here.
+   `touch-action:pan-y` keeps the page's own vertical scrolling: the browser takes
+   the gesture back (`pointercancel`) as soon as it reads as a vertical pan. */
+@media (hover:none) and (pointer:coarse){
+  .mrq-viewport{touch-action:pan-y}
+  /* The grab cursor is for a pen, which can hover; a finger never sees it. */
+  .mrq[data-drag="true"] .mrq-viewport{cursor:grabbing}
 }
 
 /* =====================================================================
@@ -2511,7 +2541,12 @@ body.menu-open{overflow:hidden}
 
 /* ---------- The reading grid --------------------------------------------- */
 .pj-body{
-  display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);
+  display:grid;
+  /* The split this page is built on: the description takes the larger share and
+     the facts the smaller one — 65/35, stated from the copy's side. The facts
+     column keeps a floor of its own, so the value list can never be squeezed
+     into a column narrower than the longest address it may be asked to hold. */
+  grid-template-columns:minmax(0,65fr) minmax(220px,35fr);
   gap:clamp(36px,5vw,104px);
   align-items:start;
   padding:clamp(56px,6vw,104px) var(--pad-x) clamp(20px,2.6vw,40px);
@@ -2582,6 +2617,10 @@ body.menu-open{overflow:hidden}
   flex:1 1 auto;min-width:0;
   font-family:var(--fa);font-weight:600;font-size:var(--fs-ui);
   line-height:var(--lh-heading);color:var(--ink);
+  /* Normalised to two lines, like the plates in the other registers: a longer
+     caption must not make one shot's meta block taller than its neighbours'. */
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  line-clamp:2;overflow:hidden;
 }
 .pj-shot-meta .loc{
   flex:0 0 auto;
@@ -4187,8 +4226,15 @@ body.lb-open .to-top{
 .mv-nav:focus-visible{outline:2px solid var(--mfc-accent);outline-offset:4px}
 
 /* The page behind the viewer does not scroll while it is open — the same lock
-   the site's lightbox takes under `lb-open`. */
-body.mv-open{overflow:hidden}
+   the site's lightbox takes under `lb-open`. The lock is taken on the root as
+   well as on the body: `overflow` on `body` only reaches the viewport while
+   `html` is `visible`, and a page that has ever been given its own
+   `overflow` — which is exactly the state a scrollbar-hiding rule leaves
+   behind — keeps scrolling behind the dialog. `overscroll-behavior` is the
+   second half of the same intent: no rubber-banding and no scroll chaining
+   from the panel's own scroller out to the page. */
+body.mv-open{overflow:hidden;overscroll-behavior:none}
+html:has(body.mv-open){overflow:hidden}
 
 /* ---------- Responsive ----------
    Three steps, in the order this layout actually gives way: the wall drops to
@@ -4640,8 +4686,18 @@ body.mv-open{overflow:hidden}
 .pdc-name{
   font-family:var(--fa);font-weight:600;
   font-size:clamp(18px,1.35vw,21px);line-height:1.45;color:var(--prd-ink);
+  /* Held to two lines, and the description to three, so the height of a row is
+     set by the card and not by the longest copy on the shelf. `margin-top:auto`
+     below aligns the actions; this is what stops one verbose item from opening a
+     gap under every other card's rule. */
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  line-clamp:2;overflow:hidden;
 }
-.pdc-desc{font-size:var(--fs-body);line-height:1.85;color:var(--prd-ink-soft)}
+.pdc-desc{
+  font-size:var(--fs-body);line-height:1.85;color:var(--prd-ink-soft);
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;
+  line-clamp:3;overflow:hidden;
+}
 /* Pushed to the foot of the card, so a row's actions line up however long the
    paragraphs above them run. */
 .pdc-cta{

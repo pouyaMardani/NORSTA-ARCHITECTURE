@@ -123,6 +123,7 @@ export default function SampleViewer({ samples, index, labels, onNavigate, onClo
 
   const dialog = useRef<HTMLDivElement | null>(null);
   const stage = useRef<HTMLDivElement | null>(null);
+  const frame = useRef<HTMLDivElement | null>(null);
   const closeButton = useRef<HTMLButtonElement | null>(null);
 
   const [view, setView] = useState<View>(FIT);
@@ -163,6 +164,38 @@ export default function SampleViewer({ samples, index, labels, onNavigate, onClo
       px: clientX - (rect.left + rect.width / 2),
       py: clientY - (rect.top + rect.height / 2),
     };
+  }, []);
+
+  /** Renders the transform exactly the way the frame's inline style states it. */
+  const transformOf = (next: View) =>
+    `translate3d(${next.x}px, ${next.y}px, 0) scale(${next.scale})`;
+
+  /**
+   * ── WHY A GESTURE WRITES THE DOM ITSELF ────────────────────────────────────
+   * A drag or a pinch changes one thing and one thing only: the plate's
+   * transform. Routing that through `setView` meant a React render of the whole
+   * dialog on every frame of the gesture — the toolbar, the specification list,
+   * and the `<Image>` inside this very frame, which is the heaviest node on the
+   * page — for a single 40-byte style change. On a phone that is the difference
+   * between a plate that follows the finger and one that trails it.
+   *
+   * So the handlers below write the transform straight to the frame and keep
+   * `viewRef` as the value the frame is showing, which is what the next move of
+   * the same gesture starts from. `commit` hands that value back to React when
+   * the gesture ends, which is what refreshes the toolbar's percentage and the
+   * `data-zoom` state. Nothing else in the component writes the frame, and React
+   * only rewrites a style property whose rendered value actually changed — so a
+   * re-render that leaves `view` alone cannot snap the plate back.
+   */
+  const apply = useCallback((next: View) => {
+    viewRef.current = next;
+    const element = frame.current;
+    if (element) element.style.transform = transformOf(next);
+  }, []);
+
+  /** The gesture is over: React takes the plate back. */
+  const commit = useCallback(() => {
+    setView({ ...viewRef.current });
   }, []);
 
   const zoomBy = useCallback(
@@ -332,7 +365,7 @@ export default function SampleViewer({ samples, index, labels, onNavigate, onClo
         active.midY
       );
       setTouched(true);
-      setView(
+      apply(
         settle({
           scale: zoomed.scale,
           x: zoomed.x + (px - active.midX),
@@ -344,7 +377,7 @@ export default function SampleViewer({ samples, index, labels, onNavigate, onClo
 
     const origin = pan.current;
     if (!origin) return;
-    setView(
+    apply(
       settle({
         scale: viewRef.current.scale,
         x: origin.x + (event.clientX - origin.px),
@@ -369,6 +402,9 @@ export default function SampleViewer({ samples, index, labels, onNavigate, onClo
     if (pointers.current.size > 0) return;
     pan.current = null;
     setDragging(false);
+    // The gesture is over, so the plate goes back under React's care — one render
+    // for the whole drag, rather than one for every frame of it.
+    commit();
 
     // A tap that never travelled is half of a double tap. Measure first, so a
     // drag that happens to end where it started cannot be mistaken for one.
@@ -408,12 +444,19 @@ export default function SampleViewer({ samples, index, labels, onNavigate, onClo
           — decoration for the pointer, nothing at all for a screen reader. */}
       <div className="mv-scrim" onClick={onClose} aria-hidden="true" />
 
+      {/* ── THE DIALOG'S OWN REGISTER ───────────────────────────────────────
+          The panel's copy, the specification pairs and the two walking controls
+          are all Persian, so the dialog is the RTL register: the labels read
+          from the right, each specification value sits opposite its own term,
+          and the footer's order puts «قبلی» where the reading starts — which is
+          also the side its arrow points to. */}
       <div
         className="mv-dialog"
         ref={dialog}
         role="dialog"
         aria-modal="true"
         aria-label={labels.viewerLabel}
+        dir="rtl"
       >
         <div className="mv-bar">
           <p className="mv-position" role="status">
@@ -521,6 +564,7 @@ export default function SampleViewer({ samples, index, labels, onNavigate, onClo
           >
             <div
               className="mv-frame"
+              ref={frame}
               style={{
                 transform: `translate3d(${view.x}px, ${view.y}px, 0) scale(${view.scale})`,
               }}

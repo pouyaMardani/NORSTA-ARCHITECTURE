@@ -289,26 +289,6 @@ export default function About() {
     setPos(50);
   };
 
-  /**
-   * One edge arrow. Both of them do the same thing — swap the mode — and differ
-   * only in the side they sit on and the direction the arriving panel travels,
-   * so the arrow pressed and the movement seen agree. Their accessible names say
-   * both halves of that: which way the section will move, and to what.
-   */
-  const arrow = (direction: Direction) => {
-    const target: Mode = mode === "studio" ? "compare" : "studio";
-    return (
-      <button
-        type="button"
-        className={`about-nav about-nav--${direction}`}
-        aria-label={`${copy.nav[direction]} — ${copy.modes[target]}`}
-        onClick={() => show(target, direction)}
-      >
-        <span aria-hidden="true">{direction === "prev" ? "‹" : "›"}</span>
-      </button>
-    );
-  };
-
   return (
     <section
       id="about"
@@ -342,16 +322,6 @@ export default function About() {
           </button>
         ))}
       </div>
-
-      {/*
-        The arrows at the section's two edges: both swap the mode, each is a real
-        button so it is reachable by tab, by touch and by screen reader, and each
-        says where it will take you. They are the row's own swap made from the
-        side of the page a visitor is already looking at, and are kept as the
-        second way in rather than the only one.
-      */}
-      {arrow("prev")}
-      {arrow("next")}
 
       {/*
         ── Mode A: the studio block as it has always been. The markup, the

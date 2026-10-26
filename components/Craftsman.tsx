@@ -68,7 +68,7 @@ const CRAFTSMAN: CraftsmanContent = {
   bio: "[معرفی کوتاه: مسیر حرفه‌ای، سال‌های همکاری و رویکرد این استادکار در اجرای میکروسمنت و پتینه.]",
   image: {
     /** ⚠ PLACEHOLDER plate — swap for approved photography of the craftsman. */
-    src: "/images/project-minimal-residence.png",
+    src: "/images/craft.png",
     alt: "جزئیات اجرای میکروسمنت در یک فضای مرطوب",
   },
   label: "CRAFT & MATERIAL",

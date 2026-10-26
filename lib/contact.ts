@@ -16,18 +16,17 @@
  * and readable in a diff, so there is no second source to fall out of step.
  *
  * ── WHAT A PLACEHOLDER MUST NOT DO ─────────────────────────────────────────
- * The number is not published yet, and no stand-in digits are used to fill the
- * gap: a plausible wrong number dials a stranger, which is worse than no link
- * at all. The value below is therefore a token rather than digits, and
- * `WHATSAPP_URL` stays `null` until it is replaced — there is no code path
- * that can build a `wa.me` link out of a value that has not been configured.
- * The showcase reads `WHATSAPP_URL`, and the closing section renders its quiet
- * "not published yet" state instead, so nothing on the page ever promises a
- * destination the studio cannot answer.
+ * A plausible wrong number dials a stranger, which is worse than no link at
+ * all. The value is therefore validated rather than trusted: `WHATSAPP_URL`
+ * stays `null` while the constant holds a token instead of digits, and there is
+ * no code path that can build a `wa.me` link out of a value that has not been
+ * configured. The showcase reads `WHATSAPP_URL`, and while it is `null` the
+ * closing section renders its quiet "not published yet" state, so nothing on
+ * the page ever promises a destination the studio cannot answer.
  */
 
-/** Replace with the studio's own number in the `wa.me` form: country code and digits only. */
-export const WHATSAPP_PHONE_E164 = "REPLACE_WITH_WHATSAPP_NUMBER";
+/** The studio's own line, in the `wa.me` form: country code and digits only. */
+export const WHATSAPP_PHONE_E164 = "989192050450";
 
 /**
  * E.164 as `wa.me` accepts it: a leading non-zero digit (a country code never

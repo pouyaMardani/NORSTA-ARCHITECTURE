@@ -120,8 +120,8 @@ export const SAMPLE_CONFIG: {
   labels: {
     open: "نمایش نزدیک",
     close: "بستن نمایشگر",
-    prev: "نمونه‌ی پیشین",
-    next: "نمونه‌ی پسین",
+    prev: "قبلی",
+    next: "بعدی",
     zoomIn: "بزرگ‌تر",
     zoomOut: "کوچک‌تر",
     reset: "بازگشت به اندازه‌ی اولیه",
