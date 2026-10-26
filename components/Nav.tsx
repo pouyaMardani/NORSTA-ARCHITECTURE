@@ -25,6 +25,14 @@ import { useEffect, useState } from "react";
  * or is renamed, move its entry here with it. `Hero` owns `#top`, so "خانه" is
  * an in-page jump rather than a route, which is also what makes it work away
  * from the home page (`/#top` in `NAV_LINKS_FROM_HOME`).
+ *
+ * ── TWO KINDS OF ENTRY ─────────────────────────────────────────────────────
+ * `#...` is a section of the home page; a `/...` value is a route of its own.
+ * The catalogue — the only route here — sits where the catalogue sits on the
+ * home page (after the selected work and the magazine, before the sections below
+ * them), so the row keeps reading as the page it maps. The two are told apart by
+ * the leading `#` (`isAnchor` below), because a route prefixed with `/` like an
+ * anchor would become `//products`.
  */
 const LINKS = [
   { href: "#instagram", label: "اینستاگرام" },
@@ -32,6 +40,7 @@ const LINKS = [
   { href: "#craft", label: "استادکار" },
   { href: "#academy", label: "آموزش میکروسمنت" },
   { href: "#journal", label: "مجله" },
+  { href: "/products", label: "محصولات" },
   { href: "#work", label: "پروژه‌ها" },
   { href: "#about", label: "درباره ما" },
   { href: "#services", label: "خدمات" },
@@ -41,19 +50,23 @@ const LINKS = [
 /** One link as the header renders it. */
 type NavLink = { href: string; label: string };
 
-/** On the home page the nine labels are the page's own anchors, verbatim. */
+/** A section of the home page (`#work`) as opposed to a route of its own. */
+const isAnchor = (href: string) => href.startsWith("#");
+
+/** On the home page the ten labels are the page's own anchors and routes. */
 const NAV_LINKS: NavLink[] = LINKS.map((link) => ({
   href: link.href,
   label: link.label,
 }));
 
 /**
- * On every other route the same nine labels point back at the home page's
- * sections, so the header stays useful on `/articles` — an anchor without a `/`
- * would simply do nothing away from the home page.
+ * On every other route the section labels point back at the home page, so the
+ * header stays useful on `/articles` — an anchor without a `/` would simply do
+ * nothing away from the home page. A route entry is already absolute (`/products`)
+ * and is left exactly as it is.
  */
 const NAV_LINKS_FROM_HOME: NavLink[] = LINKS.map((link) => ({
-  href: `/${link.href}`,
+  href: isAnchor(link.href) ? `/${link.href}` : link.href,
   label: link.label,
 }));
 
@@ -61,17 +74,19 @@ const NAV_LINKS_FROM_HOME: NavLink[] = LINKS.map((link) => ({
  * Routes painted on a dark ground, which need the header's dark variant: the
  * magazine and the academy. The home page is not one of them, so its header is
  * unchanged — the academy's own home-page block sits far below the fold and does
- * not change the header it scrolls under.
+ * not change the header it scrolls under. The catalogue is on the site's own warm
+ * ground, which is the header's default, so it is not listed here either.
  */
 const DARK_ROUTES = ["/articles", "/academy"];
 
 /**
- * Matches the hamburger breakpoint in `globals.css` (the `≤860px` block). Nine
- * section labels no longer fit one comfortable row below that, so the panel
- * takes over there. `Nav` tracks only this one query; every other breakpoint
- * belongs to the stylesheet.
+ * Matches the hamburger breakpoint in `globals.css` (the `≤1000px` block). Ten
+ * section labels no longer fit one comfortable row below that, so the panel takes
+ * over there — the header row tightens in steps above it, and the panel is what
+ * keeps the last of the range from squeezing the wordmark. `Nav` tracks only this
+ * one query; every other breakpoint belongs to the stylesheet.
  */
-const MOBILE_QUERY = "(max-width: 860px)";
+const MOBILE_QUERY = "(max-width: 1000px)";
 
 export default function Nav() {
   const [open, setOpen] = useState(false);

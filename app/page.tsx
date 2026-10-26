@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import InstagramShowcase from "@/components/InstagramShowcase";
 import Lightbox from "@/components/Lightbox";
+import MaterialsShowcase from "@/components/MaterialsShowcase";
 import MicrocementSamples from "@/components/MicrocementSamples";
 import Nav from "@/components/Nav";
 import Services from "@/components/Services";
@@ -38,6 +39,10 @@ export default function Page() {
         <Services />
         <About />
         <Work />
+        {/* Materials & tools: the four shelves of the catalogue, as an index into
+            `/products`. It reads `content/products`, so a shelf, a count and a
+            filtered link all grow from the records with nothing here changing. */}
+        <MaterialsShowcase />
         {/* The material library: the finishes behind the selected work, hung as
             framed samples. It reads the records in `content/samples`, so the wall
             grows, filters and re-orders without anything here changing. */}

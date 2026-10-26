@@ -12,6 +12,7 @@
     "audit:responsive": "node scripts/responsive-audit.mjs",
     "audit:mfc": "node scripts/mfc-audit.mjs",
     "verify:academy": "node scripts/verify-academy.mjs",
+    "verify:products": "node scripts/verify-products.mjs",
     "verify:fa": "node scripts/verify-fa.mjs"
   },
   "dependencies": {

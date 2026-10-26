@@ -27,7 +27,7 @@ const VIEWPORTS = [
   { name: "mobile", w: 390, h: 844 },
 ];
 
-const SECTIONS = ["top", "services", "about", "work", "contact"];
+const SECTIONS = ["top", "services", "about", "work", "products", "contact"];
 
 const [, , url, label = "page", ...rest] = process.argv;
 const allTargets = rest.includes("--targets=all");
