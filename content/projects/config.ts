@@ -53,12 +53,12 @@ export const PROJECT_IMAGES = {
     caption: "فضای داخلی سنگی",
   },
   stairs: {
-    src: "/images/contact-stairs.png",
+    src: "/images/after.png",
     alt: "پلکان سنگی روشن در کنار درخت زیتون",
     caption: "پلکان سنگی",
   },
   archDetail: {
-    src: "/images/services-arch.png",
+    src: "/images/befor.png",
     alt: "جزئیات معماری و بافت سطوح نما",
     caption: "جزئیات سطوح نما",
   },
