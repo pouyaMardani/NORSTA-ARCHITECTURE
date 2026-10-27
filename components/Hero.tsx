@@ -8,7 +8,12 @@ export default function Hero() {
             <span>NORSTA</span>
           </span>
         </h1>
-        <p>
+        {/* The lede is two authored lines, and the break holds at every width
+            (`globals.css`). The full stop ends the sentence in the source: put at
+            the head of the second line it was reordered to the far end of that
+            line, and the moment a narrower measure dropped the break it drifted
+            into the middle of the sentence. */}
+        <p className="pcenter">
           معماری‌ای که با سکوت، وزن و{" "}
           <br />
           .گذرِ آرام نور در فضا شکل می‌گیرد

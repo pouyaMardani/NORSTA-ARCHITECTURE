@@ -1545,14 +1545,22 @@ body.menu-open{overflow:hidden}
 
 /* ---------- ≤680px : mobile ---------- */
 @media (max-width: 680px){
-  /* Hero */
-  .hero{padding-top:114px}
+  /* Hero.
+     The media band is half the hero and the hero is exactly one viewport tall,
+     so `50vh` of bottom padding ends the copy's own box precisely where that band
+     starts. `margin-top:auto` then takes up the slack above the copy, which reads
+     the wordmark, the lede and the action as one block centred in the space over
+     the photograph — instead of pinned under the header with a dead band beneath
+     them — while the fixed bottom margin keeps a step of clear air between the
+     action and the top of the media. */
+  .hero{padding-top:114px;padding-bottom:50vh}
+  .hero-copy{margin-top:auto;margin-bottom:clamp(24px,4vh,40px)}
   .hero-copy h1{
     font-size:clamp(56px,17vw,120px);white-space:normal;
   }
-  .hero-copy p{margin-top:20px;font-size:clamp(17px,4.7vw,20px);line-height:1.75;}
-  /* The desktop line breaks are too wide for a phone; let the text reflow. */
-  .hero-copy p br{display:none}
+  .hero-copy p{margin-top:20px;font-size:clamp(17px,4.7vw,20px);line-height:1.75}
+  /* Both authored lines of the lede fit the phone's measure, so the desktop break
+     is kept here rather than dropped and left to re-flow (`Hero.tsx`). */
   .hero-copy .link-underline{font-size:1.0625rem;margin-top:28px}
   .hero-image{height:50%}
   .scroll-cue{bottom:18px;font-size:var(--fs-caption)}
@@ -2045,6 +2053,11 @@ body.menu-open{overflow:hidden}
 /* Going "back" in a right-to-left register is travelling to the right. */
 .post-back:hover .post-back-arrow{transform:translate3d(4px,0,0)}
 .post-back:focus-visible{outline:2px solid var(--art-accent);outline-offset:3px}
+/* Touch: the meta-size link is ~20px tall; pad the hit area to the guideline
+   and pull the layout back with a matching negative margin. */
+@media (pointer:coarse){
+  .post-back{padding:.7em 0;margin:-.7em 0}
+}
 
 .post-head-title{margin-top:clamp(20px,2.2vw,30px)}
 .post-cat{
@@ -3440,6 +3453,10 @@ body.lb-open .to-top{
 /* Going "back" in a right-to-left register is travelling to the right. */
 .aca-back:hover .aca-back-arrow{transform:translate3d(4px,0,0)}
 .aca-back:focus-visible{outline:2px solid var(--aca-accent);outline-offset:3px}
+/* Same touch hit-area fix as `.post-back`. */
+@media (pointer:coarse){
+  .aca-back{padding:.7em 0;margin:-.7em 0}
+}
 
 .aca-post-title-block{margin-top:clamp(20px,2.2vw,30px)}
 .aca-post-badges{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
@@ -4149,6 +4166,9 @@ body.lb-open .to-top{
   will-change:transform;
   transition:transform .34s cubic-bezier(.22,.61,.36,1);
 }
+.pcenter{
+  text-align: center;
+}
 /* While a finger is down the transform has to track it exactly, so the easing is
    dropped for the length of the gesture and restored when it ends. */
 .mv[data-drag="true"] .mv-frame{transition:none}
@@ -4822,4 +4842,17 @@ html:has(body.mv-open){overflow:hidden}
 
 
 
+
+
+/* ---------- Mobile text alignment ----------
+   Persian body copy reads better set flush-justified on narrow screens, where
+   each line holds a full phrase; on wider screens the ragged right edge is the
+   intended register, so justification stays a mobile-only rule. Headings,
+   buttons, meta rows and other short strings are left alone. */
+@media (max-width:680px){
+  p{
+    text-align:justify;
+    text-justify:inter-word;
+  }
+}
 
