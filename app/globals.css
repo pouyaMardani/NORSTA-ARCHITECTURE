@@ -1003,208 +1003,44 @@ a{color:inherit;text-decoration:none}
   z-index:2;
 }
 
-/* ============== SECTION BRIDGES ============== */
+/* ============== SECTION DIVIDER ============== */
 /*
- * The joints between the home page's sections — reconsidered.
+ * The joint between two home-page sections: one beautiful line, broken in
+ * the middle.
  *
- * The first version of this bridge was too quiet: on two sections of one
- * colour it was nearly invisible, and where the colour changed it read as the
- * next section starting early rather than as a passage between the two. This
- * version is a passage you can see, and it is built on three things:
- *
- * 1. THE COLOURS ARE THE BRIDGE. The band is tall, and its ground is a
- *    visible journey from the upper section's colour, through a middle tone,
- *    into the lower section's colour. The middle tone is passed in per joint
- *    (`--bridge-mid`): the deeper sand where two ivory sections meet, the
- *    raised charcoal where two dark sections meet, a warm taupe where ivory
- *    meets charcoal. Nothing here is a new colour.
- *
- * 2. THREE-DIMENSIONAL, DRIVEN BY THE SCROLL. A slab in the lower section's
- *    colour floats in the band — a solid plate, with a soft shadow under it
- *    and a faint light on its top edge. It is tilted in three dimensions and
- *    it moves with the scroll: as the band enters the viewport the slab
- *    swings down toward the reader, settles flat while it is in view, and
- *    tilts away as it leaves. That motion is a scroll-driven animation
- *    (`animation-timeline: view()`), so the slab answers the scroll itself
- *    instead of playing once on arrival. It is gated behind both `@supports`
- *    and `prefers-reduced-motion: no-preference`: browsers without
- *    scroll-driven animations, and readers who asked for less motion, see
- *    the slab sitting flat.
- *
- * 3. FADING. The slab fades with the same scroll — it arrives out of nothing
- *    and leaves into nothing — and the ground itself is a fade from one
- *    section's colour into the next.
- *
- * The bands are tall on purpose: a passage has to have room. Ten of them add
- * about two screens to a very long page, and that is the price of the effect,
- * spent on purpose. Their entrance still rides the page's own reveal system
- * (`data-reveal` on the band itself). A bridge is a joint, not content: it
- * never takes part in the page's landmarks, and it never intercepts a
- * pointer.
+ * The page tried tall, colourful bridges, and they were too much. This is
+ * the opposite — a slim band in the section above's own colour, carrying a
+ * single hairline that fades at both ends, broken at its centre, with one
+ * small diamond sitting in the break. The diamond is the site's own mark
+ * (the labels wear the same square), and the break is punched by a ring of
+ * the band's own ground around the diamond, so the line never crosses it.
+ * Nothing moves, nothing blends: no JavaScript, no images, one element, and
+ * its entrance rides the page's own reveal system.
  */
-.bridge{
+.divider{
   position:relative;
-  height:clamp(200px,26vw,300px);
+  height:clamp(44px,5vw,60px);
+  background:var(--divider-bg);
   pointer-events:none;
 }
-/* No `overflow:hidden` here, on purpose: the slab's scroll-driven animation
-   (`animation-timeline: view()`) measures the slab against its nearest scroll
-   container, and an `overflow:hidden` band would be that container — the slab
-   would sit inside it, unmoving, at a fixed halfway progress forever. The
-   band's own scroller has to be the document, so the clipping lives on the
-   one layer that actually spills past the band's edges (`.bridge-orbs`),
-   and the slab and the waves are kept inside the band by their own insets. */
-/* The visible journey from one section's colour into the next: the upper
-   colour, the middle tone, the lower colour, in one unbroken fade. */
-.bridge-wash{
-  position:absolute;inset:0;
-  background:linear-gradient(
-    to bottom,
-    var(--bridge-from) 0%,
-    var(--bridge-mid) 52%,
-    var(--bridge-to) 100%
-  );
+/* The line: a hairline, fading at both ends so it never meets the page's
+   edges with a hard stop. */
+.divider::before{
+  content:"";position:absolute;left:50%;top:50%;
+  width:min(320px,58%);height:1px;transform:translate(-50%,-50%);
+  background:linear-gradient(to right, transparent, var(--hair), transparent);
 }
-/* The waves need a clean field to rise from: on a `curve` joint the wash is
-   a straight two-stop fade, and the waves themselves carry the middle tone —
-   otherwise the wave and the wash behind it are the same colour and the wave
-   disappears into its own ground. */
-.bridge[data-variant="curve"] .bridge-wash{
-  background:linear-gradient(to bottom, var(--bridge-from), var(--bridge-to));
+/* The break: one small diamond on the centre line, with a ring of the band's
+   own ground around it that punches the gap in the line. On a dark ground
+   the diamond is ivory, so the mark reads on either register. */
+.divider::after{
+  content:"";position:absolute;left:50%;top:50%;
+  width:7px;height:7px;
+  transform:translate(-50%,-50%) rotate(45deg);
+  background:var(--ink);opacity:.45;
+  box-shadow:0 0 0 10px var(--divider-bg);
 }
-
-/* ---------- the three-dimensional slab ---------- */
-/* A floating plate in the lower section's colour, with the shadow of a solid
-   thing under it and a faint light on its top edge — the two marks that make
-   a flat tint read as a slab. Its corners borrow the site's own asymmetric
-   radius, so it reads as one of the page's plates rather than a box. */
-.bridge-sheet{
-  position:absolute;
-  inset:21% 11%;
-  border-radius:clamp(18px,2vw,28px) 2px clamp(18px,2vw,28px) 2px;
-  background:var(--bridge-to);
-  box-shadow:
-    0 34px 70px -22px rgba(29,28,24,.55),
-    inset 0 1px 0 rgba(255,250,242,.32);
-}
-/* The slab's scroll: it swings down toward the reader as the band enters,
-   lies flat while the band is in view, and tilts away as the band leaves —
-   arriving and leaving out of nothing. Only where scroll-driven animation
-   exists and motion is welcome; everywhere else the slab simply sits flat. */
-@media (prefers-reduced-motion: no-preference){
-  @supports (animation-timeline: view()){
-    .bridge-sheet{
-      will-change:transform,opacity;
-      animation:bridge-sheet-pass linear both;
-      animation-timeline:view();
-      animation-range:entry 0% exit 100%;
-    }
-  }
-}
-@keyframes bridge-sheet-pass{
-  0%{
-    opacity:0;
-    transform:perspective(900px) rotateX(46deg) translateY(54px) scale(.94);
-  }
-  32%{
-    opacity:1;
-    transform:perspective(900px) rotateX(0deg) translateY(0) scale(1);
-  }
-  68%{
-    opacity:1;
-    transform:perspective(900px) rotateX(0deg) translateY(0) scale(1);
-  }
-  100%{
-    opacity:0;
-    transform:perspective(900px) rotateX(-30deg) translateY(-46px) scale(.96);
-  }
-}
-/* The page turn turns harder: a steeper swing in, a steeper tilt away. */
-.bridge[data-variant="fold"] .bridge-sheet{
-  inset:16% 8%;
-}
-@media (prefers-reduced-motion: no-preference){
-  @supports (animation-timeline: view()){
-    .bridge[data-variant="fold"] .bridge-sheet{
-      animation-name:bridge-fold-pass;
-    }
-  }
-}
-@keyframes bridge-fold-pass{
-  0%{
-    opacity:0;
-    transform:perspective(900px) rotateX(62deg) translateY(72px) scale(.92);
-  }
-  32%{
-    opacity:1;
-    transform:perspective(900px) rotateX(0deg) translateY(0) scale(1);
-  }
-  68%{
-    opacity:1;
-    transform:perspective(900px) rotateX(0deg) translateY(0) scale(1);
-  }
-  100%{
-    opacity:0;
-    transform:perspective(900px) rotateX(-42deg) translateY(-60px) scale(.95);
-  }
-}
-
-/* ---------- mist: the cloudy halo ---------- */
-/* Two big soft discs — one of each section's colour — drifting slowly across
-   the band. They are large on purpose: a halo has to be seen, not implied.
-   Their drift is transform only, and the page's reduced-motion rules still
-   it outright. This layer carries the band's only clipping (see the note on
-   `.bridge`): the discs spill past the band's edges, and this box keeps them
-   inside it. */
-.bridge-orbs{position:absolute;inset:0;overflow:hidden}
-.bridge-orbs i{
-  position:absolute;border-radius:50%;
-  filter:blur(42px);
-  background:radial-gradient(closest-side, var(--bridge-to), transparent);
-  animation:bridge-drift 17s ease-in-out infinite alternate;
-  will-change:transform;
-}
-.bridge-orbs i:nth-child(1){width:52vw;height:180px;left:-8vw;top:-40px}
-.bridge-orbs i:nth-child(2){
-  width:44vw;height:150px;right:-6vw;bottom:-46px;
-  background:radial-gradient(closest-side, var(--bridge-from), transparent);
-  animation-duration:23s;animation-delay:-7s;
-}
-/* Light joints breathe ivory and the deeper sand, so the clouds read against
-   the ivory wash; dark joints breathe a little of the site's ivory at low
-   strength and a raised dark surface, so the clouds read as light on the
-   charcoal rather than as a second, greyer charcoal. */
-.bridge[data-tone="light"] .bridge-orbs i:nth-child(1){
-  background:radial-gradient(closest-side, rgba(255,250,242,.9), transparent);
-}
-.bridge[data-tone="light"] .bridge-orbs i:nth-child(2){
-  background:radial-gradient(closest-side, rgba(237,226,211,.95), transparent);
-}
-.bridge[data-tone="dark"] .bridge-orbs i{
-  background:radial-gradient(closest-side, rgba(243,233,222,.12), transparent);
-}
-.bridge[data-tone="dark"] .bridge-orbs i:nth-child(2){
-  background:radial-gradient(closest-side, rgba(29,25,21,.9), transparent);
-}
-@keyframes bridge-drift{
-  from{transform:translate3d(-4vw,0,0)}
-  to{transform:translate3d(4vw,-8px,0)}
-}
-
-/* ---------- curve: the waves ---------- */
-/* Two waves fill the lower half of the band: the lower section's colour
-   sweeping up in front, the middle tone behind it, offset so the two read
-   as depth rather than one flat shape. The waves are drawn, not photographed:
-   one inline SVG, no request. */
-.bridge-waves{
-  position:absolute;left:0;right:0;bottom:0;width:100%;height:62%;
-  display:block;
-  /* A soft shadow cast upward from the waves' crest, so the edge reads even
-     where the wave and the wash are close in tone. */
-  filter:drop-shadow(0 -10px 22px rgba(29,28,24,.18));
-}
-.bridge-wave--front{fill:var(--bridge-accent)}
-.bridge-wave--back{fill:var(--bridge-mid);opacity:.55}
+.divider[data-tone="dark"]::after{background:var(--bg);opacity:.7}
 
 /* ============== FOOT ============== */
 .foot{

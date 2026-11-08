@@ -12,7 +12,7 @@ import Lightbox from "@/components/Lightbox";
 import MaterialsShowcase from "@/components/MaterialsShowcase";
 import MicrocementSamples from "@/components/MicrocementSamples";
 import Nav from "@/components/Nav";
-import SectionBridge from "@/components/SectionBridge";
+import SectionDivider from "@/components/SectionDivider";
 import Services from "@/components/Services";
 import SiteInteractions from "@/components/SiteInteractions";
 import Work from "@/components/Work";
@@ -37,45 +37,30 @@ export default function Page() {
       <Nav />
       <main>
         <Hero />
-        {/* The joints: one bridge between every two sections, each in the two
-            sections' own colours, with the middle tone the colour journey
-            passes through — the deeper sand where two ivory sections meet,
-            the raised charcoal where two dark sections meet, a warm taupe
-            where ivory meets charcoal. `fold` is the three-dimensional page
-            turn where the colour changes, `curve` the rising wave, `mist` the
-            cloudy halo where two sections of one colour need air. See
-            `components/SectionBridge.tsx`. */}
-        <SectionBridge variant="mist" from="var(--bg)" to="var(--bg)" mid="var(--bg-2)" />
+        {/* The joints: one simple divider between every two sections — a
+            beautiful line, broken in the middle, in the site's own language.
+            Its ground is the section above's own colour, so it never reads
+            as a stripe of the wrong colour where two dark sections meet. See
+            `components/SectionDivider.tsx`. */}
+        <SectionDivider bg="var(--bg)" />
         <Services />
-        <SectionBridge
-          variant="curve"
-          from="var(--bg)"
-          to="var(--bg)"
-          mid="var(--bg-2)"
-          accent="var(--hair)"
-        />
+        <SectionDivider bg="var(--bg)" />
         <About />
-        <SectionBridge variant="mist" from="var(--bg)" to="var(--bg)" mid="var(--bg-2)" />
+        <SectionDivider bg="var(--bg)" />
         <Work />
-        <SectionBridge
-          variant="curve"
-          from="var(--bg)"
-          to="var(--bg)"
-          mid="var(--bg-2)"
-          accent="var(--hair)"
-        />
+        <SectionDivider bg="var(--bg)" />
         <MaterialsShowcase />
-        <SectionBridge variant="fold" from="var(--bg)" to="#100e0b" mid="#7d7468" />
+        <SectionDivider bg="var(--bg)" />
         <MicrocementSamples />
-        <SectionBridge variant="mist" from="#100e0b" to="#100e0b" mid="#1d1915" tone="dark" />
+        <SectionDivider bg="#100e0b" tone="dark" />
         <Articles />
-        <SectionBridge variant="fold" from="#100e0b" to="var(--bg-2)" mid="#7d7468" />
+        <SectionDivider bg="#100e0b" tone="dark" />
         <Craftsman />
-        <SectionBridge variant="curve" from="var(--bg-2)" to="#100e0b" mid="#7d7468" />
+        <SectionDivider bg="var(--bg-2)" />
         <AcademyPromo />
-        <SectionBridge variant="fold" from="#100e0b" to="var(--bg)" mid="#7d7468" />
+        <SectionDivider bg="#100e0b" tone="dark" />
         <Contact />
-        <SectionBridge variant="mist" from="var(--bg)" to="var(--bg)" mid="var(--bg-2)" />
+        <SectionDivider bg="var(--bg)" />
         <InstagramShowcase />
       </main>
       <Lightbox />
