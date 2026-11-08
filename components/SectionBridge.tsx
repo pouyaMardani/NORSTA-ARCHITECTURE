@@ -1,51 +1,70 @@
 import type { CSSProperties } from "react";
 
 /**
- * The bridge between two home-page sections.
+ * The bridge between two home-page sections — reconsidered.
  *
- * The home page is twelve sections in a row, and the gap between two of them
- * was only padding — one section ended, the next began, and the change was a
- * hard cut. A bridge sits in that gap and joins the two sections' own colours,
- * so the eye travels from one to the next instead of jumping.
+ * The first version of this bridge was too quiet: on two sections of one
+ * colour it was nearly invisible, and where the colour changed it read as the
+ * next section starting early rather than as a passage between the two. This
+ * version is a passage you can see. Three things, all of them deliberate:
  *
- * Four variants, one system — no JavaScript, no images, no extra requests.
- * Everything here is paint: gradients, one inline SVG, and transforms, so the
- * bridges cost nothing to load and nothing to scroll. Their entrance rides the
- * page's own reveal system (`data-reveal`), and the global reduced-motion
- * rules still the drift and the fold outright.
+ * 1. THE COLOURS ARE THE BRIDGE. The band is tall, and its ground is a
+ *    visible journey from the upper section's colour, through a middle tone,
+ *    into the lower section's colour. `from` and `to` are the two sections'
+ *    own backgrounds; `mid` is the tone the journey passes through — the
+ *    deeper sand where two ivory sections meet, the raised charcoal where two
+ *    dark sections meet, a warm taupe where ivory meets charcoal. Nothing
+ *    here is a new colour: every tone is the page's own palette, or the
+ *    midpoint of the two colours it joins.
  *
- * ── THE FOUR VARIANTS ──────────────────────────────────────────────────────
- * `mist`   A cloudy halo: the band blends the upper colour into the lower one
- *          and three soft discs of the two colours drift across it, slowly.
- *          The breathing space between two sections of the same colour.
- * `fold`   A three-dimensional page turn: the lower section's colour arrives
- *          as a plane that swings down from the crease and settles flat, with
- *          the shadow of the fold under it. Used where the page enters the
- *          dark — ivory into charcoal — so the turn reads as a real turn.
- * `curve`  A wave: the lower section's colour sweeps up into the band as one
- *          smooth curve. Used where the page leaves the dark — charcoal into
- *          ivory — so the light rises out of it.
- * `veil`   The quiet one: the same blend as `mist` without the clouds, a
- *          hairline that fades at both ends, and one small diamond on the
- *          centre line. Used where the joint should be felt and not seen.
+ * 2. THREE-DIMENSIONAL, DRIVEN BY THE SCROLL. A slab in the lower section's
+ *    colour floats in the band — a solid plate, with a soft shadow under it
+ *    and a faint light on its top edge, so it reads as a thing rather than a
+ *    tint. It is tilted in three dimensions and it moves with the scroll:
+ *    as the band enters the viewport the slab swings down toward the reader,
+ *    settles flat while it is in view, and tilts away as it leaves. That
+ *    motion is a scroll-driven animation (`animation-timeline: view()`), so
+ *    the slab answers the scroll itself instead of playing once on arrival.
+ *    Browsers without scroll-driven animations, and readers who asked for
+ *    less motion, see the slab sitting flat — the bridge is still a coloured
+ *    passage, just without the turn.
  *
- * ── HOW A VARIANT READS ITS COLOURS ────────────────────────────────────────
- * `from` / `to` are the two sections' own backgrounds, as CSS colours — the
- * site's own tokens (`var(--bg)`, `var(--bg-2)`) or the dark sections' own
- * charcoal (`#100e0b`). `tone` says which register the clouds belong to:
- * light joints breathe ivory, dark joints breathe a little of the site's
- * ivory at low strength. `accent` is only for `curve`: the wave's fill when
- * the two sections share a colour and the wave would otherwise be invisible.
+ * 3. FADING. The slab fades with the same scroll: it arrives out of nothing
+ *    and leaves into nothing, and the ground itself is a fade from one
+ *    section's colour into the next. The bridge is a dissolve as much as a
+ *    joint.
+ *
+ * ── THE THREE VARIANTS ─────────────────────────────────────────────────────
+ * `fold`   The slab is the star: a page turn. It swings down from the top
+ *          crease at a steep tilt, so the turn reads as a real turn. Used
+ *          where the colour changes — the joints that need the most drama.
+ * `mist`   The cloudy halo: two big soft discs of the two sections' colours
+ *          drift across the band, slowly, and the slab turns more gently
+ *          beneath them. Used where two sections of one colour need air.
+ * `curve`  No slab — two waves instead. The lower section's colour sweeps up
+ *          into the band as one smooth wave, with a fainter wave of the
+ *          middle tone behind it, so the light (or the dark) rises out of
+ *          the section above.
+ *
+ * ── COST ───────────────────────────────────────────────────────────────────
+ * Still no JavaScript and no images: one inline SVG for the waves, the rest
+ * paint. The scroll-driven motion is transform and opacity only, which the
+ * compositor owns, and it is gated behind both `@supports` and
+ * `prefers-reduced-motion: no-preference`. The bands are tall on purpose —
+ * a passage has to have room — so the page grows by about two screens in
+ * total. That is the price of the effect, and it is spent on purpose.
  */
-export type BridgeVariant = "mist" | "fold" | "curve" | "veil";
+export type BridgeVariant = "mist" | "fold" | "curve";
 
 type SectionBridgeProps = {
-  /** Which of the four joints this is. */
+  /** Which of the three joints this is. */
   variant: BridgeVariant;
   /** The section above, as a CSS colour. */
   from: string;
   /** The section below, as a CSS colour. */
   to: string;
+  /** The tone the colour journey passes through, as a CSS colour. */
+  mid: string;
   /** Light or dark clouds for `mist`. Defaults to light. */
   tone?: "light" | "dark";
   /** The wave's fill for `curve`, when `to` would not read against `from`. */
@@ -56,12 +75,14 @@ export default function SectionBridge({
   variant,
   from,
   to,
+  mid,
   tone = "light",
   accent,
 }: SectionBridgeProps) {
   const style = {
     "--bridge-from": from,
     "--bridge-to": to,
+    "--bridge-mid": mid,
     "--bridge-accent": accent ?? to,
   } as CSSProperties;
 
@@ -74,36 +95,38 @@ export default function SectionBridge({
       aria-hidden="true"
       style={style}
     >
+      {/* The visible journey from one section's colour into the next. */}
+      <span className="bridge-wash" />
+
       {variant === "mist" ? (
-        <span className="bridge-mist">
-          <i />
+        <span className="bridge-orbs">
           <i />
           <i />
         </span>
       ) : null}
 
-      {variant === "fold" ? (
-        <>
-          <span className="bridge-fold-plane" />
-          <span className="bridge-fold-crease" />
-        </>
+      {variant !== "curve" ? (
+        /* The three-dimensional slab: the lower section's colour, floating in
+           the band, tilted by the scroll. */
+        <span className="bridge-sheet" />
       ) : null}
 
       {variant === "curve" ? (
         <svg
-          className="bridge-curve"
-          viewBox="0 0 1440 120"
+          className="bridge-waves"
+          viewBox="0 0 1440 220"
           preserveAspectRatio="none"
           focusable="false"
         >
-          <path d="M0,0 L1440,0 L1440,34 C1180,86 980,18 760,52 C560,82 360,30 180,58 C90,72 30,66 0,58 Z" />
+          <path
+            className="bridge-wave bridge-wave--back"
+            d="M0,60 C240,10 480,110 720,60 C960,10 1200,110 1440,60 L1440,220 L0,220 Z"
+          />
+          <path
+            className="bridge-wave bridge-wave--front"
+            d="M0,110 C240,60 480,160 720,110 C960,60 1200,160 1440,110 L1440,220 L0,220 Z"
+          />
         </svg>
-      ) : null}
-
-      {variant === "veil" ? (
-        <span className="bridge-veil">
-          <i />
-        </span>
       ) : null}
     </div>
   );

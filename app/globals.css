@@ -1005,134 +1005,206 @@ a{color:inherit;text-decoration:none}
 
 /* ============== SECTION BRIDGES ============== */
 /*
- * The joints between the home page's sections.
+ * The joints between the home page's sections — reconsidered.
  *
- * Twelve sections in a row, and the gap between two of them was only padding:
- * one section ended, the next began, and the change was a hard cut. A bridge
- * sits in that gap and joins the two sections' own colours, so the eye travels
- * from one to the next instead of jumping. Four variants, one system, and all
- * of it paint — gradients, one inline SVG, and transforms. No JavaScript, no
- * images, no extra requests, and nothing to scroll: the only motion is
- * transform and opacity, which the compositor owns, and the global
- * reduced-motion rules still the drift and the fold outright.
+ * The first version of this bridge was too quiet: on two sections of one
+ * colour it was nearly invisible, and where the colour changed it read as the
+ * next section starting early rather than as a passage between the two. This
+ * version is a passage you can see, and it is built on three things:
  *
- * The bridge's own height is the joint's breathing room — modest, so ten of
- * them add about one screen to a very long page rather than ten. Its entrance
- * rides the page's own reveal system (`data-reveal` on the band itself).
+ * 1. THE COLOURS ARE THE BRIDGE. The band is tall, and its ground is a
+ *    visible journey from the upper section's colour, through a middle tone,
+ *    into the lower section's colour. The middle tone is passed in per joint
+ *    (`--bridge-mid`): the deeper sand where two ivory sections meet, the
+ *    raised charcoal where two dark sections meet, a warm taupe where ivory
+ *    meets charcoal. Nothing here is a new colour.
  *
- * `mist`   The band blends the upper colour into the lower one, and three soft
- *          discs of the two colours drift across it. The breathing space
- *          between two sections of the same colour.
- * `fold`   A three-dimensional page turn, used where the page enters the dark.
- *          The lower colour arrives as a plane hinged on the crease: it starts
- *          tilted up toward the reader and swings down flat as the band is
- *          revealed, with the fold's own shadow under the crease. The plane is
- *          the lower section's colour, so once it has settled the band is the
- *          next section already begun.
- * `curve`  A wave of the lower colour sweeping up into the band, drawn as one
- *          inline SVG path. Used where the page leaves the dark, so the light
- *          rises out of it.
- * `veil`   The quiet one: the same blend without the clouds, a hairline that
- *          fades at both ends, and one small diamond on the centre line.
+ * 2. THREE-DIMENSIONAL, DRIVEN BY THE SCROLL. A slab in the lower section's
+ *    colour floats in the band — a solid plate, with a soft shadow under it
+ *    and a faint light on its top edge. It is tilted in three dimensions and
+ *    it moves with the scroll: as the band enters the viewport the slab
+ *    swings down toward the reader, settles flat while it is in view, and
+ *    tilts away as it leaves. That motion is a scroll-driven animation
+ *    (`animation-timeline: view()`), so the slab answers the scroll itself
+ *    instead of playing once on arrival. It is gated behind both `@supports`
+ *    and `prefers-reduced-motion: no-preference`: browsers without
+ *    scroll-driven animations, and readers who asked for less motion, see
+ *    the slab sitting flat.
+ *
+ * 3. FADING. The slab fades with the same scroll — it arrives out of nothing
+ *    and leaves into nothing — and the ground itself is a fade from one
+ *    section's colour into the next.
+ *
+ * The bands are tall on purpose: a passage has to have room. Ten of them add
+ * about two screens to a very long page, and that is the price of the effect,
+ * spent on purpose. Their entrance still rides the page's own reveal system
+ * (`data-reveal` on the band itself). A bridge is a joint, not content: it
+ * never takes part in the page's landmarks, and it never intercepts a
+ * pointer.
  */
 .bridge{
   position:relative;
-  height:clamp(72px,9vw,132px);
-  overflow:hidden;
+  height:clamp(200px,26vw,300px);
+  pointer-events:none;
+}
+/* No `overflow:hidden` here, on purpose: the slab's scroll-driven animation
+   (`animation-timeline: view()`) measures the slab against its nearest scroll
+   container, and an `overflow:hidden` band would be that container — the slab
+   would sit inside it, unmoving, at a fixed halfway progress forever. The
+   band's own scroller has to be the document, so the clipping lives on the
+   one layer that actually spills past the band's edges (`.bridge-orbs`),
+   and the slab and the waves are kept inside the band by their own insets. */
+/* The visible journey from one section's colour into the next: the upper
+   colour, the middle tone, the lower colour, in one unbroken fade. */
+.bridge-wash{
+  position:absolute;inset:0;
+  background:linear-gradient(
+    to bottom,
+    var(--bridge-from) 0%,
+    var(--bridge-mid) 52%,
+    var(--bridge-to) 100%
+  );
+}
+/* The waves need a clean field to rise from: on a `curve` joint the wash is
+   a straight two-stop fade, and the waves themselves carry the middle tone —
+   otherwise the wave and the wash behind it are the same colour and the wave
+   disappears into its own ground. */
+.bridge[data-variant="curve"] .bridge-wash{
   background:linear-gradient(to bottom, var(--bridge-from), var(--bridge-to));
 }
-/* A bridge is a joint, not content: it never takes part in the page's own
-   landmarks, and it never intercepts a pointer. */
-.bridge{pointer-events:none}
+
+/* ---------- the three-dimensional slab ---------- */
+/* A floating plate in the lower section's colour, with the shadow of a solid
+   thing under it and a faint light on its top edge — the two marks that make
+   a flat tint read as a slab. Its corners borrow the site's own asymmetric
+   radius, so it reads as one of the page's plates rather than a box. */
+.bridge-sheet{
+  position:absolute;
+  inset:21% 11%;
+  border-radius:clamp(18px,2vw,28px) 2px clamp(18px,2vw,28px) 2px;
+  background:var(--bridge-to);
+  box-shadow:
+    0 34px 70px -22px rgba(29,28,24,.55),
+    inset 0 1px 0 rgba(255,250,242,.32);
+}
+/* The slab's scroll: it swings down toward the reader as the band enters,
+   lies flat while the band is in view, and tilts away as the band leaves —
+   arriving and leaving out of nothing. Only where scroll-driven animation
+   exists and motion is welcome; everywhere else the slab simply sits flat. */
+@media (prefers-reduced-motion: no-preference){
+  @supports (animation-timeline: view()){
+    .bridge-sheet{
+      will-change:transform,opacity;
+      animation:bridge-sheet-pass linear both;
+      animation-timeline:view();
+      animation-range:entry 0% exit 100%;
+    }
+  }
+}
+@keyframes bridge-sheet-pass{
+  0%{
+    opacity:0;
+    transform:perspective(900px) rotateX(46deg) translateY(54px) scale(.94);
+  }
+  32%{
+    opacity:1;
+    transform:perspective(900px) rotateX(0deg) translateY(0) scale(1);
+  }
+  68%{
+    opacity:1;
+    transform:perspective(900px) rotateX(0deg) translateY(0) scale(1);
+  }
+  100%{
+    opacity:0;
+    transform:perspective(900px) rotateX(-30deg) translateY(-46px) scale(.96);
+  }
+}
+/* The page turn turns harder: a steeper swing in, a steeper tilt away. */
+.bridge[data-variant="fold"] .bridge-sheet{
+  inset:16% 8%;
+}
+@media (prefers-reduced-motion: no-preference){
+  @supports (animation-timeline: view()){
+    .bridge[data-variant="fold"] .bridge-sheet{
+      animation-name:bridge-fold-pass;
+    }
+  }
+}
+@keyframes bridge-fold-pass{
+  0%{
+    opacity:0;
+    transform:perspective(900px) rotateX(62deg) translateY(72px) scale(.92);
+  }
+  32%{
+    opacity:1;
+    transform:perspective(900px) rotateX(0deg) translateY(0) scale(1);
+  }
+  68%{
+    opacity:1;
+    transform:perspective(900px) rotateX(0deg) translateY(0) scale(1);
+  }
+  100%{
+    opacity:0;
+    transform:perspective(900px) rotateX(-42deg) translateY(-60px) scale(.95);
+  }
+}
 
 /* ---------- mist: the cloudy halo ---------- */
-.bridge-mist{position:absolute;inset:0}
-.bridge-mist i{
+/* Two big soft discs — one of each section's colour — drifting slowly across
+   the band. They are large on purpose: a halo has to be seen, not implied.
+   Their drift is transform only, and the page's reduced-motion rules still
+   it outright. This layer carries the band's only clipping (see the note on
+   `.bridge`): the discs spill past the band's edges, and this box keeps them
+   inside it. */
+.bridge-orbs{position:absolute;inset:0;overflow:hidden}
+.bridge-orbs i{
   position:absolute;border-radius:50%;
-  filter:blur(26px);
-  /* Two discs of the lower colour, one of the upper: the clouds are the two
-     sections themselves, softened, so the halo is always in the page's own
-     palette and never a new colour. */
+  filter:blur(42px);
   background:radial-gradient(closest-side, var(--bridge-to), transparent);
-  animation:bridge-drift 18s ease-in-out infinite alternate;
+  animation:bridge-drift 17s ease-in-out infinite alternate;
   will-change:transform;
 }
-.bridge-mist i:nth-child(1){width:44vw;height:120px;left:-6vw;top:-30px}
-.bridge-mist i:nth-child(2){
-  width:36vw;height:100px;right:-4vw;bottom:-34px;
+.bridge-orbs i:nth-child(1){width:52vw;height:180px;left:-8vw;top:-40px}
+.bridge-orbs i:nth-child(2){
+  width:44vw;height:150px;right:-6vw;bottom:-46px;
   background:radial-gradient(closest-side, var(--bridge-from), transparent);
-  animation-duration:23s;animation-delay:-6s;
+  animation-duration:23s;animation-delay:-7s;
 }
-.bridge-mist i:nth-child(3){
-  width:26vw;height:80px;left:34%;top:6px;
-  animation-duration:15s;animation-delay:-11s;
-}
-/* Light joints breathe ivory; dark joints breathe a little of the site's ivory
-   at low strength, so the clouds read as light on the charcoal rather than as
-   a second, greyer charcoal. */
-.bridge[data-tone="light"] .bridge-mist i:nth-child(1){
+/* Light joints breathe ivory and the deeper sand, so the clouds read against
+   the ivory wash; dark joints breathe a little of the site's ivory at low
+   strength and a raised dark surface, so the clouds read as light on the
+   charcoal rather than as a second, greyer charcoal. */
+.bridge[data-tone="light"] .bridge-orbs i:nth-child(1){
   background:radial-gradient(closest-side, rgba(255,250,242,.9), transparent);
 }
-.bridge[data-tone="light"] .bridge-mist i:nth-child(2){
+.bridge[data-tone="light"] .bridge-orbs i:nth-child(2){
   background:radial-gradient(closest-side, rgba(237,226,211,.95), transparent);
 }
-.bridge[data-tone="light"] .bridge-mist i:nth-child(3){
-  background:radial-gradient(closest-side, rgba(255,250,242,.75), transparent);
+.bridge[data-tone="dark"] .bridge-orbs i{
+  background:radial-gradient(closest-side, rgba(243,233,222,.12), transparent);
 }
-.bridge[data-tone="dark"] .bridge-mist i{
-  background:radial-gradient(closest-side, rgba(243,233,222,.09), transparent);
-}
-.bridge[data-tone="dark"] .bridge-mist i:nth-child(2){
-  background:radial-gradient(closest-side, rgba(23,19,16,.9), transparent);
+.bridge[data-tone="dark"] .bridge-orbs i:nth-child(2){
+  background:radial-gradient(closest-side, rgba(29,25,21,.9), transparent);
 }
 @keyframes bridge-drift{
-  from{transform:translate3d(-3vw,0,0)}
-  to{transform:translate3d(3vw,-6px,0)}
+  from{transform:translate3d(-4vw,0,0)}
+  to{transform:translate3d(4vw,-8px,0)}
 }
 
-/* ---------- fold: the three-dimensional page turn ---------- */
-.bridge[data-variant="fold"]{perspective:900px}
-.bridge-fold-plane{
-  position:absolute;inset:0;
-  background:var(--bridge-to);
-  transform-origin:top center;
-  /* Tilted up toward the reader while the band is still hidden, flat once it
-     has been revealed: the lower section swings down out of the crease. */
-  transform:rotateX(52deg);
-  transition:transform 1.1s cubic-bezier(.22,.61,.36,1);
-  will-change:transform;
-}
-.bridge.is-in .bridge-fold-plane{transform:rotateX(0)}
-/* The crease itself: a hairline at the top of the band, with the fold's shadow
-   cast down over the plane — the shadow is what sells the depth, so it is the
-   one soft shadow in the whole system. */
-.bridge-fold-crease{
-  position:absolute;left:0;right:0;top:0;height:1px;z-index:1;
-  background:rgba(29,28,24,.22);
-  box-shadow:0 26px 42px -16px rgba(29,28,24,.5);
-}
-
-/* ---------- curve: the wave ---------- */
-.bridge-curve{
-  position:absolute;left:0;right:0;bottom:0;width:100%;height:100%;
+/* ---------- curve: the waves ---------- */
+/* Two waves fill the lower half of the band: the lower section's colour
+   sweeping up in front, the middle tone behind it, offset so the two read
+   as depth rather than one flat shape. The waves are drawn, not photographed:
+   one inline SVG, no request. */
+.bridge-waves{
+  position:absolute;left:0;right:0;bottom:0;width:100%;height:62%;
   display:block;
+  /* A soft shadow cast upward from the waves' crest, so the edge reads even
+     where the wave and the wash are close in tone. */
+  filter:drop-shadow(0 -10px 22px rgba(29,28,24,.18));
 }
-.bridge-curve path{fill:var(--bridge-accent)}
-
-/* ---------- veil: the quiet joint ---------- */
-.bridge-veil{
-  position:absolute;inset:0;
-  display:grid;place-items:center;
-}
-.bridge-veil::before{
-  content:"";position:absolute;left:50%;top:50%;
-  width:min(240px,42%);height:1px;transform:translate(-50%,-50%);
-  background:linear-gradient(to right, transparent, var(--hair), transparent);
-}
-.bridge-veil i{
-  position:relative;display:block;width:7px;height:7px;
-  background:var(--ink);opacity:.45;transform:rotate(45deg);
-}
+.bridge-wave--front{fill:var(--bridge-accent)}
+.bridge-wave--back{fill:var(--bridge-mid);opacity:.55}
 
 /* ============== FOOT ============== */
 .foot{

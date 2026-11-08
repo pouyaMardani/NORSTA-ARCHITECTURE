@@ -38,34 +38,44 @@ export default function Page() {
       <main>
         <Hero />
         {/* The joints: one bridge between every two sections, each in the two
-            sections' own colours. `fold` is where the page enters the dark,
-            `curve` where it leaves it, `mist` where two sections of one colour
-            need air, `veil` where the joint should be felt and not seen. See
+            sections' own colours, with the middle tone the colour journey
+            passes through — the deeper sand where two ivory sections meet,
+            the raised charcoal where two dark sections meet, a warm taupe
+            where ivory meets charcoal. `fold` is the three-dimensional page
+            turn where the colour changes, `curve` the rising wave, `mist` the
+            cloudy halo where two sections of one colour need air. See
             `components/SectionBridge.tsx`. */}
-        <SectionBridge variant="mist" from="var(--bg)" to="var(--bg)" />
+        <SectionBridge variant="mist" from="var(--bg)" to="var(--bg)" mid="var(--bg-2)" />
         <Services />
-        <SectionBridge variant="veil" from="var(--bg)" to="var(--bg)" />
-        <About />
         <SectionBridge
           variant="curve"
           from="var(--bg)"
           to="var(--bg)"
-          accent="var(--bg-2)"
+          mid="var(--bg-2)"
+          accent="var(--hair)"
         />
+        <About />
+        <SectionBridge variant="mist" from="var(--bg)" to="var(--bg)" mid="var(--bg-2)" />
         <Work />
-        <SectionBridge variant="mist" from="var(--bg)" to="var(--bg)" />
+        <SectionBridge
+          variant="curve"
+          from="var(--bg)"
+          to="var(--bg)"
+          mid="var(--bg-2)"
+          accent="var(--hair)"
+        />
         <MaterialsShowcase />
-        <SectionBridge variant="fold" from="var(--bg)" to="#100e0b" />
+        <SectionBridge variant="fold" from="var(--bg)" to="#100e0b" mid="#7d7468" />
         <MicrocementSamples />
-        <SectionBridge variant="mist" from="#100e0b" to="#100e0b" tone="dark" />
+        <SectionBridge variant="mist" from="#100e0b" to="#100e0b" mid="#1d1915" tone="dark" />
         <Articles />
-        <SectionBridge variant="curve" from="#100e0b" to="var(--bg-2)" />
+        <SectionBridge variant="fold" from="#100e0b" to="var(--bg-2)" mid="#7d7468" />
         <Craftsman />
-        <SectionBridge variant="fold" from="var(--bg-2)" to="#100e0b" />
+        <SectionBridge variant="curve" from="var(--bg-2)" to="#100e0b" mid="#7d7468" />
         <AcademyPromo />
-        <SectionBridge variant="curve" from="#100e0b" to="var(--bg)" />
+        <SectionBridge variant="fold" from="#100e0b" to="var(--bg)" mid="#7d7468" />
         <Contact />
-        <SectionBridge variant="veil" from="var(--bg)" to="var(--bg)" />
+        <SectionBridge variant="mist" from="var(--bg)" to="var(--bg)" mid="var(--bg-2)" />
         <InstagramShowcase />
       </main>
       <Lightbox />
