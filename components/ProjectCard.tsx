@@ -8,8 +8,9 @@ import { formatProjectNumber, type ProjectDTO } from "@/content/projects";
  * related-projects row under a project page.
  *
  * The card is a real link to `/projects/<slug>`: the whole plate is the target,
- * the photograph is a real <Image>, and the title, category and location are
- * real text laid over a gradient scrim, never a flattened screenshot.
+ * the photograph is a real <Image>, and the title, category, location and the
+ * project's own one-line description are real text laid over a gradient scrim,
+ * never a flattened screenshot.
  *
  * Accessibility: the link's accessible name is its own content (category,
  * title, location), so a screen reader announces what the card is. The plate
@@ -70,15 +71,22 @@ export default function ProjectCard({
         <span className="pcard-meta">
           <span className="pcard-cat">{project.category}</span>
           <h3 className="pcard-title">{project.title}</h3>
-          {project.location ? (
-            <span className="pcard-loc">{project.location}</span>
-          ) : null}
+          <span className="pcard-desc">{project.shortDescription}</span>
 
-          <span className="pcard-arrow" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
-              <path d="M4 12h16" />
-              <path d="M14 6l6 6-6 6" />
-            </svg>
+          <span className="pcard-foot">
+            {project.location ? (
+              <span className="pcard-loc">{project.location}</span>
+            ) : null}
+            <span className="pcard-action" aria-hidden="true">
+              مشاهده پروژه
+              <span className="pcard-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
+                  {/* Left-pointing: forward in this right-to-left page. */}
+                  <path d="M20 12H4" />
+                  <path d="M10 6l-6 6 6 6" />
+                </svg>
+              </span>
+            </span>
           </span>
         </span>
       </span>

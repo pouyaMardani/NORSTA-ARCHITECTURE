@@ -8,14 +8,14 @@ import { getFeaturedProjects, PROJECT_CONFIG, toPersianDigits } from "@/content/
  *
  * The section is a Server Component: it reads the projects, prints them as
  * static HTML in the section head, and hands the list to `ProjectMarquee`, the
- * only client piece of the feature (it measures the track to keep the loop
- * seamless and pauses the drift when the gallery is off screen). All of the copy
- * lives in `content/projects/config.ts`, so nothing here has to change when a
- * project is added, removed or re-ordered.
+ * only client piece of the feature. All of the copy lives in
+ * `content/projects/config.ts`, so nothing here has to change when a project
+ * is added, removed or re-ordered.
  *
- * The heading and the intro keep the site's original wording and line breaks
- * (`introLines`); `#work` is still the section's id, so the header, the hero cue
- * and every deep link keep working.
+ * The head's call-to-action is a real button, not a bare arrow: it scrolls to
+ * the gallery itself (`#work-gallery`), so it works with a keyboard, a mouse
+ * and a finger alike. `#work` is still the section's id, so the header, the
+ * hero cue and every deep link keep working.
  */
 export default function Work() {
   const projects = getFeaturedProjects();
@@ -38,8 +38,9 @@ export default function Work() {
               {line}
             </Fragment>
           ))}
-          <a href="#work" className="arrow-link" aria-label={labels.jumpToGallery}>
-            →
+          <a href="#work-gallery" className="work-cta">
+            {labels.viewGallery}
+            <span aria-hidden="true">↓</span>
           </a>
         </p>
 
@@ -51,7 +52,13 @@ export default function Work() {
         </div>
       </div>
 
-      <ProjectMarquee projects={projects} label={section.galleryLabel} />
+      <ProjectMarquee
+        projects={projects}
+        label={section.galleryLabel}
+        hint={labels.scrollHint}
+        previousLabel={labels.previous}
+        nextLabel={labels.next}
+      />
     </section>
   );
 }

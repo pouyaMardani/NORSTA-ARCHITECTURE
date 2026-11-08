@@ -1,38 +1,46 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 import ProjectCard from "./ProjectCard";
 import type { ProjectDTO } from "@/content/projects";
+import { toPersianDigits } from "@/content/projects";
 
 /**
- * The home-page project gallery: one horizontal track that drifts from right to
- * left, continuously and without a seam.
+ * The home-page project gallery.
  *
- * How the loop works
- * ──────────────────
- * The project list is rendered `copies` times inside a single flex track, and
- * the track is animated by exactly *one* copy's width. Copy n+1 therefore sits
- * where copy n started, so the moment the animation restarts is
- * indistinguishable from the frame before it: no jump, no gap at either end.
- * `copies` is measured, never guessed — the effect works out how many copies it
- * takes to cover the viewport (so a very wide screen renders more, a phone the
- * minimum) and re-measures on resize. The *data* is never duplicated: only the
- * rendered track is, and every extra copy is hidden from assistive technology
- * and skipped by the tab order.
+ * Two modes, chosen by width — never by pointer type:
  *
- * `--mrq-copies` and `--mrq-duration` are the only knobs the stylesheet needs:
- * the shift is `-100% / copies` and the duration comes from the track's own
- * width, so the drift stays at one constant, very calm speed however many
- * projects there are. Without JavaScript the server-rendered markup still
- * carries two copies and the stylesheet's fallbacks keep the loop seamless.
+ * ── Wide screens: one horizontal track that drifts from right to left,
+ *    continuously and without a seam. The project list is rendered `copies`
+ *    times inside a single flex track, and the track is animated by exactly
+ *    *one* copy's width, so copy n+1 sits where copy n started and the
+ *    restart is invisible. `--mrq-copies` and `--mrq-duration` are the only
+ *    knobs the stylesheet needs. Motion pauses while the pointer is over the
+ *    gallery, while anything inside it has focus, while it is being pressed,
+ *    and while it is off screen. `prefers-reduced-motion` gets the static
+ *    variant — one copy, no animation, a scrollable row (see `globals.css`).
  *
- * Motion pauses while the pointer is over the gallery, while anything inside it
- * has focus, while it is being pressed, and while it is off screen. On a touch
- * screen the row is dragged by hand rather than scrolled, and the drag is folded
- * into the loop (see `onPointerDown`) so the two motions share one coordinate.
- * The observer is disconnected on unmount. `prefers-reduced-motion` gets the
- * static variant — one copy, no animation, a scrollable row (see `globals.css`).
+ * ── Narrow screens (≤860px, every pointer): a native horizontal scroller
+ *    with scroll-snap. This is the fix for the mobile bug the old code had:
+ *    on a touchscreen the viewport was `overflow:hidden` and the only way to
+ *    move the row was a hand-rolled PointerEvent drag — but `touch-action:
+ *    pan-y` lets the browser reclaim any gesture with a vertical component
+ *    (`pointercancel`), so an ordinary diagonal swipe ended the drag at once
+ *    and the row snapped back, feeling dead. The ≤860px native-scroller CSS
+ *    also only applied to `pointer:fine`, so a touch phone never got it at
+ *    all. A native scroller is handled by the browser itself: touch, trackpad
+ *    and keyboard all work, there is no drag state to go stale, and there is
+ *    no second coordinate for the drift to fight with. Only one copy is
+ *    rendered in this mode, so there is no seam to hide.
+ *
+ * The bright ivory edge fades (`.mrq-edge`) are gone: they painted a light
+ * halo over the left and right plates. The row now ends cleanly at the
+ * section gutter, and the previous / next controls below it say the row
+ * continues.
+ *
+ * The observer is disconnected on unmount. The pause timeout is cleared on
+ * unmount too.
  */
 
 /** Track width travelled per second. Deliberately slow: this is a drift. */
@@ -44,37 +52,72 @@ const MAX_SECONDS = 480;
 const FALLBACK_COPIES = 2;
 /** Upper bound, so a very wide viewport can never flood the DOM. */
 const MAX_COPIES = 6;
+/** How long the drift stays paused after a previous / next tap on desktop. */
+const PAUSE_AFTER_STEP_MS = 2500;
 
 type ProjectMarqueeProps = {
   /** The projects to show, in the order they should travel. */
   projects: ProjectDTO[];
   /** Accessible name of the gallery. */
   label: string;
+  /** Short hint shown under the gallery, telling visitors how to browse it. */
+  hint: string;
+  /** Labels of the previous / next controls. */
+  previousLabel: string;
+  nextLabel: string;
 };
 
-export default function ProjectMarquee({ projects, label }: ProjectMarqueeProps) {
+export default function ProjectMarquee({
+  projects,
+  label,
+  hint,
+  previousLabel,
+  nextLabel,
+}: ProjectMarqueeProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLUListElement>(null);
   const [copies, setCopies] = useState(FALLBACK_COPIES);
   const [seconds, setSeconds] = useState(MIN_SECONDS);
   const [pressed, setPressed] = useState(false);
   const [onScreen, setOnScreen] = useState(true);
+  const [phase, setPhase] = useState(0);
+  const [narrow, setNarrow] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   /** One copy's width in pixels — the only distance a loop may ever travel. */
   const stepRef = useRef(0);
-  /** The offset the hand is holding the row at right now, in pixels. */
-  const holdRef = useRef(0);
-  /** True while a hand owns the row, so a second finger is ignored. */
-  const draggingRef = useRef(false);
-  const [phase, setPhase] = useState(0);
+  const pauseTimeoutRef = useRef<number | null>(null);
+
+  /** Narrow mode follows the same 860px step as the stylesheet. */
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 860px)");
+    const update = () => setNarrow(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (pauseTimeoutRef.current !== null) {
+        window.clearTimeout(pauseTimeoutRef.current);
+      }
+    };
+  }, []);
 
   /**
    * Measure one copy and derive the two knobs from it. The step (the distance
    * between the first card of two neighbouring copies) is read straight off the
    * layout, so gaps, margins and card widths are all accounted for without the
-   * script knowing any of them.
+   * script knowing any of them. Narrow mode renders one copy and never drifts,
+   * so there is nothing to measure there.
    */
   useEffect(() => {
+    if (narrow) {
+      setCopies(1);
+      return;
+    }
     const root = rootRef.current;
     const track = trackRef.current;
     if (!root || !track) return;
@@ -105,7 +148,7 @@ export default function ProjectMarquee({ projects, label }: ProjectMarqueeProps)
       observer.disconnect();
       window.clearTimeout(settle);
     };
-  }, [projects.length]);
+  }, [projects.length, narrow]);
 
   /** Nothing should drift while the gallery is off screen. */
   useEffect(() => {
@@ -120,103 +163,78 @@ export default function ProjectMarquee({ projects, label }: ProjectMarqueeProps)
     return () => observer.disconnect();
   }, []);
 
-  /**
-   * ── THE HAND'S OWN LOOP ────────────────────────────────────────────────────
-   * On a touchscreen the row is dragged rather than scrolled, and the drag and
-   * the drift share one coordinate: the offset is folded into a single step, so
-   * the seam can never be on screen.
-   *
-   * The native scroller this replaces is what broke the loop. The drift shifts
-   * the whole track by one copy's width, and a row that had *also* been scrolled
-   * by hand could be pushed past its own last copy — with the minimum number of
-   * copies rendered, the far end of the scroll range plus a full step of drift
-   * lands the visible window beyond the track's last frame, and a gap opens at
-   * the row's edge. One mechanism, one coordinate, no gap.
-   *
-   * The hand-over at the end of a drag is a phase rather than a jump: the drift
-   * is linear, so the fraction of a step the row was left at is exactly the
-   * negative delay the animation needs to carry on from there.
-   */
+  /** In narrow mode, track which card is most visible, for the counter. */
+  useEffect(() => {
+    if (!narrow) return;
+    const viewport = viewportRef.current;
+    const track = trackRef.current;
+    if (!viewport || !track || typeof IntersectionObserver === "undefined") return;
 
-  /** Fold an offset into one step, half-open at the top, so the seam stays hidden. */
-  const foldShift = (value: number) => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+            const index = Number((entry.target as HTMLElement).dataset.index ?? 0);
+            setCurrentIndex(index);
+          }
+        }
+      },
+      { root: viewport, threshold: [0.6] }
+    );
+    for (const item of track.children) {
+      if ((item as HTMLElement).dataset.copy === "0") observer.observe(item);
+    }
+    return () => observer.disconnect();
+  }, [narrow, projects.length]);
+
+  /** Width of one card plus its trailing gap, in pixels. */
+  const cardStep = () => {
+    const track = trackRef.current;
+    if (!track || track.children.length < 2) return 0;
+    const first = track.children[0] as HTMLElement;
+    const second = track.children[1] as HTMLElement;
+    return second.offsetLeft - first.offsetLeft;
+  };
+
+  /**
+   * Move the gallery by one card.
+   *
+   * Narrow mode scrolls the native viewport, so the browser owns the motion.
+   * Wide mode shifts the drift's phase by one card's share of a step and
+   * pauses the drift briefly, so the new position is actually seen instead
+   * of being carried away at once.
+   */
+  const stepBy = (direction: 1 | -1) => {
+    const viewport = viewportRef.current;
+    const width = cardStep();
+    if (!viewport || width <= 0) return;
+
+    if (narrow) {
+      const rtl = getComputedStyle(viewport).direction === "rtl";
+      // Forward is left in this right-to-left page.
+      const delta = direction * (rtl ? -1 : 1) * width;
+      viewport.scrollBy({ left: delta, behavior: "smooth" });
+      return;
+    }
+
     const step = stepRef.current;
-    if (step <= 0) return 0;
-    const folded = ((value % step) + step) % step;
-    return folded === 0 ? 0 : folded - step;
-  };
-
-  /** Where the track sits right now — read off the running animation itself. */
-  const currentShift = () => {
-    const track = trackRef.current;
-    if (!track) return 0;
-    const matrix = getComputedStyle(track).transform;
-    if (matrix === "none") return 0;
-    return foldShift(new DOMMatrixReadOnly(matrix).m41);
-  };
-
-  /**
-   * A mouse keeps the older behaviour: pressing the row holds the drift while
-   * the hand is down, and nothing is dragged — the plates inside are links, and
-   * a click that had been pulled sideways should not open one.
-   *
-   * A touch or a pen does drag, and nothing is re-rendered for it: the gesture
-   * writes the track's transform straight to the element — the same property the
-   * animation writes — and React is asked only once, on release, for the phase
-   * the loop should carry on from. The pointer is deliberately *not* captured:
-   * a captured pointer makes the browser post the click to the capturing
-   * element, and a plain tap on a plate must still open its project.
-   */
-  const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === "mouse") {
-      setPressed(true);
-      return;
+    if (step <= 0) return;
+    const fraction = width / step;
+    setPhase((prev) => {
+      const next = (prev + direction * fraction) % 1;
+      return next < 0 ? next + 1 : next;
+    });
+    setPressed(true);
+    if (pauseTimeoutRef.current !== null) {
+      window.clearTimeout(pauseTimeoutRef.current);
     }
-    const root = rootRef.current;
-    const track = trackRef.current;
-    if (
-      !root ||
-      !track ||
-      draggingRef.current ||
-      stepRef.current <= 0 ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
-      return;
-    }
-
-    const startX = event.clientX;
-    const startShift = currentShift();
-    draggingRef.current = true;
-    holdRef.current = startShift;
-    root.setAttribute("data-drag", "true");
-    track.style.transform = `translate3d(${startShift}px, 0, 0)`;
-
-    const onMove = (move: globalThis.PointerEvent) => {
-      holdRef.current = foldShift(startShift + (move.clientX - startX));
-      track.style.transform = `translate3d(${holdRef.current}px, 0, 0)`;
-    };
-
-    /* The listeners live on the window, not on the row: a finger that wanders
-       off it — or a gesture the page claims back for a vertical pan — must still
-       end the drag, or the row would be left frozen with the drift switched off. */
-    const finish = () => {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", finish);
-      window.removeEventListener("pointercancel", finish);
-      draggingRef.current = false;
-      root.removeAttribute("data-drag");
-      track.style.transform = "";
-      const step = stepRef.current;
-      setPhase(step > 0 ? Math.min(1, Math.max(0, -holdRef.current / step)) : 0);
-    };
-
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", finish);
-    window.addEventListener("pointercancel", finish);
+    pauseTimeoutRef.current = window.setTimeout(() => setPressed(false), PAUSE_AFTER_STEP_MS);
   };
+
+  const effectiveCopies = narrow ? 1 : copies;
 
   const style = {
-    "--mrq-copies": String(copies),
+    "--mrq-copies": String(effectiveCopies),
     /* A time, not a bare number: the stylesheet reads this as a duration, and a
        number there would invalidate the declaration. */
     "--mrq-duration": `${Math.round(seconds)}s`,
@@ -229,26 +247,29 @@ export default function ProjectMarquee({ projects, label }: ProjectMarqueeProps)
   return (
     <div
       className="mrq"
+      id="work-gallery"
       ref={rootRef}
       data-paused={paused ? "true" : undefined}
       data-reveal="fade-up"
-      onPointerDown={onPointerDown}
       onPointerUp={() => setPressed(false)}
       onPointerCancel={() => setPressed(false)}
       onPointerLeave={() => setPressed(false)}
     >
-      <div className="mrq-viewport">
+      <div
+        className="mrq-viewport"
+        ref={viewportRef}
+        role="region"
+        aria-label={label}
+        tabIndex={0}
+      >
         <ul className="mrq-track" ref={trackRef} style={style} aria-label={label}>
-          {Array.from({ length: copies }, (_, copy) =>
+          {Array.from({ length: effectiveCopies }, (_, copy) =>
             projects.map((project, index) => (
               <li
                 className="mrq-item"
                 key={`${copy}-${project.id}`}
                 data-copy={copy}
-                /* Counts within the copy, never across the track: the rhythm of
-                   alternating plates is therefore identical on both sides of the
-                   seam. */
-                data-slot={index % 2}
+                data-index={index}
                 aria-hidden={copy > 0 || undefined}
               >
                 <ProjectCard
@@ -263,9 +284,36 @@ export default function ProjectMarquee({ projects, label }: ProjectMarqueeProps)
         </ul>
       </div>
 
-      {/* Edge fades: they say the row continues, in the section's own ground. */}
-      <span className="mrq-edge mrq-edge-start" aria-hidden="true" />
-      <span className="mrq-edge mrq-edge-end" aria-hidden="true" />
+      <div className="mrq-controls">
+        <p className="mrq-hint">{hint}</p>
+        <div className="mrq-nav">
+          <span className="mrq-count" aria-live="polite">
+            {toPersianDigits(currentIndex + 1)} از {toPersianDigits(projects.length)}
+          </span>
+          <button
+            type="button"
+            className="mrq-nav-btn"
+            aria-label={previousLabel}
+            disabled={narrow && currentIndex <= 0}
+            onClick={() => stepBy(-1)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className="mrq-nav-btn"
+            aria-label={nextLabel}
+            disabled={narrow && currentIndex >= projects.length - 1}
+            onClick={() => stepBy(1)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+              <path d="M15 6l-6 6 6 6" />
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

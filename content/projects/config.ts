@@ -98,6 +98,13 @@ export type ProjectLabels = {
   zoom: string;
   /** Label of the arrow that jumps back into the home-page gallery. */
   jumpToGallery: string;
+  /** Visible label of the section head's call-to-action button. */
+  viewGallery: string;
+  /** Short hint under the gallery, telling visitors how to browse it. */
+  scrollHint: string;
+  /** Labels of the gallery's previous / next controls. */
+  previous: string;
+  next: string;
   notFoundTitle: string;
   notFoundLede: string;
   notFoundAction: string;
@@ -132,6 +139,10 @@ export const PROJECT_CONFIG: {
     materials: "مصالح",
     zoom: "بزرگ‌نمایی تصویر",
     jumpToGallery: "پرش به پروژه‌ها",
+    viewGallery: "دیدن گالری پروژه‌ها",
+    scrollHint: "با انگشت ورق بزنید تا همه‌ی پروژه‌ها را ببینید",
+    previous: "پروژه‌ی قبلی",
+    next: "پروژه‌ی بعدی",
     notFoundTitle: "این پروژه پیدا نشد",
     notFoundLede:
       "نشانی‌ای که باز کرده‌اید به پروژه‌ای در گالری نورستا اشاره نمی‌کند؛ ممکن است جابه‌جا شده باشد یا هنوز منتشر نشده باشد.",

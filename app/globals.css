@@ -789,7 +789,22 @@ a{color:inherit;text-decoration:none}
   position:relative;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-soft);
   max-width:440px;justify-self:end;
 }
-.arrow-link{display:block;margin-top:24px;font-size:22px;color:var(--ink)}
+/* The section head's call-to-action: a real pill button, not a bare arrow.
+   It scrolls to the gallery itself, so it works with keyboard, mouse and
+   touch alike. */
+.work-cta{
+  display:inline-flex;align-items:center;gap:.6em;
+  margin-top:24px;padding:.9em 1.5em;
+  background:var(--ink);color:var(--bg);
+  border:1px solid var(--ink);border-radius:999px;
+  font-family:var(--fa);font-size:var(--fs-ui);font-weight:600;
+  text-decoration:none;
+  transition:transform .5s cubic-bezier(.22,.61,.36,1),
+             background-color .5s ease,box-shadow .5s ease;
+}
+.work-cta:hover{background:#000;transform:translateY(-2px);box-shadow:0 16px 34px -18px rgba(29,28,24,.55)}
+.work-cta:focus-visible{outline:2px solid #c9ab84;outline-offset:3px}
+.work-cta span{font-size:1.1em;line-height:1}
 
 
 
@@ -2289,41 +2304,42 @@ body.menu-open{overflow:hidden}
 .pcard-media img{transition:transform 1.6s cubic-bezier(.22,.61,.36,1)}
 
 /* The scrim is what keeps the copy readable on every photograph; it deepens a
-   little when the plate is picked out. */
+   little when the plate is picked out. It is deliberately lighter than before:
+   the old scrim ran to 90% black and swallowed the photograph's own tones. */
 .pcard-scrim{
   position:absolute;inset:0;
   background:linear-gradient(to top,
-    var(--mrq-scrim) 0%,
-    rgba(17,15,12,.66) 24%,
-    rgba(17,15,12,.2) 52%,
-    rgba(17,15,12,0) 76%);
+    rgba(17,15,12,.78) 0%,
+    rgba(17,15,12,.52) 28%,
+    rgba(17,15,12,.16) 55%,
+    rgba(17,15,12,0) 78%);
   transition:opacity .8s ease;
 }
 
 /* Mounted plate number — the crafted label the rest of the site already uses,
-   now read over a photograph. */
+   now read over a photograph. A solid dark chip: the old translucent chip with
+   a backdrop blur painted a pale halo around the number. */
 .pcard-num{
   position:absolute;top:clamp(14px,1.4vw,22px);left:clamp(14px,1.4vw,22px);
   display:inline-flex;align-items:center;
   padding:.55em .9em;
-  background:rgba(243,233,222,.12);border:1px solid rgba(243,233,222,.3);
+  background:rgba(17,15,12,.62);border:1px solid rgba(243,233,222,.35);
   border-radius:2px;
-  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
   font-size:var(--fs-caption);letter-spacing:var(--track-meta);
   color:var(--mrq-ink);white-space:nowrap;unicode-bidi:isolate;
 }
 
-/* The ledger: category, title and location read from the right, the arrow keeps
-   the left corner so nothing has to wrap around it. */
+/* The ledger: category, title and the project's own one-line description,
+   then a foot row with the location and a labelled "view project" action.
+   A column, not a grid: the old grid pushed the location and the arrow into
+   corners and left the description with nowhere to go. */
 .pcard-meta{
   position:absolute;left:0;right:0;bottom:0;
-  display:grid;grid-template-columns:auto minmax(0,1fr);align-items:end;
-  gap:6px 16px;
+  display:flex;flex-direction:column;align-items:flex-start;gap:8px;
   padding:clamp(22px,2.2vw,34px);
   color:var(--mrq-ink);text-align:right;
 }
 .pcard-cat{
-  grid-column:1/-1;justify-self:end;
   display:inline-flex;align-items:center;gap:.7em;
   font-size:var(--fs-caption);letter-spacing:var(--track-meta);
   color:var(--mrq-accent);unicode-bidi:isolate;
@@ -2335,7 +2351,6 @@ body.menu-open{overflow:hidden}
   transition:width .7s cubic-bezier(.22,.61,.36,1);
 }
 .pcard-title{
-  grid-column:1/-1;
   font-family:var(--fa);font-weight:600;
   font-size:clamp(21px,1.7vw,31px);line-height:var(--lh-heading);
   color:var(--mrq-ink);
@@ -2346,23 +2361,38 @@ body.menu-open{overflow:hidden}
   display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
   line-clamp:2;overflow:hidden;
 }
+.pcard-desc{
+  font-size:var(--fs-meta);line-height:1.7;
+  color:var(--mrq-ink-soft);unicode-bidi:isolate;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  line-clamp:2;overflow:hidden;
+}
+.pcard-foot{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  width:100%;margin-top:6px;padding-top:12px;
+  border-top:1px solid rgba(243,233,222,.22);
+}
 .pcard-loc{
-  grid-column:2;justify-self:end;
   font-size:var(--fs-meta);color:var(--mrq-ink-soft);unicode-bidi:isolate;
-  /* One line, clipped rather than wrapped: the location is a label beside the
-     plate number, not a second line of copy. */
+  /* One line, clipped rather than wrapped: the location is a label, not a
+     second line of copy. */
   max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.pcard-arrow{
-  grid-column:1;justify-self:start;align-self:end;
-  display:flex;align-items:center;justify-content:center;
-  width:32px;height:32px;
-  border:1px solid rgba(243,233,222,.36);border-radius:50%;
-  color:var(--mrq-ink);opacity:.72;
-  transition:transform .6s cubic-bezier(.22,.61,.36,1),
-             opacity .6s ease,background-color .6s ease,border-color .6s ease;
+.pcard-action{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  color:var(--mrq-ink);white-space:nowrap;unicode-bidi:isolate;
 }
-.pcard-arrow svg{width:15px;height:15px}
+.pcard-arrow{
+  display:flex;align-items:center;justify-content:center;
+  width:40px;height:40px;flex:0 0 auto;
+  border:1px solid rgba(243,233,222,.5);border-radius:50%;
+  background:rgba(243,233,222,.14);
+  color:var(--mrq-ink);
+  transition:transform .6s cubic-bezier(.22,.61,.36,1),
+             background-color .6s ease,border-color .6s ease;
+}
+.pcard-arrow svg{width:16px;height:16px}
 /* Drawn just inside the plate, so the radius can never clip the ring. */
 .pcard:focus-visible{outline:2px solid var(--mrq-accent);outline-offset:-4px}
 
@@ -2402,21 +2432,43 @@ body.menu-open{overflow:hidden}
    set, which is what makes a step equal to a copy's own width. */
 .mrq-item{flex:0 0 auto;margin-inline-end:var(--mrq-gap)}
 
-/* Proportions alternate so the row reads as a composition rather than a strip:
-   every second plate is a little narrower and shallower, and cut the other way
-   round. */
+/* Every plate is the same size: the old alternation (every second plate
+   narrower, shallower and cut the other way) made the row read as a strip of
+   mismatched boxes and made the loop's measurement depend on which slot was
+   first. One proportion, one corner treatment — the photographs do the
+   varying now. */
 .mrq-card{width:var(--mrq-card)}
-.mrq-item[data-slot="1"] .mrq-card{width:calc(var(--mrq-card) * .87)}
-.mrq-item[data-slot="1"] .pcard-media{aspect-ratio:16/11}
-.mrq-item[data-slot="1"] .pcard{--pcard-radius:var(--mrq-radius-b)}
 
-/* The two edges say the row continues, in the section's own ground colour. */
-.mrq-edge{
-  position:absolute;top:0;bottom:0;z-index:2;width:clamp(36px,7vw,132px);
-  pointer-events:none;
+/* ---------- Controls: hint, counter and previous / next --------------------
+   The controls replace the old edge fades: instead of a bright ivory halo
+   painted over the end plates, a real hint and two real buttons say the row
+   continues — and on a phone they are the way to move it one card at a time. */
+.mrq-controls{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  margin-top:clamp(18px,2vw,28px);
+  padding-inline:var(--pad-x);
 }
-.mrq-edge-start{left:0;background:linear-gradient(to right, var(--bg), rgba(243,233,222,0))}
-.mrq-edge-end{right:0;background:linear-gradient(to left, var(--bg), rgba(243,233,222,0))}
+.mrq-hint{
+  font-size:var(--fs-meta);color:var(--muted);unicode-bidi:isolate;
+}
+.mrq-nav{display:flex;align-items:center;gap:10px}
+.mrq-count{
+  margin-inline-end:6px;
+  font-size:var(--fs-meta);letter-spacing:var(--track-meta);
+  color:var(--ink-soft);white-space:nowrap;unicode-bidi:isolate;
+}
+.mrq-nav-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:48px;height:48px;flex:0 0 auto;
+  background:transparent;border:1px solid var(--hair);border-radius:50%;
+  color:var(--ink);cursor:pointer;
+  transition:background-color .5s ease,color .5s ease,border-color .5s ease,
+             transform .5s cubic-bezier(.22,.61,.36,1);
+}
+.mrq-nav-btn svg{width:18px;height:18px}
+.mrq-nav-btn:hover:not(:disabled){background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.mrq-nav-btn:focus-visible{outline:2px solid #c9ab84;outline-offset:3px}
+.mrq-nav-btn:disabled{opacity:.32;cursor:default}
 
 /* ---------- Holding still ------------------------------------------------- */
 /* A gallery that is being read should not walk away: hovering it, focusing any
@@ -2426,50 +2478,43 @@ body.menu-open{overflow:hidden}
 .mrq:focus-within .mrq-track,
 .mrq[data-paused="true"] .mrq-track{animation-play-state:paused}
 
-/* A hand on the row owns the loop outright. The drag writes the same property
-   the animation writes, so the animation is dropped (not paused — a paused one
-   would still be holding the transform it had) for as long as the gesture lasts.
-   `ProjectMarquee` folds the offset into a single step while it does, which is
-   how the seam is kept off screen. */
-.mrq[data-drag="true"] .mrq-track{animation:none}
-
 @media (hover:hover){
   .mrq-card:hover{transform:translate3d(0,-10px,0);box-shadow:0 34px 70px -34px rgba(29,28,24,.62)}
   .mrq-card:hover .pcard-media img{transform:scale(1.05)}
   .mrq-card:hover .pcard-scrim{opacity:.92}
   .mrq-card:hover .pcard-cat::before{width:34px}
   .mrq-card:hover .pcard-arrow{
-    opacity:1;background-color:rgba(243,233,222,.14);border-color:var(--mrq-accent);
-    transform:translate3d(5px,0,0);
+    background-color:var(--mrq-accent);border-color:var(--mrq-accent);
+    color:#1d1c18;
+    transform:translate3d(-5px,0,0);
   }
 }
 
-/* A narrow window on a fine pointer: the row is a native scroller, as it always
-   was. Nothing is folded here — a trackpad or a mouse wheel has no grab to fold
-   — and the drift simply keeps running underneath the scroll. */
-@media (max-width: 860px) and (pointer:fine){
+/* A narrow window — every pointer, touch included: the row is a native
+   horizontal scroller with snap, and the drift is switched off.
+   This is the fix for the mobile bug. The old code only made the row a
+   scroller for `pointer:fine`, so a touch phone never got it: its viewport
+   stayed `overflow:hidden` and the only way to move was a hand-rolled
+   PointerEvent drag — but `touch-action:pan-y` lets the browser reclaim any
+   gesture with a vertical component (`pointercancel`), so an ordinary
+   diagonal swipe ended the drag at once and the row snapped back, feeling
+   dead. A native scroller is owned by the browser: touch, trackpad and
+   keyboard all work, there is no drag state to go stale, and with only one
+   copy rendered there is no seam for a second coordinate to open. */
+@media (max-width: 860px){
+  .mrq-track{animation:none;transform:none}
+  .mrq-item:not([data-copy="0"]){display:none}
   .mrq-viewport{
     overflow-x:auto;overflow-y:hidden;
+    touch-action:pan-x pan-y;
     -webkit-overflow-scrolling:touch;
-    scroll-snap-type:x proximity;
+    overscroll-behavior-x:contain;
+    scroll-snap-type:x mandatory;
     scrollbar-width:none;
   }
   .mrq-viewport::-webkit-scrollbar{display:none}
-  .mrq-item{scroll-snap-align:center}
-}
-
-/* A touchscreen: the row is dragged, never scrolled. The two mechanisms used to
-   be one — a native scroller under a drifting track — and they fought over the
-   same axis: the drift shifts the whole track by one copy's width, so a row that
-   had also been scrolled by hand could be pushed past its own last copy and open
-   a gap at the row's end. With the drag folded into the loop there is only ever
-   one coordinate, so the native scroll is handed back here.
-   `touch-action:pan-y` keeps the page's own vertical scrolling: the browser takes
-   the gesture back (`pointercancel`) as soon as it reads as a vertical pan. */
-@media (hover:none) and (pointer:coarse){
-  .mrq-viewport{touch-action:pan-y}
-  /* The grab cursor is for a pen, which can hover; a finger never sees it. */
-  .mrq[data-drag="true"] .mrq-viewport{cursor:grabbing}
+  .mrq-item{scroll-snap-align:start}
+  .mrq-card{box-shadow:0 18px 40px -28px rgba(29,28,24,.45)}
 }
 
 /* =====================================================================
@@ -2729,18 +2774,15 @@ body.menu-open{overflow:hidden}
   .mrq{--mrq-card:clamp(258px,38vw,420px)}
 }
 @media (max-width: 860px){
-  /* Past the header's breakpoint the alternation goes: one proportion, one
-     corner treatment, sized so a neighbour is always showing. */
+  /* One proportion, sized so a neighbour is always showing. */
   .mrq{--mrq-card:min(74vw,380px)}
-  .mrq-item[data-slot="1"] .mrq-card{width:var(--mrq-card)}
-  .mrq-item[data-slot="1"] .pcard-media{aspect-ratio:4/3}
-  .mrq-item[data-slot="1"] .pcard{--pcard-radius:var(--mrq-radius-a)}
 }
 @media (max-width: 680px){
   .mrq{--mrq-card:min(78vw,320px);--mrq-gap:16px}
-  .mrq-edge{width:28px}
   .pcard-meta{padding:18px}
   .pcard-title{font-size:clamp(20px,5.6vw,26px)}
+  .mrq-controls{flex-direction:column;align-items:flex-start;gap:14px}
+  .mrq-hint{font-size:.9rem}
 }
 
 @media (prefers-reduced-motion: reduce){
