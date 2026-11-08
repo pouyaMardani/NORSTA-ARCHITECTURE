@@ -5028,3 +5028,214 @@ html:has(body.mv-open){overflow:hidden}
   }
 }
 
+
+/* ============== SCREEN-READER-ONLY TEXT ============== */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ============== MAGIC CURSOR ============== */
+/*
+ * The small dot that trails the pointer — the reference template's magic
+ * cursor, ported without jQuery or GSAP. The wrapper rides
+ * `requestAnimationFrame` (see `components/MagicCursor.tsx`); the ball's own
+ * scale, size and opacity ride these transitions. The native cursor is left
+ * alone: the ball trails beside it, exactly as the reference does.
+ * `mix-blend-mode: difference` on an ink ball reads on the ivory sections
+ * and inverts to a light dot on the dark ones.
+ */
+#magic-cursor{
+  position:fixed;top:0;left:0;z-index:99999;pointer-events:none;
+  opacity:0;transition:opacity .3s;
+}
+#magic-cursor.is-on{opacity:1}
+#ball{
+  position:absolute;top:0;left:0;width:14px;height:14px;border-radius:50%;
+  background:var(--ink);mix-blend-mode:difference;pointer-events:none;
+  display:flex;align-items:center;justify-content:center;
+  transform:translate(-50%,-50%) scale(var(--ball-scale,1));
+  transition:transform .3s ease,opacity .3s ease,width .3s ease,
+    height .3s ease,background-color .3s ease;
+}
+/* Over a link or a button the ball fades away; a click pulses it once. */
+#ball.is-hidden{--ball-scale:0;opacity:0}
+#ball.is-clicked{--ball-scale:1.3;opacity:0}
+/* Over a magnetic element the ball doubles. */
+#ball.is-magnetic{--ball-scale:2}
+/* Over a `[data-cursor]` element the ball swells into a blurred disc with
+   its label inside. */
+#ball.is-view{width:110px;height:110px;background:#fff;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+#ball .ball-view{
+  position:absolute;opacity:0;visibility:hidden;padding:0 5px;
+  font-size:15px;font-weight:500;line-height:1.3;text-align:center;
+  color:var(--ink);transform:scale(0);
+  transition:opacity .3s,transform .3s,visibility .3s;
+}
+#ball.is-view .ball-view{opacity:1;visibility:visible;transform:scale(1)}
+
+/* ============== EYEBROW ROLL ============== */
+/*
+ * The reference's eyebrow label: the text — and the diagonal arrow beside it —
+ * roll upward on hover and a second copy slides in from below. The arrow is
+ * mirrored for RTL, so it points up-left: forward in this page.
+ */
+.eyebrow-roll{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:var(--fs-caption);font-weight:500;letter-spacing:var(--track-meta);
+  color:var(--ink-soft);
+}
+.eyebrow-roll-text{position:relative;display:block;overflow:hidden}
+.eyebrow-roll .text-1{position:relative;display:block;transition:transform .3s}
+.eyebrow-roll .text-2{
+  position:absolute;top:100%;inset-inline-start:0;display:block;
+  transition:top .3s,transform .3s;
+}
+.eyebrow-roll:hover .text-1{transform:translateY(-150%)}
+.eyebrow-roll:hover .text-2{top:50%;transform:translateY(-50%)}
+.eyebrow-roll-arrow{position:relative;display:block;width:11px;height:11px;overflow:hidden;flex:none}
+.eyebrow-roll-arrow svg{
+  position:absolute;inset-inline-start:0;top:0;width:11px;height:11px;
+  transform:scaleX(-1);transition:transform .3s;
+}
+.eyebrow-roll-arrow svg + svg{top:100%}
+.eyebrow-roll:hover .eyebrow-roll-arrow svg{transform:scaleX(-1) translateY(-100%)}
+
+/* ============== PROCESS — STEP BY STEP ============== */
+/*
+ * The studio's four steps, as the reference's “My Process”: a stack of cards,
+ * each one sliding up over the last while the covered card shrinks a little.
+ * The reference pins with GSAP ScrollTrigger; here the stack is
+ * `position: sticky` — each card sticks at the top and the next scrolls up
+ * over it — and a small scroll listener (see `components/Process.tsx`) shrinks
+ * a card in proportion to how far the next one has covered it. The stack's
+ * bottom padding is the scroll room the last card needs to reach the sticky
+ * line; without JavaScript the cards still stack, and under reduced motion
+ * they flow one after another, unpinned.
+ *
+ * Ground is the deeper sand (`--bg-2`) and the cards are the lighter ivory
+ * (`--bg`): the same light-on-light card contrast the reference draws from
+ * its own two neutrals.
+ */
+.process{position:relative;padding:160px var(--pad-x) 0;background:var(--bg-2)}
+.process-head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:48px;
+  margin-bottom:96px;
+}
+.process-title{
+  font-size:var(--fs-subdisplay);font-weight:600;line-height:var(--lh-heading);
+  color:var(--ink);margin-top:18px;
+}
+.process-lede{
+  max-width:520px;padding-bottom:8px;
+  font-size:clamp(18px,1.6vw,22px);font-weight:600;line-height:1.6;
+  color:var(--ink-soft);text-align:end;
+}
+.process-stack{display:flex;flex-direction:column;gap:24px;padding-bottom:55vh}
+.process-item{
+  position:sticky;top:24px;will-change:transform;
+  transform:scale(calc(1 - (1 - var(--cover-scale,.9)) * var(--cover,0)));
+}
+.process-card{
+  display:grid;grid-template-columns:4fr 8fr;gap:48px;align-items:center;
+  padding:40px;background:var(--bg);border:1px solid var(--hair);
+}
+.process-media{position:relative;aspect-ratio:16/10;min-height:240px;overflow:hidden}
+.process-content{min-width:0}
+.process-header{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  gap:16px;padding-bottom:16px;margin-bottom:26px;border-bottom:1px solid var(--hair);
+}
+.process-card-title{
+  font-size:clamp(24px,2.2vw,32px);font-weight:600;line-height:1.2;
+  letter-spacing:-.01em;color:var(--ink);
+}
+.process-meta{display:flex;align-items:center;gap:12px;padding-top:8px}
+.process-meta-text{font-size:16px;font-weight:600;color:var(--ink)}
+.process-meta-label{font-weight:400;color:var(--muted);margin-inline-start:4px}
+.process-plus{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--bg);
+  font-size:20px;font-weight:400;line-height:1;
+}
+.process-desc{
+  font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-soft);
+  max-width:75%;text-align:justify;
+}
+@media (max-width:680px){
+  .process{padding:96px var(--pad-x) 0}
+  .process-head{flex-direction:column;align-items:flex-start;gap:24px;margin-bottom:48px}
+  .process-lede{text-align:start}
+  .process-card{grid-template-columns:1fr;gap:24px;padding:24px}
+  .process-media{order:2;min-height:180px}
+  .process-header{flex-direction:column;align-items:flex-start}
+  .process-desc{
+    max-width:none;display:-webkit-box;-webkit-line-clamp:3;
+    -webkit-box-orient:vertical;overflow:hidden;
+  }
+  .process-item{top:16px}
+}
+@media (prefers-reduced-motion: reduce){
+  .process-item{position:static;transform:none}
+  .process-stack{padding-bottom:0}
+}
+
+/* ============== FAQ ============== */
+/*
+ * The reference's FAQ: the title column on one side, a four-item accordion on
+ * the other, one open at a time, the first one open on arrival. The reference
+ * builds it on Bootstrap's collapse; here the panel opens with the
+ * `grid-template-rows: 0fr → 1fr` transition, smooth at any answer length
+ * with no measured pixels. The icon is the reference's own device: a plus
+ * that turns into a minus when its item opens. Ground is the ivory and the
+ * cards the deeper sand — the reference's own deeper-cards-on-lighter-ground.
+ */
+.faq{position:relative;padding:160px var(--pad-x) 180px;background:var(--bg)}
+.faq-grid{display:grid;grid-template-columns:4fr 7fr;gap:64px;align-items:start}
+.faq-title{
+  font-size:var(--fs-subdisplay);font-weight:600;line-height:1.1;
+  color:var(--ink);margin-top:18px;
+}
+.faq-lede{
+  margin-top:24px;max-width:420px;
+  font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-soft);
+  text-align:justify;
+}
+.faq-list{display:flex;flex-direction:column;gap:16px;padding-top:80px}
+.faq-item{
+  background:var(--bg-2);border:1px solid var(--hair);border-radius:16px;
+  padding:10px 30px;box-shadow:0 0 2px rgba(29,28,24,.04);
+}
+.faq-header{display:flex;align-items:flex-start;gap:12px;padding:15px 0}
+.faq-num{
+  flex:none;display:flex;width:30px;height:30px;align-items:center;justify-content:center;
+  border-radius:50%;background:var(--ink);color:var(--bg);
+  font-size:16px;font-weight:600;margin-top:2px;
+}
+.faq-button{
+  flex:1;background:transparent;border:0;padding:0;
+  font-family:var(--fa);font-weight:600;font-size:24px;line-height:1.4;
+  color:var(--ink);text-align:start;cursor:pointer;padding-inline-end:50px;
+}
+/* The plus: two bars. Open, the vertical bar turns to lie on the horizontal
+   one, and the plus reads as a minus. */
+.faq-icon{position:relative;flex:none;width:36px;height:36px;margin-top:2px}
+.faq-icon::before,.faq-icon::after{
+  content:"";position:absolute;top:50%;left:50%;width:16px;height:2px;
+  background:var(--ink);transform:translate(-50%,-50%);
+  transition:transform .5s ease,opacity .5s ease;
+}
+.faq-icon::after{transform:translate(-50%,-50%) rotate(90deg)}
+.faq-item.is-open .faq-icon::after{transform:translate(-50%,-50%) rotate(0deg);opacity:0}
+.faq-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s ease}
+.faq-item.is-open .faq-panel{grid-template-rows:1fr}
+.faq-panel-inner{overflow:hidden;min-height:0}
+.faq-panel p{
+  font-size:16px;line-height:1.67;color:var(--muted);text-align:justify;
+  padding:0 0 14px;padding-inline-start:45px;padding-inline-end:112px;
+}
+@media (max-width:680px){
+  .faq{padding:96px var(--pad-x) 120px}
+  .faq-grid{grid-template-columns:1fr;gap:40px}
+  .faq-list{padding-top:0}
+  .faq-item{padding:10px 20px}
+  .faq-button{font-size:18px;padding-inline-end:40px}
+  .faq-panel p{padding-inline-end:0}
+}

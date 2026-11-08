@@ -93,6 +93,7 @@ export default function BackToTop() {
       type="button"
       className="to-top"
       data-visible={visible ? "true" : undefined}
+      data-magnetic
       aria-label="بازگشت به بالای صفحه"
       aria-hidden={visible ? undefined : true}
       tabIndex={visible ? undefined : -1}

@@ -46,6 +46,7 @@ export default function ProjectCard({
     <Link
       className={className ? `pcard ${className}` : "pcard"}
       href={`/projects/${project.slug}`}
+      data-cursor="مشاهده"
       tabIndex={decorative ? -1 : undefined}
       aria-hidden={decorative || undefined}
       draggable={false}

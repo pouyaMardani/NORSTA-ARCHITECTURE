@@ -18,7 +18,7 @@ export default function Hero() {
           <br />
           .گذرِ آرام نور در فضا شکل می‌گیرد
         </p>
-        <a href="#work" className="link-underline">
+        <a href="#work" className="link-underline" data-magnetic>
           مشاهده پروژه‌ها
         </a>
       </div>

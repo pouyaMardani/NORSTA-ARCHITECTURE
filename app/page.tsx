@@ -5,6 +5,7 @@ import AcademyPromo from "@/components/AcademyPromo";
 import Articles from "@/components/Articles";
 import Contact from "@/components/Contact";
 import Craftsman from "@/components/Craftsman";
+import Faq from "@/components/Faq";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import InstagramShowcase from "@/components/InstagramShowcase";
@@ -12,6 +13,7 @@ import Lightbox from "@/components/Lightbox";
 import MaterialsShowcase from "@/components/MaterialsShowcase";
 import MicrocementSamples from "@/components/MicrocementSamples";
 import Nav from "@/components/Nav";
+import Process from "@/components/Process";
 import SectionDivider from "@/components/SectionDivider";
 import Services from "@/components/Services";
 import SiteInteractions from "@/components/SiteInteractions";
@@ -42,6 +44,12 @@ export default function Page() {
             Its ground is the section above's own colour, so it never reads
             as a stripe of the wrong colour where two dark sections meet. See
             `components/SectionDivider.tsx`. */}
+        <SectionDivider bg="var(--bg)" />
+        {/* The process and the questions sit directly under the hero: the
+            four steps first, then the answers — before the services. */}
+        <Process />
+        <SectionDivider bg="var(--bg-2)" />
+        <Faq />
         <SectionDivider bg="var(--bg)" />
         <Services />
         <SectionDivider bg="var(--bg)" />

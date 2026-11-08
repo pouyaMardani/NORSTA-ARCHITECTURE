@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 
 import BackToTop from "@/components/BackToTop";
 import JsonLd from "@/components/JsonLd";
+import MagicCursor from "@/components/MagicCursor";
 import PageTransition from "@/components/PageTransition";
 
 import {
@@ -137,6 +138,7 @@ export default function RootLayout({
             components; the markup they render is static and hidden by default,
             so the server-rendered HTML and the first client render agree. */}
         <BackToTop />
+        <MagicCursor />
         <PageTransition />
       </body>
     </html>
