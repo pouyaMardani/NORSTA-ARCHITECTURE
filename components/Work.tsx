@@ -1,5 +1,3 @@
-import { Fragment } from "react";
-
 import ProjectMarquee from "@/components/ProjectMarquee";
 import { getFeaturedProjects, PROJECT_CONFIG, toPersianDigits } from "@/content/projects";
 
@@ -12,10 +10,15 @@ import { getFeaturedProjects, PROJECT_CONFIG, toPersianDigits } from "@/content/
  * `content/projects/config.ts`, so nothing here has to change when a project
  * is added, removed or re-ordered.
  *
+ * The head is one centred column on every width: eyebrow and title, then the
+ * intro, then the call-to-action. The intro lines flow as a single justified
+ * paragraph — the old hard line breaks are gone, because a justified block
+ * cannot have both fixed breaks and even edges. `#work` is still the
+ * section's id, so the header, the hero cue and every deep link keep working.
+ *
  * The head's call-to-action is a real button, not a bare arrow: it scrolls to
  * the gallery itself (`#work-gallery`), so it works with a keyboard, a mouse
- * and a finger alike. `#work` is still the section's id, so the header, the
- * hero cue and every deep link keep working.
+ * and a finger alike.
  */
 export default function Work() {
   const projects = getFeaturedProjects();
@@ -24,32 +27,19 @@ export default function Work() {
   return (
     <section id="work" className="work">
       <div className="work-head" data-reveal="fade-up">
-        <p className="work-lede">
-          {section.introLines.map((line, index) => (
-            <Fragment key={line}>
-              {/* The space belongs to the line break: with the breaks hidden on
-                  a phone (`globals.css`, ≤680px) the clauses still read apart. */}
-              {index > 0 ? (
-                <>
-                  {" "}
-                  <br />
-                </>
-              ) : null}
-              {line}
-            </Fragment>
-          ))}
-          <a href="#work-gallery" className="work-cta">
-            {labels.viewGallery}
-            <span aria-hidden="true">↓</span>
-          </a>
-        </p>
-
         <div>
           <span className="eyebrow">
             {toPersianDigits(projects.length)} {section.eyebrow}
           </span>
           <h2>{section.title}</h2>
         </div>
+
+        <p className="work-lede">{section.introLines.join(" ")}</p>
+
+        <a href="#work-gallery" className="work-cta">
+          {labels.viewGallery}
+          <span aria-hidden="true">↓</span>
+        </a>
       </div>
 
       <ProjectMarquee

@@ -780,21 +780,28 @@ a{color:inherit;text-decoration:none}
 
 /* ============== SELECTED WORK ============== */
 .work{padding:120px var(--pad-x) 180px;background:var(--bg)}
+/* The head is one centred column on every width: eyebrow and title, then the
+   intro, then the call-to-action. The intro is justified — `text-align-last:
+   center` keeps its final line on the centre line instead of stretching it
+   across the measure — so the block reads as one tidy, centred column on a
+   phone and on a wide screen alike. */
 .work-head{
-  display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end;
-  margin-bottom:72px;
+  display:flex;flex-direction:column;align-items:center;gap:22px;
+  margin-bottom:clamp(48px,6vw,72px);
+  text-align:center;
 }
 .work-head h2{font-size:var(--fs-display);margin-top:14px}
 .work-lede{
   position:relative;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-soft);
-  max-width:440px;justify-self:end;
+  max-width:640px;margin:0;
+  text-align:justify;text-align-last:center;
 }
 /* The section head's call-to-action: a real pill button, not a bare arrow.
    It scrolls to the gallery itself, so it works with keyboard, mouse and
    touch alike. */
 .work-cta{
   display:inline-flex;align-items:center;gap:.6em;
-  margin-top:24px;padding:.9em 1.5em;
+  padding:.9em 1.5em;
   background:var(--ink);color:var(--bg);
   border:1px solid var(--ink);border-radius:999px;
   font-family:var(--fa);font-size:var(--fs-ui);font-weight:600;
@@ -1389,8 +1396,6 @@ a{color:inherit;text-decoration:none}
      beside a capped portrait. */
   .craft{grid-template-columns:1fr;gap:44px;padding-top:100px;padding-bottom:120px}
   .craft-visual{max-width:100%}
-  .work-head{grid-template-columns:1fr;gap:24px}
-  .work-lede{justify-self:start}
   .contact{grid-template-columns:1fr;min-height:auto}
   .contact-image{aspect-ratio:4/3}
   .metrics{gap:48px;margin-top:64px}
@@ -2456,10 +2461,17 @@ body.menu-open{overflow:hidden}
   font-size:var(--fs-meta);color:var(--muted);unicode-bidi:isolate;
 }
 .mrq-nav{display:flex;align-items:center;gap:14px}
+/* The counter is a flex row, not a bidi string: three items in DOM order
+   (current, "از", total) laid out right-to-left, so it can never read as
+   "۴ از ۳". The numbers are tabular-weight, so the row does not jump as the
+   count changes. */
 .mrq-count{
+  display:inline-flex;align-items:baseline;gap:.4em;
   font-size:var(--fs-meta);letter-spacing:var(--track-meta);
-  color:var(--ink-soft);white-space:nowrap;unicode-bidi:isolate;
+  color:var(--ink-soft);white-space:nowrap;
 }
+.mrq-count-num{font-variant-numeric:tabular-nums}
+.mrq-count-sep{color:var(--muted)}
 .mrq-nav-btn{
   display:flex;align-items:center;justify-content:center;
   width:48px;height:48px;flex:0 0 auto;

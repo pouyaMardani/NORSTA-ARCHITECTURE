@@ -32,7 +32,11 @@ import { toPersianDigits } from "@/content/projects";
  *    all. A native scroller is handled by the browser itself: touch, trackpad
  *    and keyboard all work, there is no drag state to go stale, and there is
  *    no second coordinate for the drift to fight with. Only one copy is
- *    rendered in this mode, so there is no seam to hide.
+ *    rendered in this mode, so there is no seam to hide. The drift does not
+ *    reach a phone, so narrow mode advances one card at a time on its own
+ *    instead — every 4.5 seconds, pausing for six seconds after a hand
+ *    touches the row, while the gallery is off screen, and entirely for
+ *    `prefers-reduced-motion`.
  *
  * The bright ivory edge fades (`.mrq-edge`) are gone: they painted a light
  * halo over the left and right plates. The row now ends cleanly at the
@@ -54,6 +58,10 @@ const FALLBACK_COPIES = 2;
 const MAX_COPIES = 6;
 /** How long the drift stays paused after a previous / next tap on desktop. */
 const PAUSE_AFTER_STEP_MS = 2500;
+/** How often the row advances by itself on a narrow screen. */
+const AUTO_ADVANCE_MS = 4500;
+/** How long after a hand on the row the auto-advance stays paused. */
+const RESUME_AFTER_MS = 6000;
 
 type ProjectMarqueeProps = {
   /** The projects to show, in the order they should travel. */
@@ -88,6 +96,14 @@ export default function ProjectMarquee({
   /** One copy's width in pixels — the only distance a loop may ever travel. */
   const stepRef = useRef(0);
   const pauseTimeoutRef = useRef<number | null>(null);
+  /** Mirrors `currentIndex` for the auto-advance timer, so it never reads stale. */
+  const currentIndexRef = useRef(0);
+  /** Last time a hand touched the row (finger, button or key), in ms. */
+  const lastInteractionRef = useRef(0);
+
+  useEffect(() => {
+    currentIndexRef.current = currentIndex;
+  }, [currentIndex]);
 
   /** Narrow mode follows the same 860px step as the stylesheet. */
   useEffect(() => {
@@ -163,7 +179,10 @@ export default function ProjectMarquee({
     return () => observer.disconnect();
   }, []);
 
-  /** In narrow mode, track which card is most visible, for the counter. */
+  /** In narrow mode, track which card is most visible, for the counter.
+      The entry with the highest ratio wins: taking the last entry in the
+      batch could name the card that is leaving instead of the one that has
+      snapped into place. */
   useEffect(() => {
     if (!narrow) return;
     const viewport = viewportRef.current;
@@ -172,20 +191,56 @@ export default function ProjectMarquee({
 
     const observer = new IntersectionObserver(
       (entries) => {
+        let best: IntersectionObserverEntry | null = null;
         for (const entry of entries) {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
-            const index = Number((entry.target as HTMLElement).dataset.index ?? 0);
-            setCurrentIndex(index);
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            if (!best || entry.intersectionRatio > best.intersectionRatio) {
+              best = entry;
+            }
           }
         }
+        if (best) {
+          setCurrentIndex(Number((best.target as HTMLElement).dataset.index ?? 0));
+        }
       },
-      { root: viewport, threshold: [0.6] }
+      { root: viewport, threshold: [0.5, 0.6, 0.8, 1] }
     );
     for (const item of track.children) {
       if ((item as HTMLElement).dataset.copy === "0") observer.observe(item);
     }
     return () => observer.disconnect();
   }, [narrow, projects.length]);
+
+  /**
+   * Auto-advance on a narrow screen: the desktop drift never reaches a phone,
+   * so the row advances one card at a time on its own. It stops while the
+   * gallery is off screen, while the tab is hidden, for six seconds after a
+   * hand touches the row, and entirely for `prefers-reduced-motion` — the
+   * row is never moved under a reader who asked for less motion. The timer
+   * only reads the interaction timestamp, never the scroll position, so an
+   * auto-advance never mistakes its own smooth scroll for a hand.
+   */
+  useEffect(() => {
+    if (!narrow) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(() => {
+      if (document.hidden || !onScreen) return;
+      if (Date.now() - lastInteractionRef.current < RESUME_AFTER_MS) return;
+      const track = trackRef.current;
+      if (!track) return;
+      const next = (currentIndexRef.current + 1) % projects.length;
+      const item = track.children[next] as HTMLElement | undefined;
+      item?.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
+      setCurrentIndex(next);
+    }, AUTO_ADVANCE_MS);
+    return () => window.clearInterval(id);
+  }, [narrow, onScreen, projects.length]);
+
+  /** A hand on the row pauses the auto-advance; a scroll caused by the
+      auto-advance itself does not, because it never fires these handlers. */
+  const noteInteraction = () => {
+    lastInteractionRef.current = Date.now();
+  };
 
   /** Width of one card plus its trailing gap, in pixels. */
   const cardStep = () => {
@@ -213,6 +268,7 @@ export default function ProjectMarquee({
     const viewport = viewportRef.current;
     const track = trackRef.current;
     if (!viewport || !track) return;
+    noteInteraction();
 
     if (narrow) {
       const target = Math.min(
@@ -221,6 +277,7 @@ export default function ProjectMarquee({
       );
       const item = track.children[target] as HTMLElement | undefined;
       item?.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
+      setCurrentIndex(target);
       return;
     }
 
@@ -269,6 +326,10 @@ export default function ProjectMarquee({
         role="region"
         aria-label={label}
         tabIndex={0}
+        onPointerDown={noteInteraction}
+        onTouchStart={noteInteraction}
+        onWheel={noteInteraction}
+        onKeyDown={noteInteraction}
       >
         <ul className="mrq-track" ref={trackRef} style={style} aria-label={label}>
           {Array.from({ length: effectiveCopies }, (_, copy) =>
@@ -306,8 +367,17 @@ export default function ProjectMarquee({
               <path d="M9 6l6 6-6 6" />
             </svg>
           </button>
-          <span className="mrq-count" aria-live="polite">
-            {toPersianDigits(currentIndex + 1)} از {toPersianDigits(projects.length)}
+          {/* The counter is three flex items, not one bidi string: a plain
+              "۳ از ۴" string lets the bidi algorithm put the numbers on the
+              wrong sides, so it read as "۴ از ۳". Flex in a right-to-left
+              row lays the items out in DOM order — current, "از", total —
+              which reads correctly in every browser. */}
+          <span className="mrq-count" dir="rtl" aria-live="polite">
+            <span className="mrq-count-num">{toPersianDigits(currentIndex + 1)}</span>
+            <span className="mrq-count-sep" aria-hidden="true">
+              از
+            </span>
+            <span className="mrq-count-num">{toPersianDigits(projects.length)}</span>
           </span>
           <button
             type="button"
