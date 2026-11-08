@@ -39,6 +39,8 @@ export const PROJECTS: ProjectDTO[] = [
     slug: "minimal-residence",
     title: "خانه‌ی مینیمال",
     category: "مسکونی",
+    location: "کپنهاگ",
+    completedAt: "2023",
     shortDescription:
       "خانه‌ای که با کم کردن شکل می‌گیرد: سطح‌های یکدست، بازشو‌های کشیده و نوری که آرام در فضا می‌گردد.",
     description: [
@@ -87,6 +89,8 @@ export const PROJECTS: ProjectDTO[] = [
     slug: "cultural-center",
     title: "مرکز فرهنگی",
     category: "فرهنگی",
+    location: "شوش",
+    completedAt: "2023",
     shortDescription:
       "حجمی سفید و کم‌حرف که با نور روز کار می‌کند: سطح‌های ساده و آستانه‌های روشن برای یک فضای عمومی.",
     description: [
