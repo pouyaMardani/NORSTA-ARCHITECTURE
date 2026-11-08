@@ -131,7 +131,7 @@ export const PROJECT_CONFIG: {
   },
 
   labels: {
-    back: "بازگشت به صفحه اصلی",
+    back: "بازگشت به پروژه‌های اخیر",
     gallery: "گالری پروژه",
     related: "پروژه‌های دیگر",
     location: "موقعیت",

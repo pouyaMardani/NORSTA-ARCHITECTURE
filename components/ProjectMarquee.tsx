@@ -199,26 +199,34 @@ export default function ProjectMarquee({
   /**
    * Move the gallery by one card.
    *
-   * Narrow mode scrolls the native viewport, so the browser owns the motion.
+   * Narrow mode scrolls the target card itself into view. That is deliberate:
+   * `scrollBy({left})` is not portable in a right-to-left row — Chrome and
+   * Firefox count `scrollLeft` down from 0 while Safari counts it down from
+   * the maximum, so the same signed delta moves the row in opposite
+   * directions on different phones, which is exactly how the two buttons
+   * ended up swapped. `scrollIntoView` has no sign to get wrong.
    * Wide mode shifts the drift's phase by one card's share of a step and
    * pauses the drift briefly, so the new position is actually seen instead
    * of being carried away at once.
    */
   const stepBy = (direction: 1 | -1) => {
     const viewport = viewportRef.current;
-    const width = cardStep();
-    if (!viewport || width <= 0) return;
+    const track = trackRef.current;
+    if (!viewport || !track) return;
 
     if (narrow) {
-      const rtl = getComputedStyle(viewport).direction === "rtl";
-      // Forward is left in this right-to-left page.
-      const delta = direction * (rtl ? -1 : 1) * width;
-      viewport.scrollBy({ left: delta, behavior: "smooth" });
+      const target = Math.min(
+        Math.max(currentIndex + direction, 0),
+        projects.length - 1
+      );
+      const item = track.children[target] as HTMLElement | undefined;
+      item?.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
       return;
     }
 
+    const width = cardStep();
     const step = stepRef.current;
-    if (step <= 0) return;
+    if (width <= 0 || step <= 0) return;
     const fraction = width / step;
     setPhase((prev) => {
       const next = (prev + direction * fraction) % 1;
@@ -287,9 +295,6 @@ export default function ProjectMarquee({
       <div className="mrq-controls">
         <p className="mrq-hint">{hint}</p>
         <div className="mrq-nav">
-          <span className="mrq-count" aria-live="polite">
-            {toPersianDigits(currentIndex + 1)} از {toPersianDigits(projects.length)}
-          </span>
           <button
             type="button"
             className="mrq-nav-btn"
@@ -301,6 +306,9 @@ export default function ProjectMarquee({
               <path d="M9 6l6 6-6 6" />
             </svg>
           </button>
+          <span className="mrq-count" aria-live="polite">
+            {toPersianDigits(currentIndex + 1)} از {toPersianDigits(projects.length)}
+          </span>
           <button
             type="button"
             className="mrq-nav-btn"

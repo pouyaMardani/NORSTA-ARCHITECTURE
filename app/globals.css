@@ -2442,18 +2442,21 @@ body.menu-open{overflow:hidden}
 /* ---------- Controls: hint, counter and previous / next --------------------
    The controls replace the old edge fades: instead of a bright ivory halo
    painted over the end plates, a real hint and two real buttons say the row
-   continues — and on a phone they are the way to move it one card at a time. */
+   continues — and on a phone they are the way to move it one card at a time.
+   The whole block is centred: the hint sits on its own centred line and the
+   counter sits between the two buttons, so the pagination reads as one
+   centred group instead of a count stranded at the row's far end. */
 .mrq-controls{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  display:flex;flex-direction:column;align-items:center;gap:14px;
   margin-top:clamp(18px,2vw,28px);
   padding-inline:var(--pad-x);
+  text-align:center;
 }
 .mrq-hint{
   font-size:var(--fs-meta);color:var(--muted);unicode-bidi:isolate;
 }
-.mrq-nav{display:flex;align-items:center;gap:10px}
+.mrq-nav{display:flex;align-items:center;gap:14px}
 .mrq-count{
-  margin-inline-end:6px;
   font-size:var(--fs-meta);letter-spacing:var(--track-meta);
   color:var(--ink-soft);white-space:nowrap;unicode-bidi:isolate;
 }
@@ -2781,7 +2784,6 @@ body.menu-open{overflow:hidden}
   .mrq{--mrq-card:min(78vw,320px);--mrq-gap:16px}
   .pcard-meta{padding:18px}
   .pcard-title{font-size:clamp(20px,5.6vw,26px)}
-  .mrq-controls{flex-direction:column;align-items:flex-start;gap:14px}
   .mrq-hint{font-size:.9rem}
 }
 
