@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties, KeyboardEvent, PointerEvent } from "react";
 
 import { ABOUT_SHOWCASE, formatCompareValue, formatSampleNumber } from "@/content/about";
@@ -135,6 +135,10 @@ export default function About() {
   const frameRef = useRef<HTMLDivElement | null>(null);
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const readoutRef = useRef<HTMLSpanElement | null>(null);
+  /** The mode row's track, for measuring the sliding pill. */
+  const modesRef = useRef<HTMLDivElement | null>(null);
+  /** The pill's box, in the track's own coordinates. */
+  const [pill, setPill] = useState({ x: 0, y: 0, w: 0, h: 0 });
   /** The live position, readable by the handlers without re-rendering. */
   const posRef = useRef(50);
   /** The frame's box, measured once per drag rather than once per event. */
@@ -289,6 +293,37 @@ export default function About() {
     setPos(50);
   };
 
+  /**
+   * The sliding pill under the mode in hand. It is measured, not guessed:
+   * the two tabs have different names, so a fixed half would sit wrong on
+   * either of them. The active tab's own box is read — x, y, width and height,
+   * so the pill still fits if the tabs ever stack on a narrow phone — and the
+   * stylesheet glides the pill there. Measured in layout, before paint, so
+   * the pill is never caught sitting at the track's start on first paint.
+   */
+  useLayoutEffect(() => {
+    const track = modesRef.current;
+    if (!track) return;
+    const measure = () => {
+      const active = track.querySelector('[aria-current="true"]') as HTMLElement | null;
+      if (!active) return;
+      setPill({
+        x: active.offsetLeft,
+        y: active.offsetTop,
+        w: active.offsetWidth,
+        h: active.offsetHeight,
+      });
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(track);
+    window.addEventListener("resize", measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [mode]);
+
   return (
     <section
       id="about"
@@ -298,17 +333,29 @@ export default function About() {
     >
       {/*
         The section's own switch, and the obvious one: two tabs in one track,
-        each naming a mode, the one in hand inked. It is built like the
-        showcase's sample chips below — a row of buttons marked with
-        `aria-current`, which is what the stylesheet keys on — and it stands
-        before either panel, so it is the first thing read in the block and the
-        first thing reached after the header's own `#about` jump.
+        each naming a mode, with a pill that glides under the one in hand — the
+        pill is measured from the active tab's own box, so it fits either name.
+        The tabs are marked with `aria-current`, which is what the stylesheet
+        keys the label colour on. It stands before either panel, so it is the
+        first thing read in the block and the first thing reached after the
+        header's own `#about` jump.
 
         `dir="rtl"` is set here for the same reason the panels set it: the shell
         stays LTR, but this row is Persian and reads right-to-left, so the studio
         tab stands at its reading start.
       */}
-      <div className="about-modes" dir="rtl">
+      <div className="about-modes" dir="rtl" ref={modesRef}>
+        {/* The pill that glides under the mode in hand, measured in the
+            component so it fits either tab's own width. */}
+        <span
+          className="about-mode-pill"
+          aria-hidden="true"
+          style={{
+            width: pill.w,
+            height: pill.h,
+            transform: `translate3d(${pill.x}px, ${pill.y}px, 0)`,
+          }}
+        />
         {MODES.map((target) => (
           <button
             key={target}
@@ -361,15 +408,10 @@ export default function About() {
           direction, the alignment and the reading order of the metric pair are
           RTL. Tablet and phone centre the column in the stylesheet. */}
       <div className="about-copy" dir="rtl">
-        <span className="eyebrow" data-reveal="fade-up">
-          استودیو
-        </span>
+        {/* One line, no break after «ماده»: the title is a single piece. */}
         <h2 className="mask-title" data-reveal="mask-line" data-delay="120">
           <span className="line">
-            <span>ماده</span>
-          </span>
-          <span className="line">
-            <span>و سکوت</span>
+            <span>ماده و سکوت</span>
           </span>
         </h2>
         <p className="lede" data-reveal="fade-up" data-delay="320">

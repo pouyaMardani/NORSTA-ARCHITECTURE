@@ -411,6 +411,9 @@ a{color:inherit;text-decoration:none}
   --about-offset:clamp(10px,1.1vw,18px);
   position:relative;
   padding:140px var(--pad-x) 180px;background:var(--bg);
+  /* The depth the mode swap tilts in: the incoming panel arrives with a
+     slight rotateX, so the switch reads as a turn rather than a slide. */
+  perspective:1200px;
 }
 
 /* Which panel is on screen is the mode itself, so the swap carries no second
@@ -485,13 +488,16 @@ a{color:inherit;text-decoration:none}
 
 .about-copy{padding-inline-start:4%}
 .about-copy h2{font-size:var(--fs-subdisplay);margin:22px 0 46px}
+/* Justified, like the rest of the site's prose: the last line stays on the
+   reading start, so a short final line never stretches across the measure. */
 .about-copy .lede{
   font-family:var(--fa);font-weight:400;
   font-size:var(--fs-lede);line-height:1.6;color:var(--ink);
-  max-width:620px;
+  max-width:620px;text-align:justify;
 }
 .about-copy .sub{
   margin-top:32px;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-soft);max-width:520px;
+  text-align:justify;
 }
 .metrics{
   display:flex;gap:96px;margin-top:96px;
@@ -510,12 +516,15 @@ a{color:inherit;text-decoration:none}
 /*
  * The mode row. The section's own switch, standing at the top of the block before
  * either panel, so it is the first thing read in the block and the first thing
- * reached after the header's own jump. It is the same device as the showcase's
- * sample chips below: buttons marked with `aria-current`, which is what this rule
- * keys on, so no second class has to be kept in step with the mode. The track is
- * the block's own ground a shade deeper, inside a hairline, and the tab in hand is
- * inked the way every other current item on the page is — charcoal ground, ivory
- * label.
+ * reached after the header's own jump. It is a sliding-pill switch, not two
+ * separate buttons that each ink themselves: one charcoal pill glides under the
+ * tab in hand — measured from that tab's own box, so it fits either name — and
+ * the label over it turns ivory. The track is the block's own ground a shade
+ * deeper, inside a hairline, with a shallow inset shade so the pill reads as a
+ * raised plate sliding in a groove; the pill itself carries a soft drop shadow
+ * and a faint top highlight, which is what makes it read as a solid piece
+ * rather than a flat tint. The tabs are marked with `aria-current`, which is
+ * what the label colour keys on.
  *
  * It is the section's only switch, so it stands on the block's centre line rather
  * than on the content's start edge: a control on the middle axis belongs to both
@@ -524,30 +533,44 @@ a{color:inherit;text-decoration:none}
  * the auto margins are measuring the row and not the section.
  */
 .about-modes{
+  position:relative;
   display:flex;width:fit-content;flex-wrap:wrap;gap:4px;
   max-width:100%;
   margin-inline:auto;margin-bottom:clamp(26px,3vw,46px);padding:5px;
   background:var(--bg-2);border:1px solid var(--hair);border-radius:999px;
+  box-shadow:inset 0 1px 4px rgba(29,28,24,.08), 0 1px 2px rgba(29,28,24,.04);
+}
+/* The gliding pill: its box is written by the component from the active tab,
+   and the glide is the switch's own motion — a slow, sprung ease, not a snap. */
+.about-mode-pill{
+  position:absolute;top:0;left:0;z-index:0;
+  background:var(--ink);border-radius:999px;
+  box-shadow:0 2px 14px rgba(29,28,24,.22),
+             inset 0 1px 0 rgba(243,233,222,.22);
+  transition:transform .55s cubic-bezier(.22,1,.36,1),
+             width .55s cubic-bezier(.22,1,.36,1),
+             height .55s cubic-bezier(.22,1,.36,1);
+  pointer-events:none;
 }
 /* 44px is the tap target, the gap between glyph and name is the chips' own, and
-   `nowrap` stops a name ever breaking mid-word. */
+   `nowrap` stops a name ever breaking mid-word. The tab itself is transparent:
+   the pill behind it is the ink. */
 .about-mode{
+  position:relative;z-index:1;
   display:inline-flex;align-items:center;justify-content:center;gap:.6em;
   min-height:44px;padding:.5em 1.15em;
   background:none;border:0;border-radius:999px;
   font-family:var(--fa);font-size:var(--fs-ui);line-height:1.2;
   color:var(--ink-soft);white-space:nowrap;cursor:pointer;
-  transition:background-color .4s ease,color .4s ease,box-shadow .4s ease;
+  transition:color .4s ease,transform .18s ease;
 }
 .about-mode svg{width:1.15em;height:1.15em;flex:none;opacity:.85}
-.about-mode[aria-current="true"]{
-  background:var(--ink);color:var(--bg);
-  box-shadow:0 2px 14px rgba(29,28,24,.18);
-}
+.about-mode[aria-current="true"]{color:var(--bg)}
 .about-mode[aria-current="true"] svg{opacity:1}
+.about-mode:active{transform:scale(.96)}
 .about-mode:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 @media (hover:hover){
-  .about-mode:not([aria-current="true"]):hover{background:rgba(29,28,24,.05);color:var(--ink)}
+  .about-mode:not([aria-current="true"]):hover{color:var(--ink)}
 }
 
 /*
@@ -573,12 +596,16 @@ a{color:inherit;text-decoration:none}
 .about-compare-lede{
   font-family:var(--fa);font-weight:400;
   font-size:var(--fs-lede);line-height:1.7;color:var(--ink);
+  text-align:justify;text-align-last:center;
 }
 
 /* The selector: a row of chips rather than a box of tabs, each naming the space
    it shows, with the current one inked. Its own accessible name comes from the
    data module, and the current chip is marked with `aria-current` in the markup,
-   which is what this rule styles — there is no separate class to keep in step. */
+   which is what this rule styles — there is no separate class to keep in step.
+   The chips lift on hover and press, and the current one sits deepest in ink
+   with a shadow, so the selector reads as three small plates rather than three
+   flat labels. */
 .about-samples{
   display:flex;flex-wrap:wrap;justify-content:center;gap:10px;
   margin-top:clamp(26px,3vw,40px);
@@ -586,19 +613,33 @@ a{color:inherit;text-decoration:none}
 .about-sample{
   display:inline-flex;align-items:center;gap:.7em;
   padding:.7em 1.1em;
-  background:var(--bg-2);border:1px solid var(--hair);border-radius:2px;
+  background:var(--bg-2);border:1px solid var(--hair);border-radius:999px;
   font-family:var(--fa);font-size:var(--fs-caption);letter-spacing:.1em;
   color:var(--ink-soft);
   cursor:pointer;
-  transition:color .4s ease,background-color .4s ease,border-color .4s ease;
+  box-shadow:0 1px 3px rgba(29,28,24,.06);
+  transition:color .4s ease,background-color .4s ease,border-color .4s ease,
+             transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s ease;
 }
 .about-sample-index{
   font-size:.85em;letter-spacing:.06em;opacity:.6;
   font-variant-numeric:tabular-nums;
 }
-.about-sample[aria-current="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.about-sample[aria-current="true"]{
+  background:var(--ink);border-color:var(--ink);color:var(--bg);
+  box-shadow:0 10px 24px -10px rgba(29,28,24,.5);
+}
 .about-sample[aria-current="true"] .about-sample-index{opacity:.8}
 .about-sample:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.about-sample:active{transform:scale(.96)}
+@media (hover:hover){
+  .about-sample:not([aria-current="true"]):hover{
+    transform:translateY(-2px);
+    border-color:var(--ink);color:var(--ink);
+    box-shadow:0 12px 26px -14px rgba(29,28,24,.45);
+  }
+  .about-sample[aria-current="true"]:hover{transform:translateY(-2px)}
+}
 
 /*
  * The frame. `--about-pos` is one number with one meaning: the share of the frame
@@ -749,6 +790,7 @@ a{color:inherit;text-decoration:none}
   padding-top:clamp(14px,1.6vw,20px);border-top:1px solid var(--hair);
   font-family:var(--fa);font-size:var(--fs-body);line-height:var(--lh-body);
   color:var(--ink-soft);
+  text-align:justify;
 }
 
 /*
@@ -763,7 +805,7 @@ a{color:inherit;text-decoration:none}
  * an immediate swap — the studio view is simply there, as it was left.
  */
 @keyframes about-panel-in{
-  from{opacity:0;transform:translate3d(var(--about-entry,26px),0,0)}
+  from{opacity:0;transform:translate3d(var(--about-entry,26px),14px,0) rotateX(5deg)}
   to{opacity:1;transform:none}
 }
 .about[data-entry] .about-panel--compare{
@@ -1638,16 +1680,30 @@ body.menu-open{overflow:hidden}
   .about-mode{flex:1 1 auto;min-height:46px;padding:.5em .9em;font-size:var(--fs-meta)}
   /* The showcase takes the phone's measure: a taller frame, the heading at the
      phone's own display size, and a handle sized for a thumb. The two badges keep
-     their corners of the pictures, a shade inside the frame's own edges. */
+     their corners of the pictures, a shade inside the frame's own edges. The
+     frame is portrait now, so the comparison has a real presence instead of
+     reading as a small strip lost in the column. */
   .about-compare-title{font-size:clamp(36px,10.2vw,58px);margin:16px 0 18px}
   .about-compare-lede{font-size:clamp(19px,4.8vw,23px);line-height:1.65}
-  .about-compare{aspect-ratio:5/4}
+  .about-compare{aspect-ratio:4/5}
   .about-compare-handle{width:38px;height:38px}
+  /* The three sample chips share one row, as three equal cards with the number
+     over the name: the old wrapping row broke into two lines, two chips above
+     and one alone below. */
+  .about-samples{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .about-sample{
+    flex-direction:column;justify-content:center;gap:2px;
+    min-height:64px;padding:.8em .4em;text-align:center;
+  }
+  .about-sample-index{font-size:.8em}
   /* The centred column and the centred metric rule are set at ≤960px; on a phone
-     only the display sizes and the label's own placement change. */
+     only the display sizes and the label's own placement change. The studio
+     photograph is portrait here: the old 5/4 frame read as a square tile, and
+     the courtyard wants height. */
   .about-copy h2{font-size:clamp(36px,10.2vw,58px);margin:18px 0 30px}
   .about-copy .lede{font-size:clamp(19px,4.8vw,23px);line-height:1.65}
   .about-copy .sub{margin-top:24px}
+  .about-image{aspect-ratio:3/4}
   .metrics{gap:32px 48px;margin-top:54px}
   .metrics .num{font-size:clamp(44px,11.5vw,62px)}
   /* The caption takes the centre line of the plate, as the project cards' plate
