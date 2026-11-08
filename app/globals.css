@@ -1565,16 +1565,20 @@ body.menu-open{overflow:hidden}
 
 /* ---------- ≤680px : mobile ---------- */
 @media (max-width: 680px){
-  /* Hero.
-     The media band is half the hero and the hero is exactly one viewport tall,
-     so `50vh` of bottom padding ends the copy's own box precisely where that band
-     starts. `margin-top:auto` then takes up the slack above the copy, which reads
-     the wordmark, the lede and the action as one block centred in the space over
-     the photograph — instead of pinned under the header with a dead band beneath
-     them — while the fixed bottom margin keeps a step of clear air between the
-     action and the top of the media. */
-  .hero{padding-top:114px;padding-bottom:50vh}
-  .hero-copy{margin-top:auto;margin-bottom:clamp(24px,4vh,40px)}
+  /* Hero — full-bleed video on a phone.
+     The old mobile hero kept the video to the bottom half and the copy in the
+     upper half, which left most of the first screen as empty ivory: the video
+     — the part that makes the desktop hero — read as a small strip. Here the
+     video fills the whole first screen instead, and the copy sits on top of
+     it. Two veils keep that readable without a solid panel: the video's own
+     top fade is deepened to 340px down, just past the copy, so the wordmark,
+     the lede and the action always sit on ivory melting into the picture on
+     any phone height, and a short ivory fade at the bottom carries the scroll
+     cue. `100svh` is the height the phone actually shows — `100vh` counts
+     the area behind the browser chrome, which used to push the video's lower
+     half below the fold. */
+  .hero{padding-top:114px;padding-bottom:0;min-height:100vh;min-height:100svh}
+  .hero-copy{margin-top:0;margin-bottom:0}
   .hero-copy h1{
     font-size:clamp(56px,17vw,120px);white-space:normal;
   }
@@ -1582,7 +1586,24 @@ body.menu-open{overflow:hidden}
   /* Both authored lines of the lede fit the phone's measure, so the desktop break
      is kept here rather than dropped and left to re-flow (`Hero.tsx`). */
   .hero-copy .link-underline{font-size:1.0625rem;margin-top:28px}
-  .hero-image{height:50%}
+  .hero-image{
+    height:100%;
+    -webkit-mask-image:linear-gradient(to bottom,
+      rgba(0,0,0,0) 0%,
+      rgba(0,0,0,1) 340px,
+      rgba(0,0,0,1) 100%);
+    mask-image:linear-gradient(to bottom,
+      rgba(0,0,0,0) 0%,
+      rgba(0,0,0,1) 340px,
+      rgba(0,0,0,1) 100%);
+  }
+  /* Bottom veil for the scroll cue: --bg at a little over half strength,
+     fading out two thirds up, so the cue never sits on a busy frame. */
+  .hero::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:150px;z-index:2;
+    background:linear-gradient(to top, rgba(243,233,222,.55), rgba(243,233,222,0) 70%);
+    pointer-events:none;
+  }
   .scroll-cue{bottom:18px;font-size:var(--fs-caption)}
   .scroll-cue i{height:28px}
 
