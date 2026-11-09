@@ -144,6 +144,10 @@ export default function SiteInteractions() {
     const counters = Array.from(document.querySelectorAll<HTMLElement>("[data-count]"));
     let co: IntersectionObserver | null = null;
 
+    /** Persian digits for the counters, so the numbers read as Persian. */
+    const toPersianDigits = (value: string | number) =>
+      String(value).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
+
     const runCount = (el: HTMLElement) => {
       const target = parseInt(el.dataset.count || "0", 10);
       const from = parseInt(el.dataset.from || "0", 10);
@@ -154,7 +158,7 @@ export default function SiteInteractions() {
         const t = Math.min(1, (now - start) / duration);
         const eased = 1 - Math.pow(1 - t, 3);
         const value = Math.round(from + (target - from) * eased);
-        el.textContent = value + (t === 1 ? suffix : "");
+        el.textContent = toPersianDigits(value) + (t === 1 ? suffix : "");
         if (t < 1) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
@@ -163,7 +167,8 @@ export default function SiteInteractions() {
     if (counters.length) {
       if (reduced) {
         counters.forEach((el) => {
-          el.textContent = (el.dataset.count || "") + (el.dataset.suffix || "");
+          el.textContent =
+            toPersianDigits(el.dataset.count || "") + (el.dataset.suffix || "");
         });
       } else {
         co = new IntersectionObserver(

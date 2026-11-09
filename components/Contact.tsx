@@ -67,7 +67,7 @@ export default function Contact() {
           rel="noopener noreferrer"
           className="link-underline strong"
         >
-          آغاز گفت‌وگو &nbsp;←
+          گفت‌وگو با مهندس افسانه مردانی &nbsp;←
         </a>
       </div>
 

@@ -113,8 +113,8 @@ export default function InstagramShowcase() {
 
         <div className="conn-head-aside">
           <p className="conn-lede" data-reveal="fade-up" data-delay="240">
-            از جزئیات متریال تا پروژههای اجراشده، همراه نورستا باش؛ برای انتخاب
-            متریال، استعلام یا شروع یک همکاری، مستقیم با ما در ارتباط باش.
+            از جزئیات میکروسمنت تا پروژه‌های اجراشده، همراه نورستا باش؛ برای انتخاب
+            میکروسمنت، استعلام یا شروع یک همکاری، مستقیم با ما در ارتباط باش.
           </p>
 
           <p className="conn-domain" data-reveal="fade-up" data-delay="340">

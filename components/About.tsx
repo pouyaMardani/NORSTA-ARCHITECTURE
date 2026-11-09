@@ -387,7 +387,7 @@ export default function About() {
           <div className="about-image" data-reveal="image-reveal">
             <Image
               src="/images/about-courtyard.png"
-              alt="فضای داخلی سنگیِ آفتاب‌گیر با درخت و پلکان"
+              alt="فضای داخلی سنگی با نور طبیعی و دیوارهای مادهای"
               fill
               sizes="(max-width: 960px) 100vw, 48vw"
               style={{ objectFit: "cover" }}
@@ -397,7 +397,7 @@ export default function About() {
           <figcaption className="about-caption">
             <span className="about-label">
               <i aria-hidden="true" />
-              حیاط سنگی، کپنهاگ
+              فضای داخلی سنگی
             </span>
           </figcaption>
         </figure>
@@ -415,25 +415,25 @@ export default function About() {
           </span>
         </h2>
         <p className="lede" data-reveal="fade-up" data-delay="320">
-          ما بناهایی طراحی می‌کنیم که آرام و استوار بر جای خود می‌ایستند. سنگ،
-          چوب و نور همچون سازهایی کوک‌شده با مکان، اقلیم و ریتمِ بی‌عجله‌ی
-          زندگی روزمره به کار گرفته می‌شوند.
+          کار ما میکروسمنت است؛ سطحی یکپارچه و بی‌درز که فضا را آرام و استوار
+          می‌کند. سنگ، چوب و نور همچون سازهایی کوک‌شده با مکان، اقلیم و ریتمِ
+          بی‌عجله‌ی زندگی روزمره به کار گرفته می‌شوند.
         </p>
         <p className="sub" data-reveal="fade-up" data-delay="460">
-          این استودیو که در سال 2008 میان کپنهاگ و کیوتو بنیان گذاشته شد، بیش از
-          140 پروژه را در حوزه‌های مسکونی، فرهنگی و اقامتی به سرانجام رسانده است.
+          نورستا از سال ۱۴۰۱ با میکروسمنت کار می‌کند و بیش از ۳۰ پروژه را در
+          تهران به سرانجام رسانده است؛ به رهبری مهندس افسانه مردانی.
         </p>
 
         <div className="metrics" data-reveal="metrics-rule">
           <div data-reveal="fade-up" data-delay="200">
-            <span className="num" data-count="2008" data-from="2000">
-              2000
+            <span className="num" data-count="1401" data-from="1395">
+              ۱۳۹۵
             </span>
             <span className="label">سال تأسیس</span>
           </div>
           <div data-reveal="fade-up" data-delay="340">
-            <span className="num" data-count="140" data-suffix="+">
-              0
+            <span className="num" data-count="30" data-suffix="+">
+              ۰
             </span>
             <span className="label">پروژه‌های اجراشده</span>
           </div>

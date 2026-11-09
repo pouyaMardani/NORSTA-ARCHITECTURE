@@ -53,7 +53,7 @@ export const SITE_URL: string = (() => {
  */
 export const SITE_TITLE = "NORSTA HOME";
 export const SITE_TAGLINE =
-  "معماری‌ای که با سکوت، وزن و گذرِ آرام نور در فضا شکل می‌گیرد.";
+  "میکروسمنت؛ سطحی یکپارچه که با سکوت، وزن و گذرِ آرام نور در فضا شکل می‌گیرد.";
 
 /**
  * The mark as the design spells it: Latin, all caps, no suffix. The Persian

@@ -14,7 +14,7 @@ export default function Hero() {
             line, and the moment a narrower measure dropped the break it drifted
             into the middle of the sentence. */}
         <p className="pcenter">
-          معماری‌ای که با سکوت، وزن و{" "}
+          میکروسمنت؛ سطحی یکپارچه که با سکوت، وزن و{" "}
           <br />
           .گذرِ آرام نور در فضا شکل می‌گیرد
         </p>

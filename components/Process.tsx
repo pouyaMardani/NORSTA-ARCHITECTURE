@@ -28,7 +28,7 @@ import { useEffect, useRef, type CSSProperties } from "react";
  *     same scroll window.
  *   · After the last card, the numbers. The reference follows its cards with
  *     a row of counting stats; this one repeats the numbers the About section
- *     already publishes (founded 2008, 140+ projects) beside the size of the
+ *     already publishes (founded 1401, 30+ projects) beside the size of the
  *     sample library (8), counted up by the site's own `[data-count]` system.
  *
  * The copy is the studio's own: the step order and the vocabulary come from
@@ -92,10 +92,14 @@ const STEPS: ProcessStep[] = [
 
 /** The numbers after the last card — the site's own published figures. */
 const STATS = [
-  { value: "2008", from: "2000", suffix: "", label: "سال تأسیس" },
-  { value: "140", from: undefined, suffix: "+", label: "پروژه‌های اجراشده" },
+  { value: "1401", from: "1395", suffix: "", label: "سال تأسیس" },
+  { value: "30", from: undefined, suffix: "+", label: "پروژه‌های اجراشده" },
   { value: "8", from: undefined, suffix: "", label: "نمونه‌ی رنگ و بافت" },
 ];
+
+/** Persian digits for the counters' starting text, matching the animation. */
+const toFa = (value: string) =>
+  value.replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
 
 /**
  * The sticky line the cards settle on. The reference pins at the viewport's
@@ -220,11 +224,11 @@ export default function Process() {
             <span className="sr-only">قدم به قدم</span>
           </span>
           <h2 id="process-title" className="process-title" ref={titleRef}>
-            روند کار ما
+            روند اجرای میکروسمنت
           </h2>
         </div>
         <p className="process-lede" data-reveal="fade-up" data-delay="120">
-          از نخستین گفت‌وگو تا تحویل نهایی، هر گام را با هم و با نمونه‌های
+          از نخستین گفت‌وگو تا تحویل نهایی، هر گام اجرای میکروسمنت را با هم و با نمونه‌های
           واقعی جلو می‌بریم.
         </p>
       </div>
@@ -283,7 +287,7 @@ export default function Process() {
               data-from={stat.from}
               data-suffix={stat.suffix || undefined}
             >
-              {stat.from ?? "0"}
+              {toFa(stat.from ?? "0")}
             </span>
             <span className="process-stat-label">{stat.label}</span>
           </div>

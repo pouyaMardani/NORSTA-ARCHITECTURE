@@ -9,28 +9,25 @@ import Image from "next/image";
  * the hands that made them, and the quiet CTA hands over to the contact block.
  *
  * ── CONTENT ────────────────────────────────────────────────────────────────
- * This repository contains no verifiable information about a real person (no
- * name, biography, years of practice, qualifications, certifications or awards),
- * and Norsta's brand rules forbid inventing any of it. Every factual field below
- * is therefore a bracketed placeholder: replace the strings in `CRAFTSMAN`, not
- * the markup.
+ * The name, the role and the biography below are the owner's own facts: the
+ * engineer who leads Norsta's microcement and patina work is مهندس افسانه
+ * مردانی, and the studio's work in the material runs from ۱۴۰۱. The three
+ * figures under the biography are the site's own published numbers (founded
+ * ۱۴۰۱, ۳۰+ projects, ۸ finishes), so nothing here is a guess.
  *
- * The only copy that is not a placeholder is the material heading and the two
- * material tags. They name microcement and patina in general — the subject of
- * the business, already stated in the Instagram section — and make no claim
- * about a specific person or project.
+ * The only copy that is not a person-specific fact is the material heading and
+ * the two material tags. They name microcement and patina in general — the
+ * subject of the business, already stated in the Instagram section — and make
+ * no claim about a specific person or project.
  *
  * ── IMAGE ──────────────────────────────────────────────────────────────────
- * `CRAFTSMAN.image` is a stand-in plate: an authentic Norsta microcement detail
- * (`project-minimal-residence.png`, currently unused elsewhere on the page).
- * It is deliberately *not* captioned as a portrait, and its alt text describes
- * what the photograph actually shows.
- *
- * Swap the `src` for an approved photograph when one exists — no styling change
- * is needed. The composition is built from `--craft-radius` and `--craft-offset`
- * in `globals.css` (the plate and the hairline ghost frame behind it share both
- * values), and the photograph is cropped by `object-fit:cover` inside a fixed
- * `4/5` plate, so a different source image lands in exactly the same silhouette.
+ * `CRAFTSMAN.image` is her portrait — مهندس افسانه مردانی outdoors, beside
+ * the olive tree — so the alt text names her, and the plate is captioned as
+ * her portrait rather than as a material detail. The composition is built from
+ * `--craft-radius` and `--craft-offset` in `globals.css` (the plate and the
+ * hairline ghost frame behind it share both values), and the photograph is
+ * cropped by `object-fit:cover` inside a fixed `4/5` plate, so a different
+ * source image lands in exactly the same silhouette.
  *
  * ── MOTION ─────────────────────────────────────────────────────────────────
  * `data-reveal-cycle` marks the section as reversible: `SiteInteractions` adds
@@ -41,11 +38,12 @@ import Image from "next/image";
  */
 
 type CraftsmanContent = {
-  name: string;
+  /** Her professional title, as the owner states it. */
   title: string;
-  experience: string;
-  experienceLabel: string;
+  /** One short paragraph: who she is and how she works. */
   bio: string;
+  /** The site's own published numbers, so the section never guesses. */
+  metrics: { value: string; label: string }[];
   image: { src: string; alt: string };
   /** Latin micro-label for the plate, set in the same face as the wordmarks. */
   label: string;
@@ -54,22 +52,20 @@ type CraftsmanContent = {
 };
 
 const CRAFTSMAN: CraftsmanContent = {
-  /** ⚠ PLACEHOLDER — the craftsman's real name. */
-  name: "[نام استادکار]",
-  /** ⚠ PLACEHOLDER — the craftsman's real professional title. The craft named
-      here is the subject of the business, but the wording still needs the
-      owner's confirmation. */
-  title: "استادکار میکروسمنت و پتینه",
-  /** ⚠ PLACEHOLDER — the real figure (e.g. "۱۸"). Left as a dash so that no
-      number is ever implied. */
-  experience: "[—]",
-  experienceLabel: "سال تجربه",
-  /** ⚠ PLACEHOLDER — replace with the approved biography. */
-  bio: "[معرفی کوتاه: مسیر حرفه‌ای، سال‌های همکاری و رویکرد این استادکار در اجرای میکروسمنت و پتینه.]",
+  /** Her role: the engineer who runs Norsta's microcement and patina work. */
+  title: "مجری میکروسمنت و پتینه‌ی نورستا",
+  /** The introduction, in her own section's voice: the work, and how she
+      follows it from the first sample to the last coat. */
+  bio: "از سال ۱۴۰۱ اجرای سطح‌های یکپارچه‌ی نورستا را رهبری می‌کند. هر پروژه از نمونه تا تحویل با همراهی مستقیم او پیش می‌رود؛ از انتخاب رنگ و بافت در نور همان فضا تا آخرین لایه‌ی ماله و سیلر.",
+  metrics: [
+    { value: "۱۴۰۱", label: "آغاز به کار" },
+    { value: "۳۰+", label: "پروژه‌ی اجراشده" },
+    { value: "۸", label: "نمونه‌ی رنگ و بافت" },
+  ],
   image: {
-    /** ⚠ PLACEHOLDER plate — swap for approved photography of the craftsman. */
+    /** Her portrait, outdoors beside the olive tree. */
     src: "/images/craft.png",
-    alt: "جزئیات اجرای میکروسمنت در یک فضای مرطوب",
+    alt: "پرتره‌ی مهندس افسانه مردانی",
   },
   label: "CRAFT & MATERIAL",
   tags: ["MICROCEMENT", "PATINA"],
@@ -118,16 +114,13 @@ export default function Craftsman() {
 
         <h2 className="mask-title" data-reveal-item>
           <span className="line">
-            <span>میکروسمنت</span>
+            <span>مهندس افسانه</span>
           </span>
           <span className="line">
-            <span>و پتینه</span>
+            <span>مردانی</span>
           </span>
         </h2>
 
-        <p className="craft-name" data-reveal-item>
-          {CRAFTSMAN.name}
-        </p>
         <p className="craft-role" data-reveal-item>
           {CRAFTSMAN.title}
         </p>
@@ -136,10 +129,12 @@ export default function Craftsman() {
         </p>
 
         <div className="metrics" data-reveal-item>
-          <div>
-            <span className="num">{CRAFTSMAN.experience}</span>
-            <span className="label">{CRAFTSMAN.experienceLabel}</span>
-          </div>
+          {CRAFTSMAN.metrics.map((metric) => (
+            <div key={metric.label}>
+              <span className="num">{metric.value}</span>
+              <span className="label">{metric.label}</span>
+            </div>
+          ))}
         </div>
 
         <a className="link-underline strong" href="#contact" data-reveal-item>
