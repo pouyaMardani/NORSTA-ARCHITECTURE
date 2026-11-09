@@ -4534,9 +4534,13 @@ html:has(body.mv-open){overflow:hidden}
      one it measures about 2:1, so it can only ever be a decoration — and a
      decoration that is nearly invisible is not worth a token. The catalogue's
      emphasis is carried by the ink and the hairlines instead. */
-  /* The site's corner family, in the same two mirrored cuts the project plates
-     use, so a catalogue card belongs to the same construction. */
-  --prd-radius:clamp(18px,1.8vw,28px) 2px clamp(18px,1.8vw,28px) 2px;
+  /* One clean, professional radius for the whole register — the same on all
+     four corners. The mirrored cut the project plates use reads as a torn
+     corner on a product photograph; a product frame wants the quiet, even
+     radius a shop window uses. The photograph keeps square lower corners
+     where it meets the card's rule, because the card's own `overflow:hidden`
+     clips its top to this same radius. */
+  --prd-radius:clamp(16px,1.6vw,24px);
   --prd-gap:clamp(18px,2vw,30px);
   --prd-pad-y:clamp(96px,9.6vw,150px);
 }
@@ -4621,6 +4625,7 @@ html:has(body.mv-open){overflow:hidden}
   max-width:54ch;
   font-size:clamp(16px,1.15vw,19px);line-height:1.95;
   color:var(--prd-ink-soft);
+  text-align:justify;text-justify:inter-word;
 }
 .mats-actions{
   display:flex;flex-wrap:wrap;align-items:center;gap:16px 22px;
@@ -4636,7 +4641,7 @@ html:has(body.mv-open){overflow:hidden}
 .mats-all-count{font-size:var(--fs-caption);color:var(--prd-muted)}
 .mats-all-arrow{display:block;width:1.05em;height:1.05em;flex:none;transition:transform .5s cubic-bezier(.22,.61,.36,1)}
 .mats-all-arrow svg{width:100%;height:100%}
-.mats-note{margin-top:16px;font-size:var(--fs-meta);line-height:1.9;color:var(--prd-muted);max-width:48ch}
+.mats-note{margin-top:16px;font-size:var(--fs-meta);line-height:1.9;color:var(--prd-muted);max-width:48ch;text-align:justify;text-justify:inter-word}
 
 /* ---------- The four shelves ----------
    A twelve-column field so the four plates can be laid out asymmetrically —
@@ -4644,23 +4649,40 @@ html:has(body.mv-open){overflow:hidden}
    its variation without a second design, and one `--mats-media-h` for the whole
    grid is what keeps a row's plates from ending at four different depths. */
 .mats-grid{
-  --mats-media-h:clamp(280px,30vw,440px);
+  --mats-media-h:clamp(320px,34vw,520px);
   display:grid;grid-template-columns:repeat(12,minmax(0,1fr));
   gap:var(--prd-gap);
   list-style:none;
+  perspective:1200px;
 }
 .mats-card:nth-child(1){grid-column:1/7}
 .mats-card:nth-child(2){grid-column:7/13}
 .mats-card:nth-child(3){grid-column:1/6}
 .mats-card:nth-child(4){grid-column:6/13}
-.mats-card{display:flex;flex-direction:column;gap:18px;min-width:0}
+/* A shelf arrives in three dimensions: it rises out of a forward tilt as it
+   scrolls into view, one card after the next (`--i`, set by the component).
+   The entrance is scroll-driven, so it needs no JavaScript — and where the
+   browser has no scroll-driven animations it simply plays once on load. */
+.mats-card{
+  display:flex;flex-direction:column;gap:18px;min-width:0;
+  animation:mats-in 1s cubic-bezier(.22,.61,.36,1) both;
+  animation-timeline:view();
+  animation-range:entry 0% entry 70%;
+  animation-delay:calc(var(--i,0) * 90ms);
+}
+@keyframes mats-in{
+  from{opacity:.45;transform:translateY(48px) rotateX(8deg)}
+  to{opacity:1;transform:none}
+}
 .mats-card-media{
   position:relative;overflow:hidden;
   height:var(--mats-media-h);
   border-radius:var(--prd-radius);
   background:var(--prd-bg-2);
-  box-shadow:0 30px 60px -46px rgba(29,28,24,.6);
+  box-shadow:0 30px 60px -46px rgba(29,28,24,.6), inset 0 0 0 1px rgba(29,28,24,.10);
+  transition:transform .6s cubic-bezier(.22,.61,.36,1), box-shadow .6s cubic-bezier(.22,.61,.36,1);
 }
+.mats-card-media img{transition:transform 1.4s cubic-bezier(.22,.61,.36,1)}
 /* The veil keeps the two overlay labels legible over any plate, including the
    pale ones, and deepens a plate's lower edge so the body below reads as a
    separate surface. */
@@ -4680,15 +4702,23 @@ html:has(body.mv-open){overflow:hidden}
   font-family:var(--sans);font-size:var(--fs-caption);letter-spacing:.16em;
   color:rgba(243,233,222,.92);
 }
-.mats-card-body{display:flex;flex-direction:column;gap:10px;min-width:0}
+.mats-card-body{display:flex;flex-direction:column;gap:10px;min-width:0;flex:1}
 .mats-card-title{
   font-family:var(--fa);font-weight:600;
-  font-size:clamp(19px,1.7vw,26px);line-height:1.4;color:var(--prd-ink);
+  font-size:clamp(22px,2vw,30px);line-height:1.4;color:var(--prd-ink);
 }
-.mats-card-desc{font-size:var(--fs-body);line-height:1.9;color:var(--prd-ink-soft);max-width:46ch}
+/* Justified, and held to three lines: the copy is already cut to the
+   catalogue's standard length in the component, and the clamp is what keeps a
+   shelf's body the same height when a future record runs longer. */
+.mats-card-desc{
+  font-size:var(--fs-body);line-height:1.9;color:var(--prd-ink-soft);max-width:46ch;
+  text-align:justify;text-justify:inter-word;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;
+  line-clamp:3;overflow:hidden;
+}
 .mats-card-link{
   display:inline-flex;align-items:center;gap:.7em;align-self:flex-start;
-  margin-top:4px;padding-bottom:6px;
+  margin-top:auto;padding-bottom:6px;
   border-bottom:1px solid var(--prd-hair-2);
   font-family:var(--fa);font-size:var(--fs-meta);color:var(--prd-ink);
 }
@@ -4696,6 +4726,11 @@ html:has(body.mv-open){overflow:hidden}
 .mats-card-arrow{display:block;width:.95em;height:.95em;flex:none;transition:transform .5s cubic-bezier(.22,.61,.36,1)}
 .mats-card-arrow svg{width:100%;height:100%}
 @media (hover:hover){
+  .mats-card:hover .mats-card-media{
+    transform:translateY(-6px);
+    box-shadow:0 44px 80px -40px rgba(29,28,24,.65), inset 0 0 0 1px rgba(29,28,24,.10);
+  }
+  .mats-card:hover .mats-card-media img{transform:scale(1.04)}
   /* In this right-to-left register the arrow travels to the left, i.e. onwards. */
   .mats-all:hover .mats-all-arrow{transform:translateX(-6px)}
   .mats-card-link:hover .mats-card-arrow{transform:translateX(-6px)}
@@ -4740,6 +4775,7 @@ html:has(body.mv-open){overflow:hidden}
   margin-top:clamp(18px,2vw,28px);
   font-size:clamp(17px,1.5vw,22px);line-height:var(--lh-body);
   color:var(--prd-ink-soft);max-width:44ch;
+  text-align:justify;text-justify:inter-word;
 }
 .prd-hero-actions{
   display:flex;flex-wrap:wrap;align-items:center;gap:14px 18px;
@@ -4751,6 +4787,7 @@ html:has(body.mv-open){overflow:hidden}
 .prd-hero-note{
   margin-top:18px;
   font-size:var(--fs-meta);line-height:1.95;color:var(--prd-muted);max-width:46ch;
+  text-align:justify;text-justify:inter-word;
 }
 .prd-hero-mosaic{
   display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
@@ -4761,7 +4798,7 @@ html:has(body.mv-open){overflow:hidden}
   position:relative;aspect-ratio:4/3;overflow:hidden;
   border-radius:var(--prd-radius);
   background:var(--prd-bg-2);
-  box-shadow:0 28px 56px -44px rgba(29,28,24,.6);
+  box-shadow:0 28px 56px -44px rgba(29,28,24,.6), inset 0 0 0 1px rgba(29,28,24,.10);
 }
 /* The second plate of each pair drops, so the four read as a spread rather than
    as a table — the same device the academy's collection plates use. */
@@ -4789,29 +4826,45 @@ html:has(body.mv-open){overflow:hidden}
   font-size:clamp(28px,3.4vw,48px);line-height:1.2;color:var(--prd-ink);
 }
 
-/* The filter row: a pill per shelf, with the number of products behind it. The
-   open shelf is styled from `aria-current`, i.e. from the attribute the
-   assistive layer already reads — so what a sighted visitor sees selected is
-   exactly what a screen reader is told is current. */
-.prd-filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:clamp(22px,2.4vw,32px)}
+/* The filter row: one labelled bar holding a pill per shelf, with the number of
+   products behind it in its own small disc. The open shelf is styled from
+   `aria-current`, i.e. from the attribute the assistive layer already reads —
+   so what a sighted visitor sees selected is exactly what a screen reader is
+   told is current. */
+.prd-filters{
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;
+  margin-top:clamp(22px,2.4vw,32px);padding:10px 12px;
+  border:1px solid var(--prd-hair);border-radius:999px;
+  background:var(--prd-surface);
+}
+.prd-filters-label{
+  padding-inline-start:10px;
+  font-size:var(--fs-caption);font-weight:500;letter-spacing:var(--track-meta);
+  color:var(--prd-muted);white-space:nowrap;
+}
 .prd-chip{
   display:inline-flex;align-items:center;gap:.55em;
-  padding:.55em 1em;
-  border:1px solid var(--prd-hair);border-radius:999px;
+  padding:.6em 1.1em;
+  border:1px solid transparent;border-radius:999px;
   background:transparent;color:var(--prd-ink-soft);
-  font-family:var(--fa);font-size:var(--fs-meta);
+  font-family:var(--fa);font-size:var(--fs-ui);
   transition:background-color .35s ease,border-color .35s ease,color .35s ease;
 }
 /* A chip is a pill: its label must never break inside it, or the pill turns into
    a rounded rectangle two lines tall. */
 .prd-chip-name{white-space:nowrap}
-.prd-chip-count{font-size:var(--fs-caption);opacity:.6}
+.prd-chip-count{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:22px;height:22px;padding:0 .4em;border-radius:999px;
+  background:rgba(29,28,24,.08);color:var(--prd-ink-soft);
+  font-size:var(--fs-caption);
+}
 .prd-chip.is-active{background:var(--prd-ink);border-color:var(--prd-ink);color:var(--prd-bg)}
-.prd-chip.is-active .prd-chip-count{opacity:.72}
+.prd-chip.is-active .prd-chip-count{background:rgba(243,233,222,.16);color:var(--prd-bg)}
 .prd-chip:focus-visible{outline:2px solid var(--prd-ink);outline-offset:3px}
 @media (hover:hover){
-  .prd-chip:hover{border-color:var(--prd-hair-2);color:var(--prd-ink)}
-  .prd-chip.is-active:hover{border-color:var(--prd-ink);color:var(--prd-bg)}
+  .prd-chip:hover{background:rgba(29,28,24,.06);color:var(--prd-ink)}
+  .prd-chip.is-active:hover{background:var(--prd-ink);color:var(--prd-bg)}
 }
 
 .prd-count{
@@ -4829,9 +4882,22 @@ html:has(body.mv-open){overflow:hidden}
   display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
   gap:var(--prd-gap);
   list-style:none;
+  perspective:1200px;
 }
-/* A grid stamp, so a card with a longer paragraph is still stretched to its row. */
-.prd-grid-item{display:grid}
+/* A grid stamp, so a card with a longer paragraph is still stretched to its row.
+   The cell also carries the card's entrance: it rises out of a forward tilt as
+   it scrolls into view, one card after the next (`--i`, set by the grid). */
+.prd-grid-item{
+  display:grid;
+  animation:pdc-in 1s cubic-bezier(.22,.61,.36,1) both;
+  animation-timeline:view();
+  animation-range:entry 0% entry 60%;
+  animation-delay:calc(var(--i,0) * 70ms);
+}
+@keyframes pdc-in{
+  from{opacity:.45;transform:translateY(36px) rotateX(7deg)}
+  to{opacity:1;transform:none}
+}
 
 /* ---------- One product ----------
    A card is one column of four fixed parts: the plate, a hairline in the item's
@@ -4844,8 +4910,13 @@ html:has(body.mv-open){overflow:hidden}
   border:1px solid var(--prd-hair);
   border-radius:var(--prd-radius);
   overflow:hidden;
+  box-shadow:0 18px 40px -28px rgba(29,28,24,.35);
+  transition:transform .5s cubic-bezier(.22,.61,.36,1), box-shadow .5s cubic-bezier(.22,.61,.36,1);
 }
-.pdc-media{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--prd-bg-2)}
+.pdc-media{
+  position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--prd-bg-2);
+  box-shadow:inset 0 0 0 1px rgba(29,28,24,.08);
+}
 .pdc-media img{transition:transform 1.5s cubic-bezier(.22,.61,.36,1)}
 /* Glass and an inset shadow, so a flat placeholder plate still reads as a surface
    rather than as a coloured rectangle. */
@@ -4868,7 +4939,7 @@ html:has(body.mv-open){overflow:hidden}
 /* The record's own `tintHex`, used as an accent under the plate — never as a
    claim about the product's colour. */
 .pdc-rule{display:block;height:2px;width:100%}
-.pdc-body{display:flex;flex-direction:column;gap:10px;flex:1;padding:clamp(16px,1.6vw,22px)}
+.pdc-body{display:flex;flex-direction:column;gap:10px;flex:1;padding:clamp(20px,2vw,28px)}
 .pdc-cat{
   display:inline-flex;align-items:center;gap:.6em;
   font-size:var(--fs-caption);letter-spacing:var(--track-meta);color:var(--prd-muted);
@@ -4877,7 +4948,7 @@ html:has(body.mv-open){overflow:hidden}
 .pdc-cat-sep{display:block;width:20px;height:1px;flex:none;background:var(--prd-hair-2)}
 .pdc-name{
   font-family:var(--fa);font-weight:600;
-  font-size:clamp(18px,1.35vw,21px);line-height:1.45;color:var(--prd-ink);
+  font-size:clamp(19px,1.5vw,23px);line-height:1.45;color:var(--prd-ink);
   /* Held to two lines, and the description to three, so the height of a row is
      set by the card and not by the longest copy on the shelf. `margin-top:auto`
      below aligns the actions; this is what stops one verbose item from opening a
@@ -4887,6 +4958,7 @@ html:has(body.mv-open){overflow:hidden}
 }
 .pdc-desc{
   font-size:var(--fs-body);line-height:1.85;color:var(--prd-ink-soft);
+  text-align:justify;text-justify:inter-word;
   display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;
   line-clamp:3;overflow:hidden;
 }
@@ -4906,7 +4978,8 @@ html:has(body.mv-open){overflow:hidden}
   /* As on the showcase's cards: the rule darkens, the label stays legible. */
   .pdc-cta:hover{border-top-color:var(--prd-ink)}
   .pdc-cta:hover .pdc-cta-arrow{transform:translate3d(3px,-3px,0)}
-  .pdc:hover .pdc-media img{transform:scale(1.03)}
+  .pdc:hover{transform:translateY(-6px);box-shadow:0 34px 60px -28px rgba(29,28,24,.5)}
+  .pdc:hover .pdc-media img{transform:scale(1.05)}
 }
 
 /* ---------- Empty shelf ----------
@@ -4941,7 +5014,7 @@ html:has(body.mv-open){overflow:hidden}
   font-family:var(--fa);font-weight:600;
   font-size:clamp(24px,2.9vw,40px);line-height:1.25;color:var(--prd-ink);
 }
-.prd-help-body{margin-top:16px;font-size:var(--fs-body);line-height:1.95;color:var(--prd-ink-soft);max-width:52ch}
+.prd-help-body{margin-top:16px;font-size:var(--fs-body);line-height:1.95;color:var(--prd-ink-soft);max-width:52ch;text-align:justify;text-justify:inter-word}
 .prd-help-action{justify-self:start}
 
 /* ---------- Responsive ----------
@@ -4978,6 +5051,12 @@ html:has(body.mv-open){overflow:hidden}
   .prd-catalog-title{font-size:clamp(26px,4.6vw,36px)}
 }
 @media (max-width:640px){
+  .prd-filters{
+    flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+  .prd-filters::-webkit-scrollbar{display:none}
+  .prd-chip{flex:none}
   .prd-grid{grid-template-columns:1fr}
   .prd-hero-mosaic{grid-template-columns:repeat(2,minmax(0,1fr))}
   .prd-hero-plate{aspect-ratio:4/3}
@@ -5002,6 +5081,9 @@ html:has(body.mv-open){overflow:hidden}
    arrows' travel, and the hero mosaic's settled offset — and they are dropped
    outright. */
 @media (prefers-reduced-motion: reduce){
+  .mats-card:hover .mats-card-media,
+  .mats-card:hover .mats-card-media img,
+  .pdc:hover,
   .pdc:hover .pdc-media img{transform:none}
   .prd-btn:hover .prd-btn-arrow,
   .mats-all:hover .mats-all-arrow,

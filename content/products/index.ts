@@ -136,6 +136,25 @@ export function toPersianDigits(value: string | number): string {
   return String(value).replace(/[0-9]/g, (digit) => PERSIAN_DIGITS[Number(digit)]);
 }
 
+/**
+ * A description cut to the catalogue's standard length.
+ *
+ * Cuts at the last word boundary before `max` characters and appends "…" — so
+ * a longer record never stretches its card, and every card's copy ends the same
+ * way. Shorter text is returned untouched, and the full record stays intact:
+ * the cut is a presentation rule, not an edit to the copy.
+ */
+export function truncateDescription(text: string, max = 100): string {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  const trimmed = (lastSpace > 0 ? cut.slice(0, lastSpace) : cut).replace(
+    /[،؛:.]+$/,
+    ""
+  );
+  return `${trimmed}…`;
+}
+
 /** The card's plate number, two-up and in Persian digits: ۰۱, ۰۲, ... */
 export function formatProductNumber(index: number): string {
   return toPersianDigits(String(index + 1).padStart(2, "0"));

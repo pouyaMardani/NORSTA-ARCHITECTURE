@@ -1,5 +1,7 @@
 import ProductCard from "@/components/ProductCard";
 
+import type { CSSProperties } from "react";
+
 import type { ProductDTO } from "@/content/products";
 
 /**
@@ -27,8 +29,10 @@ export default function ProductGrid({ products, label }: ProductGridProps) {
         <li
           className="prd-grid-item"
           key={product.id}
-          data-reveal="fade-up"
-          data-delay={String(Math.min(index, 7) * 70)}
+          /* The entrance is a scroll-driven 3D tilt (see globals.css), so the
+             cell carries its stagger as a custom property instead of the
+             reveal system's delay. */
+          style={{ "--i": index } as CSSProperties}
         >
           <ProductCard product={product} index={index} />
         </li>

@@ -1,6 +1,6 @@
-import { Fragment } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
 import InstagramCta from "@/components/InstagramCta";
 
@@ -13,6 +13,7 @@ import {
   getCategoryCounts,
   getAllProducts,
   toPersianDigits,
+  truncateDescription,
 } from "@/content/products";
 
 /**
@@ -83,13 +84,12 @@ export default function MaterialsShowcase() {
           </div>
 
           <div className="mats-head-copy">
+            {/* One flowing paragraph, not three broken lines: the intro is a
+                single sentence, and only a flowing paragraph can be set
+                justified — a line broken by `<br>` ends ragged, however the
+                paragraph is aligned. */}
             <p className="mats-lede" data-reveal="fade-up" data-delay="200">
-              {section.intro.map((line, index) => (
-                <Fragment key={line}>
-                  {index > 0 ? <br /> : null}
-                  {line}
-                </Fragment>
-              ))}
+              {section.intro.join(" ")}
             </p>
 
             <div className="mats-actions" data-reveal="fade-up" data-delay="280">
@@ -118,8 +118,10 @@ export default function MaterialsShowcase() {
             <li
               className="mats-card"
               key={category.id}
-              data-reveal="fade-up"
-              data-delay={String(120 + index * 90)}
+              /* The entrance is a scroll-driven 3D tilt (see globals.css), so
+                 the card carries its stagger as a custom property instead of
+                 the reveal system's delay. */
+              style={{ "--i": index } as CSSProperties}
             >
               <div className="mats-card-media">
                 <Image
@@ -142,7 +144,9 @@ export default function MaterialsShowcase() {
 
               <div className="mats-card-body">
                 <h3 className="mats-card-title">{category.title}</h3>
-                <p className="mats-card-desc">{category.description}</p>
+                <p className="mats-card-desc">
+                  {truncateDescription(category.description)}
+                </p>
 
                 <Link
                   className="mats-card-link"

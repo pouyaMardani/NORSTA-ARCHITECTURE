@@ -5,6 +5,7 @@ import {
   formatProductNumber,
   getCategoryLabel,
   getProductInquiryUrl,
+  truncateDescription,
   type ProductDTO,
 } from "@/content/products";
 
@@ -79,7 +80,7 @@ export default function ProductCard({ product, index }: ProductCardProps) {
 
         <h3 className="pdc-name">{product.name}</h3>
 
-        <p className="pdc-desc">{product.description}</p>
+        <p className="pdc-desc">{truncateDescription(product.description)}</p>
 
         <a
           className="pdc-cta"

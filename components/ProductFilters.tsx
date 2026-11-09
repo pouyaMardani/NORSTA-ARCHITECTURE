@@ -35,6 +35,11 @@ export default function ProductFilters({ active }: ProductFiltersProps) {
 
   return (
     <nav className="prd-filters" aria-label={labels.filterLabel}>
+      {/* The row's own label: the categories read as a labelled, tidy bar
+          rather than a loose pile of pills. */}
+      <span className="prd-filters-label" aria-hidden="true">
+        {labels.filterLabel}
+      </span>
       <Link
         className={`prd-chip${active ? "" : " is-active"}`}
         href={getCatalogHref(null)}
