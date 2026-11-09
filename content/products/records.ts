@@ -2,9 +2,10 @@
  * The catalogue itself.
  *
  * ── WHAT THIS FILE IS ──────────────────────────────────────────────────────
- * A *starter* catalogue: eight records that hold the shelves, the grid and the
- * filter row exactly as a full catalogue will, so the page's structure is real
- * and only its contents are provisional.
+ * The studio's own products: the microcement powder, the ready-mix paste, the
+ * fibreglass mesh, the universal colour, the practice kit, the two trowels and
+ * the two sample boards — the items the studio actually works with and sells.
+ * The names and descriptions are the studio's own words for them.
  *
  * ── WHAT IT DELIBERATELY DOES NOT SAY ──────────────────────────────────────
  * No record names a price, a pack size, a stock level, a delivery term or a
@@ -25,11 +26,12 @@
  * its filter chip automatically. Re-ordering is one `sortOrder` edit.
  *
  * ── THE PLACEHOLDERS ───────────────────────────────────────────────────────
- * Every record below starts out pointing at a plate drawn by
+ * Every record below still points at a plate drawn by
  * `scripts/make-product-plates.mjs` — the tinted surface in the record's own
  * `tintHex`, marked `TEMPORARY PLATE`. A card prints «تصویر موقت» over it, so a
- * stand-in is never presented as a photograph of a real product. Regenerate
- * them all with `node scripts/make-product-plates.mjs`.
+ * stand-in is never presented as a photograph of a real product. The products
+ * are real; their photographs are not here yet. Regenerate them all with
+ * `node scripts/make-product-plates.mjs`.
  */
 
 import { placeholderImage } from "./config";
@@ -40,51 +42,81 @@ export const PRODUCTS: ProductDTO[] = [
   /* ---------------------------------------------------------- materials --- */
   {
     id: 1,
-    slug: "microcement-base-powder",
-    name: "پودر پایهی میکروسمنت",
+    slug: "microcement-powder",
+    name: "پودر میکروسمنت",
     category: "materials",
-    description: "پودری که لایهی زیرین سطح با آن ساخته میشود؛ بستری یکدست برای رویه.",
+    description:
+      "پودر میکروسمنت؛ ماده‌ی اصلی ساخت سطح که با آب مخلوط و لایه‌به‌لایه کشیده می‌شود.",
     image: placeholderImage(
-      "microcement-base-powder",
-      "تصویر موقت پودر پایهی میکروسمنت؛ جایگزین عکس واقعی محصول"
+      "microcement-powder",
+      "تصویر موقت پودر میکروسمنت؛ جایگزین عکس واقعی محصول"
     ),
     tintHex: "#cfc0a8",
     sortOrder: 10,
   },
   {
     id: 2,
-    slug: "microcement-topcoat-powder",
-    name: "پودر رویهی میکروسمنت",
+    slug: "microcement-paste",
+    name: "میکروسمنت خمیری",
     category: "materials",
-    description: "پودر رویه که بافت و رنگ نهایی سطح از آن ساخته میشود.",
+    description:
+      "میکروسمنت خمیری آماده‌ی مصرف؛ بدون مخلوط‌کردن، مستقیم روی سطح کشیده می‌شود.",
     image: placeholderImage(
-      "microcement-topcoat-powder",
-      "تصویر موقت پودر رویهی میکروسمنت؛ جایگزین عکس واقعی محصول"
+      "microcement-paste",
+      "تصویر موقت میکروسمنت خمیری؛ جایگزین عکس واقعی محصول"
     ),
     tintHex: "#c2b096",
     sortOrder: 20,
   },
+  {
+    id: 3,
+    slug: "fiberglass-mesh",
+    name: "توری فایبرگلاس",
+    category: "materials",
+    description:
+      "توری فایبرگلاس؛ شبکه‌ی تقویتی لایه‌ی پایه که ترک بستر را مهار می‌کند.",
+    image: placeholderImage(
+      "fiberglass-mesh",
+      "تصویر موقت توری فایبرگلاس؛ جایگزین عکس واقعی محصول"
+    ),
+    tintHex: "#b8b0a4",
+    sortOrder: 30,
+  },
+  {
+    id: 4,
+    slug: "universal-colour",
+    name: "رنگ یونورسال",
+    category: "materials",
+    description:
+      "رنگ یونورسال؛ پیگمنت مایع برای رنگ‌کردن میکروسمنت، سازگار با همه‌ی سیستم‌ها.",
+    image: placeholderImage(
+      "universal-colour",
+      "تصویر موقت رنگ یونورسال؛ جایگزین عکس واقعی محصول"
+    ),
+    tintHex: "#a89a7d",
+    sortOrder: 40,
+  },
 
   /* -------------------------------------------------------------- tools --- */
   {
-    id: 3,
+    id: 5,
     slug: "stainless-trowel",
-    name: "مالهی فولادی",
+    name: "ماله‌ی فولادی",
     category: "tools",
-    description: "مالهی فولادی برای کشیدن و فشردن لایههای میکروسمنت روی سطح.",
+    description: "ماله‌ی فولادی برای کشیدن و فشردن لایه‌های میکروسمنت روی سطح.",
     image: placeholderImage(
       "stainless-trowel",
-      "تصویر موقت مالهی فولادی؛ جایگزین عکس واقعی محصول"
+      "تصویر موقت ماله‌ی فولادی؛ جایگزین عکس واقعی محصول"
     ),
     tintHex: "#8f8d88",
     sortOrder: 10,
   },
   {
-    id: 4,
+    id: 6,
     slug: "finishing-spatula",
     name: "کاردک پرداخت",
     category: "tools",
-    description: "کاردک باریک برای پرداخت گوشهها، لبهها و جاهایی که ماله نمیرسد.",
+    description: "کاردک باریک برای پرداخت گوشه‌ها، لبه‌ها و جاهایی که ماله نمی‌رسد.",
     image: placeholderImage(
       "finishing-spatula",
       "تصویر موقت کاردک پرداخت؛ جایگزین عکس واقعی محصول"
@@ -95,55 +127,43 @@ export const PRODUCTS: ProductDTO[] = [
 
   /* ------------------------------------------------------- starter kits --- */
   {
-    id: 5,
-    slug: "practice-kit-basic",
-    name: "پک تمرین پایه",
+    id: 7,
+    slug: "practice-kit",
+    name: "پک تمرین",
     category: "starter-kits",
-    description: "بستهی تمرینی برای آشنایی با متریال و ابزار، پیش از اجرای واقعی روی سطح.",
+    description:
+      "پک تمرین؛ متریال و ابزار آزمودن میکروسمنت روی پنل نمونه، پیش از اجرای واقعی.",
     image: placeholderImage(
-      "practice-kit-basic",
-      "تصویر موقت پک تمرین پایه؛ جایگزین عکس واقعی محصول"
+      "practice-kit",
+      "تصویر موقت پک تمرین؛ جایگزین عکس واقعی محصول"
     ),
     tintHex: "#c9a978",
     sortOrder: 10,
   },
-  {
-    id: 6,
-    slug: "practice-kit-colour",
-    name: "پک تمرین رنگ",
-    category: "starter-kits",
-    description: "بستهی تمرینی برای آزمودن رنگها و بافتها روی پنل نمونه، پیش از انتخاب نهایی.",
-    image: placeholderImage(
-      "practice-kit-colour",
-      "تصویر موقت پک تمرین رنگ؛ جایگزین عکس واقعی محصول"
-    ),
-    tintHex: "#bf9a6a",
-    sortOrder: 20,
-  },
 
   /* ------------------------------------------------------------ samples --- */
   {
-    id: 7,
+    id: 8,
     slug: "sample-board-colours",
-    name: "پنل نمونهی رنگ",
+    name: "پنل نمونه‌ی رنگ",
     category: "samples",
-    description: "پنل نمونه برای دیدن رنگها در نور همان فضایی که قرار است اجرا شود.",
+    description: "پنل نمونه برای دیدن رنگ‌ها در نور همان فضایی که قرار است اجرا شود.",
     image: placeholderImage(
       "sample-board-colours",
-      "تصویر موقت پنل نمونهی رنگ؛ جایگزین عکس واقعی محصول"
+      "تصویر موقت پنل نمونه‌ی رنگ؛ جایگزین عکس واقعی محصول"
     ),
     tintHex: "#d8cbb6",
     sortOrder: 10,
   },
   {
-    id: 8,
+    id: 9,
     slug: "sample-board-textures",
-    name: "پنل نمونهی بافت",
+    name: "پنل نمونه‌ی بافت",
     category: "samples",
-    description: "پنل نمونه برای مقایسهی بافت و پرداخت سطحها در کنار یکدیگر.",
+    description: "پنل نمونه برای مقایسه‌ی بافت و پرداخت سطح‌ها در کنار یکدیگر.",
     image: placeholderImage(
       "sample-board-textures",
-      "تصویر موقت پنل نمونهی بافت؛ جایگزین عکس واقعی محصول"
+      "تصویر موقت پنل نمونه‌ی بافت؛ جایگزین عکس واقعی محصول"
     ),
     tintHex: "#b8a68d",
     sortOrder: 20,

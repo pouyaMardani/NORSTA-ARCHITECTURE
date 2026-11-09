@@ -19,11 +19,14 @@ import { SITE_LOCALE, SITE_NAME } from "@/lib/site";
  */
 /** This segment's own summary line: the document description and the share card's text. */
 const SECTION_DESCRIPTION =
-  "یادداشت‌های استودیو نورستا درباره‌ی میکروسمنت، پتینه، مصالح و اجرای سطح‌های معماری.";
+  "یادداشت‌های استودیو نورستا درباره‌ی میکروسمنت، پتینه، ابزار و مصالح اجرا، آماده‌سازی بستر، نگهداری سطح و هزینه‌ی پروژه.";
 
 export const metadata: Metadata = {
+  /* The archive's own title carries the keywords, not just the magazine's
+     name: eleven characters is not enough room for a result page. The article
+     pages keep the short name as their suffix (`%s | مجله نورستا`). */
   title: {
-    default: ARTICLE_CONFIG.magazine.name,
+    default: "مجله نورستا | میکروسمنت، پتینه و اجرای سطح",
     template: `%s | ${ARTICLE_CONFIG.magazine.name}`,
   },
 
@@ -39,13 +42,21 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     locale: SITE_LOCALE,
     url: "/articles",
-    title: ARTICLE_CONFIG.magazine.name,
+    title: "مجله نورستا | میکروسمنت، پتینه و اجرای سطح",
     description: SECTION_DESCRIPTION,
+    images: [
+      {
+        url: "/images/og/articles.jpg",
+        width: 1200,
+        height: 630,
+        alt: "فضای داخلی سنگی با نور طبیعی و دیوارهای مادهای",
+      },
+    ],
   },
 
   twitter: {
-    card: "summary",
-    title: ARTICLE_CONFIG.magazine.name,
+    card: "summary_large_image",
+    title: "مجله نورستا | میکروسمنت، پتینه و اجرای سطح",
     description: SECTION_DESCRIPTION,
   },
 };

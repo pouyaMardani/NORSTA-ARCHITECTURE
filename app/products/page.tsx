@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import InstagramCta from "@/components/InstagramCta";
+import JsonLd from "@/components/JsonLd";
 import ProductFilters from "@/components/ProductFilters";
 import ProductGrid from "@/components/ProductGrid";
 import {
@@ -14,6 +15,7 @@ import {
   getProductsByCategory,
   parseProductCategory,
 } from "@/content/products";
+import { productsJsonLd } from "@/lib/structured-data";
 
 /**
  * The catalogue.
@@ -73,6 +75,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   return (
     <div className="prd-page" dir="rtl">
+      {/* The catalogue as structured data: the whole list of eight products,
+          not the filtered shelf, because the page's canonical address is the
+          unfiltered `/products`. Inert markup. */}
+      <JsonLd data={productsJsonLd(getAllProducts())} />
       <header className="prd-hero">
         <div className="prd-hero-copy">
           <span className="eyebrow prd-eyebrow" data-reveal="fade-up">

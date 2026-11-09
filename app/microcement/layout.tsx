@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
 import McReveal from "@/components/microcement/McReveal";
-import { absoluteUrl } from "@/lib/site";
+import { SITE_LOCALE, SITE_NAME, absoluteUrl } from "@/lib/site";
 
 /**
  * Shell for the microcement showcase (`/microcement` and its children).
@@ -27,16 +27,32 @@ import { absoluteUrl } from "@/lib/site";
 export const metadata: Metadata = {
   title: "میکروسمنت؛ سطحی یکپارچه — نورستا",
   description:
-    "میکروسمنت؛ سطحی یکپارچه که با سکوت، وزن و گذرِ آرام نور در فضا شکل می‌گیرد. گزیده‌ی پروژه‌های نورستا در تهران، به رهبری مهندس افسانه مردانی.",
+    "میکروسمنت و پتینه؛ سطحی یکپارچه که با سکوت، وزن و گذرِ آرام نور در فضا شکل می‌گیرد. گزیده‌ی پروژه‌های اجرا شده‌ی نورستا در تهران، به رهبری مهندس افسانه مردانی.",
   alternates: {
     canonical: absoluteUrl("/microcement"),
   },
   openGraph: {
     type: "website",
+    siteName: SITE_NAME,
+    locale: SITE_LOCALE,
     title: "میکروسمنت؛ سطحی یکپارچه — نورستا",
     description:
-      "میکروسمنت؛ سطحی یکپارچه که با سکوت، وزن و گذرِ آرام نور در فضا شکل می‌گیرد. گزیده‌ی پروژه‌های نورستا در تهران.",
+      "میکروسمنت و پتینه؛ سطحی یکپارچه که با سکوت، وزن و گذرِ آرام نور در فضا شکل می‌گیرد. گزیده‌ی پروژه‌های اجرا شده‌ی نورستا در تهران.",
     url: absoluteUrl("/microcement"),
+    images: [
+      {
+        url: "/images/og/microcement.jpg",
+        width: 1200,
+        height: 630,
+        alt: "نشیمن با کف تیره، دیوار چوبی و پنجره‌های بزرگ",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "میکروسمنت؛ سطحی یکپارچه — نورستا",
+    description:
+      "میکروسمنت و پتینه؛ سطحی یکپارچه که با سکوت، وزن و گذرِ آرام نور در فضا شکل می‌گیرد. گزیده‌ی پروژه‌های اجرا شده‌ی نورستا در تهران.",
   },
 };
 

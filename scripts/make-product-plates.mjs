@@ -78,11 +78,18 @@ function readPlateSizes() {
 }
 
 /**
- * The four shelves: `{ id, tint }`, in the order `PRODUCT_CATEGORIES` declares.
+ * The four shelves: `{ id, tint, placeholder }`, in the order `PRODUCT_CATEGORIES` declares.
  *
  * The file is hand-written TypeScript in one fixed shape, so a small explicit
  * scan is enough. A category whose tint cannot be read is skipped with a warning
  * rather than silently drawn in the wrong colour.
+ *
+ * `placeholder` is whether the shelf's image is a stand-in: a shelf whose
+ * image is a real photograph (defined as a plain object in `config.ts`, not
+ * through `categoryImage(...)`) is *not* drawn over. That is the guard that
+ * keeps a real photograph from being replaced by a tinted plate — the three
+ * category photographs (materials, starter-kits, samples) are real, and this
+ * script must never touch them.
  */
 function readCategoryTints() {
   const source = readFileSync(CONFIG_PATH, "utf8");
@@ -98,16 +105,22 @@ function readCategoryTints() {
         console.warn(`  ! category ${id}: no tintHex, skipping`);
         return null;
       }
-      return { id, tint };
+      return { id, tint, placeholder: block.includes("categoryImage(") };
     })
     .filter(Boolean);
 }
 
 /**
- * The products: `{ slug, tint }`, in the order `records.ts` declares them.
+ * The products: `{ slug, tint, placeholder }`, in the order `records.ts` declares them.
  *
  * Anchored on the record's numeric `id`, exactly as the material gallery's plate
  * generator is, so `tintHex` may sit anywhere inside the record.
+ *
+ * `placeholder` is whether the product's image is a stand-in: a product whose
+ * image is a real photograph (defined as a plain object in `records.ts`, not
+ * through `placeholderImage(...)`) is *not* drawn over. The guard is the same
+ * as for the shelves — a real photograph must never be replaced by a tinted
+ * plate.
  */
 function readProductTints() {
   const source = readFileSync(RECORDS_PATH, "utf8");
@@ -121,7 +134,7 @@ function readProductTints() {
 
     const tint = block.match(/^ {4}tintHex:\s*"(#[0-9a-fA-F]{6})",?\s*$/m)?.[1];
     if (!tint) throw new Error(`record ${slug} in records.ts has no tintHex`);
-    return { slug, tint };
+    return { slug, tint, placeholder: block.includes("placeholderImage(") };
   });
 }
 
@@ -161,27 +174,44 @@ function main() {
   const categories = readCategoryTints();
   const products = readProductTints();
 
+  /* Real photographs are never drawn over: a shelf or a product whose image
+     is a real photograph is listed here and left alone. */
+  const realCategories = categories.filter((category) => !category.placeholder);
+  const realProducts = products.filter((product) => !product.placeholder);
+  if (realCategories.length || realProducts.length) {
+    console.log(`\n  skipping real photographs (never drawn over):`);
+    for (const category of realCategories) {
+      console.log(`    category-${category.id}.png`);
+    }
+    for (const product of realProducts) {
+      console.log(`    placeholder-${product.slug}.png`);
+    }
+  }
+
+  const placeholderCategories = categories.filter((category) => category.placeholder);
+  const placeholderProducts = products.filter((product) => product.placeholder);
+
   // With `--size`, every plate is drawn at that size: an explicit override is a
   // deliberate act, and honouring it for only one group would be surprising.
   const categorySize = options.size ?? sizes.category;
   const productSize = options.size ?? sizes.product;
 
   const wantedCategories = options.category
-    ? categories.filter((category) => category.id === options.category)
+    ? placeholderCategories.filter((category) => category.id === options.category)
     : options.slug
       ? []
-      : categories;
+      : placeholderCategories;
   const wantedProducts =
     options.slug || options.category
       ? options.slug
-        ? products.filter((product) => product.slug === options.slug)
+        ? placeholderProducts.filter((product) => product.slug === options.slug)
         : []
-      : products;
+      : placeholderProducts;
 
   if (!wantedCategories.length && !wantedProducts.length) {
     throw new Error(
-      `nothing selected — categories: ${categories.map((c) => c.id).join(", ")}; ` +
-        `products: ${products.map((p) => p.slug).join(", ")}`
+      `nothing selected — categories: ${placeholderCategories.map((c) => c.id).join(", ")}; ` +
+        `products: ${placeholderProducts.map((p) => p.slug).join(", ")}`
     );
   }
 

@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
 import RouteInteractions from "@/components/RouteInteractions";
 import { PROJECT_CONFIG } from "@/content/projects";
+import { SITE_LOCALE, SITE_NAME } from "@/lib/site";
 
 /**
  * Shell for every project route.
@@ -18,14 +19,34 @@ import { PROJECT_CONFIG } from "@/content/projects";
  *
  * `title.template` gives every project page a consistent, unique document title:
  * the page sets its own `title` and the gallery's name is appended to it.
+ *
+ * The shell also carries the gallery's own share card: the project pages state
+ * their own (a cover photograph and a large card, via `detailMetadata`), so
+ * this one is only the fallback a page without its own would wear.
  */
 export const metadata: Metadata = {
   title: {
-    default: PROJECT_CONFIG.section.name,
+    default: "پروژه‌های نورستا | اجرای میکروسمنت و پتینه در تهران",
     template: `%s | ${PROJECT_CONFIG.section.name}`,
   },
   description:
-    "پروژه‌های استودیو نورستا: نگاهی به تصمیم‌های طراحی، مصالح و جزئیات اجرا در گالری پروژه‌ها.",
+    "پروژه‌های اجرای میکروسمنت و پتینه‌ی استودیو نورستا در تهران: نگاهی به تصمیم‌های طراحی، مصالح و جزئیات اجرا در گالری پروژه‌ها.",
+  alternates: { canonical: "/projects" },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: SITE_LOCALE,
+    url: "/projects",
+    title: "پروژه‌های نورستا | اجرای میکروسمنت و پتینه در تهران",
+    description:
+      "پروژه‌های اجرای میکروسمنت و پتینه‌ی استودیو نورستا در تهران: نگاهی به تصمیم‌های طراحی، مصالح و جزئیات اجرا در گالری پروژه‌ها.",
+  },
+  twitter: {
+    card: "summary",
+    title: "پروژه‌های نورستا | اجرای میکروسمنت و پتینه در تهران",
+    description:
+      "پروژه‌های اجرای میکروسمنت و پتینه‌ی استودیو نورستا در تهران: نگاهی به تصمیم‌های طراحی، مصالح و جزئیات اجرا در گالری پروژه‌ها.",
+  },
 };
 
 export default function ProjectsLayout({

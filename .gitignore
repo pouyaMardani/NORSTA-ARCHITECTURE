@@ -18,6 +18,22 @@
 .DS_Store
 *.pem
 
+# generated at build time by `prebuild` (scripts/make-og-images.mjs), next to
+# the favicon rasters: the share plates are cut from photographs the repo
+# already ships, so they are never committed as binaries.
+public/images/og/
+
+# the product plates, generated at build time by `prebuild`
+# (scripts/make-product-plates.mjs) from the catalogue's own tint and slug, so
+# a new product never needs a binary committed. Only the plates the script
+# draws are ignored: `placeholder-*.png` (every product) and the one category
+# plate that is still a stand-in (`category-tools.png`). The three real
+# category photographs — category-materials.png, category-starter-kits.png and
+# category-samples.png — are committed and are NOT ignored; the script skips
+# them, so they are never drawn over.
+public/images/products/placeholder-*.png
+public/images/products/category-tools.png
+
 # debug
 npm-debug.log*
 yarn-debug.log*

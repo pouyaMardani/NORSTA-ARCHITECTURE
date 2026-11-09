@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import JsonLd from "@/components/JsonLd";
 import ProjectView from "@/components/microcement/ProjectView";
 import {
   getAllProjects,
   getAllProjectSlugs,
   getProjectBySlug,
 } from "@/content/projects";
-import { absoluteUrl } from "@/lib/site";
+import { detailMetadata } from "@/lib/seo";
+import { projectJsonLd } from "@/lib/structured-data";
 
 /**
  * One project inside the microcement showcase (`/microcement/works/<slug>`).
@@ -17,6 +19,12 @@ import { absoluteUrl } from "@/lib/site";
  * thumbnail rail) lives in `ProjectView`. The next project is the following
  * record in the curated order, wrapping from the last back to the first, so
  * the ten case studies form one circular chain.
+ *
+ * The metadata comes from `detailMetadata`, the same helper the classic
+ * project page uses: a canonical address, a share image (the project's own
+ * cover) and a large card, with the site's name and language. The structured
+ * data names this page itself as the main entity (the same project also lives
+ * at `/projects/<slug>`, whose node names that address).
  */
 type MicrocementProjectPageProps = {
   params: Promise<{ slug: string }>;
@@ -35,19 +43,12 @@ export async function generateMetadata({
 
   if (!project) return {};
 
-  return {
+  return detailMetadata({
+    path: `/microcement/works/${project.slug}`,
     title: project.seoTitle,
     description: project.seoDescription,
-    alternates: {
-      canonical: absoluteUrl(`/microcement/works/${project.slug}`),
-    },
-    openGraph: {
-      type: "article",
-      title: project.seoTitle,
-      description: project.seoDescription,
-      url: absoluteUrl(`/microcement/works/${project.slug}`),
-    },
-  };
+    image: project.coverImage,
+  });
 }
 
 export default async function MicrocementProjectPage({
@@ -62,5 +63,14 @@ export default async function MicrocementProjectPage({
   const index = all.findIndex((item) => item.slug === project.slug);
   const next = all[(index + 1) % all.length];
 
-  return <ProjectView project={project} next={next} />;
+  return (
+    <>
+      {/* The project as structured data, naming this page as its main entity.
+          Inert markup. */}
+      <JsonLd
+        data={projectJsonLd(project, `/microcement/works/${project.slug}`)}
+      />
+      <ProjectView project={project} next={next} />
+    </>
+  );
 }

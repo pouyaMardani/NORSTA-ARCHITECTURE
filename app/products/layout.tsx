@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
 import SiteInteractions from "@/components/SiteInteractions";
-import { PRODUCT_CONFIG, SITE_ORIGIN } from "@/content/products";
+import { PRODUCT_CONFIG } from "@/content/products";
+import { SITE_LOCALE, SITE_NAME, absoluteUrl } from "@/lib/site";
 
 /**
  * Shell for the catalogue.
@@ -21,10 +22,11 @@ import { PRODUCT_CONFIG, SITE_ORIGIN } from "@/content/products";
  * nothing for a per-route remount to keep in step.
  *
  * ── THE CANONICAL ADDRESS ──────────────────────────────────────────────────
- * The page's canonical is set here, absolute and on the production origin, so a
- * filtered view (`/products?category=tools`) consolidates onto `/products` in the
- * index rather than competing with it: the filter is a way through one catalogue,
- * not four catalogues.
+ * The page's canonical is set here, on the production origin (via `SITE_URL`
+ * from `lib/site`, the single source — not the duplicate the products config
+ * used to carry), so a filtered view (`/products?category=tools`) consolidates
+ * onto `/products` in the index rather than competing with it: the filter is a
+ * way through one catalogue, not four catalogues.
  *
  * ── WHY THERE IS NO `openGraph.images` ─────────────────────────────────────
  * Every picture the catalogue currently owns is a marked temporary plate, and
@@ -37,13 +39,20 @@ export const metadata: Metadata = {
   title: PRODUCT_CONFIG.page.seoTitle,
   description: PRODUCT_CONFIG.page.seoDescription,
   alternates: {
-    canonical: `${SITE_ORIGIN}/products`,
+    canonical: absoluteUrl("/products"),
   },
   openGraph: {
     type: "website",
+    siteName: SITE_NAME,
+    locale: SITE_LOCALE,
     title: PRODUCT_CONFIG.page.seoTitle,
     description: PRODUCT_CONFIG.page.seoDescription,
-    url: `${SITE_ORIGIN}/products`,
+    url: absoluteUrl("/products"),
+  },
+  twitter: {
+    card: "summary",
+    title: PRODUCT_CONFIG.page.seoTitle,
+    description: PRODUCT_CONFIG.page.seoDescription,
   },
 };
 

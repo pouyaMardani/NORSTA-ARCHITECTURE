@@ -114,6 +114,12 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  /* The phone's browser chrome wears the site's own grounds: the ivory the
+     light sections sit on, and the charcoal the dark rooms sit on. */
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f3e9de" },
+    { media: "(prefers-color-scheme: dark)", color: "#100e0b" },
+  ],
 };
 
 export default function RootLayout({

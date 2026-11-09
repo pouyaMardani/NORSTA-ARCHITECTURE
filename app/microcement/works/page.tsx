@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import NextPageBlock from "@/components/microcement/NextPageBlock";
 import WorksGallery from "@/components/microcement/WorksGallery";
-import { absoluteUrl } from "@/lib/site";
+import { SITE_LOCALE, SITE_NAME, absoluteUrl } from "@/lib/site";
 
 /**
  * The Works gallery (`/microcement/works`).
@@ -15,16 +15,32 @@ import { absoluteUrl } from "@/lib/site";
 export const metadata: Metadata = {
   title: "آثار میکروسمنت — نورستا",
   description:
-    "گزیده‌ی پروژه‌های میکروسمنت نورستا در تهران — هر پروژه، هر فضا، یک رویکرد: ایده‌ی محکم، اجرای صادقانه و سطحی که فریاد نمی‌زند.",
+    "گزیده‌ی پروژه‌های اجرای میکروسمنت و پتینه‌ی نورستا در تهران — هر پروژه، هر فضا، یک رویکرد: ایده‌ی محکم، اجرای صادقانه و سطحی که فریاد نمی‌زند.",
   alternates: {
     canonical: absoluteUrl("/microcement/works"),
   },
   openGraph: {
     type: "website",
+    siteName: SITE_NAME,
+    locale: SITE_LOCALE,
     title: "آثار میکروسمنت — نورستا",
     description:
-      "گزیده‌ی پروژه‌های میکروسمنت نورستا در تهران — هر پروژه، هر فضا، یک رویکرد: ایده‌ی محکم، اجرای صادقانه و سطحی که فریاد نمی‌زند.",
+      "گزیده‌ی پروژه‌های اجرای میکروسمنت و پتینه‌ی نورستا در تهران — هر پروژه، هر فضا، یک رویکرد: ایده‌ی محکم، اجرای صادقانه و سطحی که فریاد نمی‌زند.",
     url: absoluteUrl("/microcement/works"),
+    images: [
+      {
+        url: "/images/og/microcement.jpg",
+        width: 1200,
+        height: 630,
+        alt: "نشیمن با کف تیره، دیوار چوبی و پنجره‌های بزرگ",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "آثار میکروسمنت — نورستا",
+    description:
+      "گزیده‌ی پروژه‌های اجرای میکروسمنت و پتینه‌ی نورستا در تهران — هر پروژه، هر فضا، یک رویکرد: ایده‌ی محکم، اجرای صادقانه و سطحی که فریاد نمی‌زند.",
   },
 };
 

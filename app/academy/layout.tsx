@@ -26,8 +26,10 @@ const SECTION_DESCRIPTION =
   "آکادمی میکروسمنت نورستا: آموزش گامبهگام میکروسمنت از شناخت متریال و ابزار تا آمادهسازی زیرکار و اجرای سطحهای دکوراتیو.";
 
 export const metadata: Metadata = {
+  /* The academy's own title carries the keywords, not just its name: the
+     lesson pages keep the short name as their suffix (`%s | آکادمی …`). */
   title: {
-    default: ACADEMY_CONFIG.copy.name,
+    default: "آکادمی میکروسمنت نورستا | آموزش اجرا و ابزار",
     template: `%s | ${ACADEMY_CONFIG.copy.name}`,
   },
 
@@ -42,13 +44,21 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     locale: SITE_LOCALE,
     url: "/academy",
-    title: ACADEMY_CONFIG.copy.name,
+    title: "آکادمی میکروسمنت نورستا | آموزش اجرا و ابزار",
     description: SECTION_DESCRIPTION,
+    images: [
+      {
+        url: "/images/og/academy.jpg",
+        width: 1200,
+        height: 630,
+        alt: "آشپزخانه‌ی روشن با جزیره‌ی مرکزی و سطوح یکدست میکروسمنت",
+      },
+    ],
   },
 
   twitter: {
-    card: "summary",
-    title: ACADEMY_CONFIG.copy.name,
+    card: "summary_large_image",
+    title: "آکادمی میکروسمنت نورستا | آموزش اجرا و ابزار",
     description: SECTION_DESCRIPTION,
   },
 };

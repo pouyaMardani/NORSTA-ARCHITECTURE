@@ -83,6 +83,35 @@ function categoryImage(id: ProductCategoryId, alt: string): ProductImage {
 }
 
 /**
+ * A shelf whose photograph is real.
+ *
+ * Three of the four shelves already have one — the materials shelf shows the
+ * CEMHER buckets, primer and tint the studio works with, the starter-kit shelf
+ * shows a gloved hand smoothing a surface, and the samples shelf shows powder
+ * sacks, buckets and sample boards. These are photographs, not plates, so they
+ * carry no `placeholder` flag and the card prints no «تصویر موقت» over them.
+ * The plate script (`scripts/make-product-plates.mjs`) reads this file and
+ * skips any shelf whose image is not made by `categoryImage(...)`, so a real
+ * photograph can never be drawn over by a tinted plate again.
+ *
+ * `width` and `height` are the photograph's own pixels, not the plate size:
+ * the three photographs are square, and the card crops them with `cover`.
+ */
+function realCategoryImage(
+  file: string,
+  alt: string,
+  width: number,
+  height: number
+): ProductImage {
+  return {
+    src: `${PRODUCT_PLACEHOLDER_DIR}/${file}`,
+    width,
+    height,
+    alt,
+  };
+}
+
+/**
  * The four shelves of the catalogue, in the order the filter row and the
  * home-page showcase present them.
  *
@@ -96,10 +125,12 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
     label: "مواد و پودرها",
     title: "مواد و پودرهای میکروسمنت",
     description:
-      "پایه، پودر و افزودنیهایی که لایهی میکروسمنت از آنها ساخته میشود؛ همان چیزی که بستر و رویهی سطح را میسازد.",
-    image: categoryImage(
-      "materials",
-      "تصویر موقت دستهی مواد و پودرهای میکروسمنت؛ جایگزین عکس واقعی محصولات"
+      "پودر، خمیر، توری و رنگ؛ موادی که لایه‌ی میکروسمنت از آن‌ها ساخته می‌شود — همان چیزی که بستر و رویه‌ی سطح را می‌سازد.",
+    image: realCategoryImage(
+      "category-materials.png",
+      "محصولات میکروسمنت CEMHER؛ سطل‌های پایه، بطری‌های پرایمر و شیشه‌های رنگ",
+      1024,
+      1024
     ),
     tintHex: "#cfc0a8",
   },
@@ -108,10 +139,10 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
     label: "ابزار اجرا",
     title: "ابزار اجرای میکروسمنت",
     description:
-      "ماله، کاردک و ابزار پرداختی که با آنها لایه کشیده، فشرده و در نهایت یکدست میشود.",
+      "ماله، کاردک و ابزار پرداختی که با آن‌ها لایه کشیده، فشرده و در نهایت یکدست می‌شود.",
     image: categoryImage(
       "tools",
-      "تصویر موقت دستهی ابزار اجرای میکروسمنت؛ جایگزین عکس واقعی محصولات"
+      "تصویر موقت دسته‌ی ابزار اجرای میکروسمنت؛ جایگزین عکس واقعی محصولات"
     ),
     tintHex: "#8f8d88",
   },
@@ -120,10 +151,12 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
     label: "پک تمرین",
     title: "پک شروع تمرین",
     description:
-      "بستههای تمرینی برای آشنایی با متریال و ابزار پیش از اجرای واقعی؛ برای کسانی که میخواهند اول روی پنل آزمون کنند.",
-    image: categoryImage(
-      "starter-kits",
-      "تصویر موقت دستهی پکهای شروع تمرین؛ جایگزین عکس واقعی محصولات"
+      "بسته‌ی تمرینی برای آشنایی با متریال و ابزار پیش از اجرای واقعی؛ برای کسانی که می‌خواهند اول روی پنل آزمون کنند.",
+    image: realCategoryImage(
+      "category-starter-kits.png",
+      "دستی با دستکش که با ماله سطح میکروسمنت را صاف می‌کند",
+      2500,
+      2500
     ),
     tintHex: "#c9a978",
   },
@@ -132,10 +165,12 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
     label: "نمونه و رنگ",
     title: "نمونه متریال و رنگ",
     description:
-      "پنلهای نمونه برای دیدن رنگ، بافت و پرداخت در نور محل پروژه؛ پیش از آنکه تصمیم نهایی گرفته شود.",
-    image: categoryImage(
-      "samples",
-      "تصویر موقت دستهی نمونه متریال و رنگ؛ جایگزین عکس واقعی محصولات"
+      "پنل‌های نمونه برای دیدن رنگ، بافت و پرداخت در نور محل پروژه؛ پیش از آنکه تصمیم نهایی گرفته شود.",
+    image: realCategoryImage(
+      "category-samples.png",
+      "کیسه‌های پودر، سطل‌ها و پنل‌های نمونه‌ی میکروسمنت با ماله",
+      720,
+      720
     ),
     tintHex: "#d8cbb6",
   },

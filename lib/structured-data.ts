@@ -1,5 +1,6 @@
 import { ARTICLE_CONFIG, type ArticleDTO } from "@/content/articles";
 import type { LessonDTO } from "@/content/academy";
+import type { ProductDTO } from "@/content/products";
 import type { ProjectDTO } from "@/content/projects";
 import {
   SITE_INSTAGRAM_URL,
@@ -113,7 +114,7 @@ function lessonNode(lesson: LessonDTO): JsonLdNode {
   };
 }
 
-function projectNode(project: ProjectDTO): JsonLdNode {
+function projectNode(project: ProjectDTO, pagePath?: string): JsonLdNode {
   return {
     "@type": "CreativeWork",
     name: project.title,
@@ -133,7 +134,11 @@ function projectNode(project: ProjectDTO): JsonLdNode {
     ...(project.materials?.length ? { keywords: project.materials.join("، ") } : {}),
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `${SITE_URL}/projects/${project.slug}`,
+      /* One project lives on two addresses — the classic page
+         (`/projects/<slug>`) and the showcase page
+         (`/microcement/works/<slug>`) — so the page that renders this node
+         names itself; the classic page is the default. */
+      "@id": `${SITE_URL}${pagePath ?? `/projects/${project.slug}`}`,
     },
     isPartOf: { "@id": `${SITE_URL}/#website` },
   };
@@ -153,6 +158,40 @@ export function lessonJsonLd(lesson: LessonDTO): JsonLdNode {
 }
 
 /** One project page's structured data. */
-export function projectJsonLd(project: ProjectDTO): JsonLdNode {
-  return { "@context": "https://schema.org", ...projectNode(project) };
+export function projectJsonLd(project: ProjectDTO, pagePath?: string): JsonLdNode {
+  return { "@context": "https://schema.org", ...projectNode(project, pagePath) };
+}
+
+/**
+ * The catalogue as structured data: an `ItemList` of the eight products.
+ *
+ * Only what the records state — a name and a description per product. No
+ * price, no stock figure and no photograph: the catalogue carries no prices,
+ * and its plates are marked temporary, so a `Product` that claimed an image
+ * would advertise a placeholder as a product photograph. The list is the whole
+ * catalogue (`getAllProducts()`), not the filtered shelf a visitor happens to
+ * be looking at, because the page's canonical address is the unfiltered
+ * `/products`.
+ */
+export function productsJsonLd(products: ProductDTO[]): JsonLdNode {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "محصولات نورستا — متریال و ابزار میکروسمنت",
+    inLanguage: SITE_LANGUAGE_TAG,
+    itemListElement: products.map((product, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Product",
+        name: product.name,
+        description: product.description,
+      },
+    })),
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${SITE_URL}/products`,
+    },
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+  };
 }

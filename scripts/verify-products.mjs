@@ -78,6 +78,10 @@ const instagramLinks = (html) =>
 const cardNames = (html) =>
   [...html.matchAll(/class="pdc-name">([^<]+)</g)].map((match) => match[1].trim());
 
+/** The category labels the filter row offers — the shelf names a customer sees. */
+const chipLabels = (html) =>
+  [...html.matchAll(/class="prd-chip-name">([^<]+)</g)].map((match) => match[1].trim());
+
 /** How many cards the grid holds. */
 const cardCount = (html) => (html.match(/class="pdc"/g) ?? []).length;
 
@@ -220,7 +224,22 @@ for (const id of chips) {
     `shelf ${id}: shows only its own products`,
     shelfNames.length > 0 && shelfNames.every((name) => names.includes(name))
   );
-  check(`shelf ${id}: hides the other shelves`, others.every((name) => !page.raw.includes(name)));
+  /* The other shelves' products must not appear in what the page *shows*.
+     The check reads the text view, not the raw HTML: the page's structured
+     data (the products ItemList) legitimately names the whole catalogue even
+     on a filtered view, because it describes the canonical `/products` page,
+     so the raw HTML always contains every product's name. A name that is also
+     a shelf's own label — «پک تمرین» is both a product and a shelf — is
+     exempted: the filter row prints every shelf's label on every view, so
+     that name is meant to be there. */
+  const labels = chipLabels(page.raw);
+  const hidden = others.filter(
+    (name) => !labels.some((label) => norm(label) === norm(name))
+  );
+  check(
+    `shelf ${id}: hides the other shelves`,
+    hidden.every((name) => !norm(page.text).includes(norm(name)))
+  );
   check(`shelf ${id}: counts what it shows`, has(page, `${DIGITS[shelfNames.length]} محصول`));
 }
 
