@@ -1156,6 +1156,71 @@ a{color:inherit;text-decoration:none}
   }
 }
 
+/* ============== ERROR PAGES (404 / 503) ============== */
+/*
+ * The two bare pages — a wrong address and a site briefly away — in the
+ * site's own register: the ivory ground, the Latin display face for the code
+ * itself (the same Cormorant the NORSTA wordmark is set in), a broken
+ * hairline with the diamond, and the Work section's own pill button for the
+ * way home. No photograph, no new colour, nothing to load: the pages have to
+ * render even when the rest of the site cannot, so nothing here depends on
+ * the reveal system or on any image — the rule below is drawn in CSS, not
+ * borrowed from the home page's divider, which rides the reveal.
+ */
+.err{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;min-height:100svh;
+  padding:clamp(140px,12vw,200px) var(--pad-x) clamp(90px,10vw,140px);
+  background:var(--bg);
+}
+/* The code itself: monumental, light, the wordmark's face. */
+.err-code{
+  font-family:var(--font-serif);font-weight:300;line-height:.9;
+  font-size:clamp(120px,26vw,280px);letter-spacing:.02em;color:var(--ink);
+}
+.err-eyebrow{margin-top:clamp(18px,2vw,28px)}
+.err-title{
+  margin-top:14px;
+  font-family:var(--fa);font-weight:600;
+  font-size:var(--fs-title);line-height:var(--lh-heading);color:var(--ink);
+}
+.err-lede{
+  margin-top:clamp(16px,1.8vw,24px);max-width:56ch;
+  font-size:clamp(16px,1.2vw,19px);line-height:2;color:var(--ink-soft);
+  text-align:justify;text-justify:inter-word;
+}
+/* The site's broken hairline with its diamond, drawn here in CSS: a hairline
+   fading at both ends, a gap at its centre, one small diamond sitting in it. */
+.err-rule{
+  position:relative;width:min(560px,100%);height:clamp(44px,5vw,60px);
+  margin-top:clamp(28px,3vw,44px);
+}
+.err-rule::before{
+  content:"";position:absolute;left:50%;top:50%;
+  width:min(320px,58%);height:1px;transform:translate(-50%,-50%);
+  background:linear-gradient(to right, transparent, var(--hair), transparent);
+}
+.err-rule::after{
+  content:"";position:absolute;left:50%;top:50%;
+  width:7px;height:7px;transform:translate(-50%,-50%) rotate(45deg);
+  background:var(--ink);opacity:.45;
+  box-shadow:0 0 0 10px var(--bg);
+}
+.err-actions{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;
+  gap:clamp(18px,2vw,28px);
+  margin-top:clamp(28px,3vw,44px);
+}
+.err-secondary{
+  display:inline-flex;align-items:center;gap:.5em;
+  padding-bottom:6px;border-bottom:1px solid var(--hair-2);
+  font-size:var(--fs-ui);color:var(--ink);
+  transition:border-color .4s ease;
+}
+.err-secondary:hover{border-bottom-color:var(--ink)}
+.err-secondary:focus-visible{outline:2px solid #c9ab84;outline-offset:4px}
+.err-secondary span{font-size:1.15em;line-height:1}
+
 /* ============== FOOT ============== */
 .foot{
   display:flex;justify-content:space-between;align-items:center;
