@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type { CSSProperties, KeyboardEvent, PointerEvent } from "react";
 
 import { ABOUT_SHOWCASE, formatCompareValue, formatSampleNumber } from "@/content/about";
@@ -9,27 +9,22 @@ import { ABOUT_SHOWCASE, formatCompareValue, formatSampleNumber } from "@/conten
 const { copy, samples } = ABOUT_SHOWCASE;
 
 /**
- * The studio block, in two modes.
+ * The studio block, showing its own work: a small selector of comparisons
+ * and, under it, one frame holding two photographs of one space with a
+ * divider between them.
  *
- * ── WHAT THE TWO MODES ARE ─────────────────────────────────────────────────
- * Mode A is the block as it has always been: the matted photograph on one side,
- * the studio's own words on the other. Mode B is the same section showing its
- * own work — a small selector of comparisons and, under it, one frame holding
- * two photographs of one space with a divider between them.
- *
- * Both live in this one `<section id="about">`, so the header's `#about` jump,
- * the reveal system and the page's section order all stay exactly as they were.
- * The mode row at the top of the block is the section's own switch and the one
- * a visitor is meant to find; the arrows at the section's left and right edges
- * make the same swap from the side of the page they are already looking at, and
- * stay as the second way to do it. There is no route and no dialog.
+ * This is the section's only view. It used to share the block with a "studio"
+ * mode — the matted photograph and the studio's own words beside it — but
+ * that half is gone: the section is the showcase now, and the switch that
+ * chose between the two went with it. The header's `#about` jump, the reveal
+ * system and the page's section order are exactly as they were.
  *
  * ── WHY THIS FILE IS THE CLIENT BOUNDARY ───────────────────────────────────
- * The mode, the selected comparison and the divider's position are three pieces
- * of state, and every one of them is visible in the markup. Keeping them in one
- * client component means the whole section is one boundary, the static half is
- * never re-created by a second copy of itself, and nothing elsewhere in the page
- * has to know that About can move.
+ * The selected comparison and the divider's position are two pieces of state,
+ * and every one of them is visible in the markup. Keeping them in one client
+ * component means the whole section is one boundary, the static half is never
+ * re-created by a second copy of itself, and nothing elsewhere in the page has
+ * to know that About can move.
  *
  * ── WHY A DRAG DOES NOT GO THROUGH REACT ───────────────────────────────────
  * A pointer drag fires far faster than the browser paints. So during a drag
@@ -73,15 +68,6 @@ const FRAME_SIZES = "(max-width: 680px) calc(100vw - 56px), 88vw";
 /** The disclosure the divider points at while a stand-in is on screen. */
 const NOTE_ID = "about-compare-note";
 
-/** The two modes, in the row's reading order: the studio block, then the work. */
-const MODES: Mode[] = ["studio", "compare"];
-
-type Mode = "studio" | "compare";
-type Direction = "prev" | "next";
-
-/** `""` until the first switch, so a page load never animates the section in. */
-type Entry = "" | Direction;
-
 const clamp = (value: number) => Math.min(100, Math.max(0, value));
 
 /**
@@ -92,53 +78,13 @@ const clamp = (value: number) => Math.min(100, Math.max(0, value));
  */
 const round = (value: number) => Math.round(value * 10) / 10;
 
-/**
- * One mode row tab's glyph, drawn here rather than imported: the project carries
- * no icon set, and every other mark on the page is an inline path. The studio
- * tab takes the matted plate this block mounts — the frame with the rule its own
- * label rides — and the showcase tab the split frame the divider runs down. Both
- * are decorative: the tab's own name is its label.
- */
-function ModeGlyph({ mode }: { mode: Mode }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      focusable="false"
-      aria-hidden="true"
-    >
-      {mode === "studio" ? (
-        <>
-          <rect x="3" y="4.5" width="18" height="12" rx="2" />
-          <path d="M6.5 20.5h5" />
-        </>
-      ) : (
-        <>
-          <rect x="3" y="4.5" width="18" height="15" rx="2" />
-          <path d="M12 4.5v15" />
-        </>
-      )}
-    </svg>
-  );
-}
-
 export default function About() {
-  const [mode, setMode] = useState<Mode>("studio");
-  const [entry, setEntry] = useState<Entry>("");
   const [activeId, setActiveId] = useState(samples[0].id);
   const [pos, setPos] = useState(50);
 
   const frameRef = useRef<HTMLDivElement | null>(null);
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const readoutRef = useRef<HTMLSpanElement | null>(null);
-  /** The mode row's track, for measuring the sliding pill. */
-  const modesRef = useRef<HTMLDivElement | null>(null);
-  /** The pill's box, in the track's own coordinates. */
-  const [pill, setPill] = useState({ x: 0, y: 0, w: 0, h: 0 });
   /** The live position, readable by the handlers without re-rendering. */
   const posRef = useRef(50);
   /** The frame's box, measured once per drag rather than once per event. */
@@ -268,23 +214,6 @@ export default function About() {
     setPos(value);
   };
 
-  /** Moves to `target`, leaving `entry` to say which side the arrival is from. */
-  const show = (target: Mode, direction: Direction) => {
-    setEntry(direction);
-    setMode(target);
-  };
-
-  /**
-   * The mode row's own swap. It is the same move the arrows make, with the
-   * arrival's side decided by which mode is coming in — the showcase still
-   * travels in from the side the pressed tab stands away from — and pressing
-   * the tab that is already inked is a no-op rather than a fresh entrance.
-   */
-  const switchTo = (target: Mode) => {
-    if (target === mode) return;
-    show(target, target === "compare" ? "next" : "prev");
-  };
-
   /** A new comparison arrives at the middle of its own measure. */
   const selectSample = (id: string) => {
     if (id === activeId) return;
@@ -293,163 +222,14 @@ export default function About() {
     setPos(50);
   };
 
-  /**
-   * The sliding pill under the mode in hand. It is measured, not guessed:
-   * the two tabs have different names, so a fixed half would sit wrong on
-   * either of them. The active tab's own box is read — x, y, width and height,
-   * so the pill still fits if the tabs ever stack on a narrow phone — and the
-   * stylesheet glides the pill there. Measured in layout, before paint, so
-   * the pill is never caught sitting at the track's start on first paint.
-   */
-  useLayoutEffect(() => {
-    const track = modesRef.current;
-    if (!track) return;
-    const measure = () => {
-      const active = track.querySelector('[aria-current="true"]') as HTMLElement | null;
-      if (!active) return;
-      setPill({
-        x: active.offsetLeft,
-        y: active.offsetTop,
-        w: active.offsetWidth,
-        h: active.offsetHeight,
-      });
-    };
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(track);
-    window.addEventListener("resize", measure);
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, [mode]);
-
   return (
-    <section
-      id="about"
-      className="about"
-      data-mode={mode}
-      data-entry={entry || undefined}
-    >
+    <section id="about" className="about">
       {/*
-        The section's own switch, and the obvious one: two tabs in one track,
-        each naming a mode, with a pill that glides under the one in hand — the
-        pill is measured from the active tab's own box, so it fits either name.
-        The tabs are marked with `aria-current`, which is what the stylesheet
-        keys the label colour on. It stands before either panel, so it is the
-        first thing read in the block and the first thing reached after the
-        header's own `#about` jump.
-
-        `dir="rtl"` is set here for the same reason the panels set it: the shell
-        stays LTR, but this row is Persian and reads right-to-left, so the studio
-        tab stands at its reading start.
-      */}
-      <div className="about-modes" dir="rtl" ref={modesRef}>
-        {/* The pill that glides under the mode in hand, measured in the
-            component so it fits either tab's own width. */}
-        <span
-          className="about-mode-pill"
-          aria-hidden="true"
-          style={{
-            width: pill.w,
-            height: pill.h,
-            transform: `translate3d(${pill.x}px, ${pill.y}px, 0)`,
-          }}
-        />
-        {MODES.map((target) => (
-          <button
-            key={target}
-            type="button"
-            className="about-mode"
-            aria-current={mode === target ? "true" : undefined}
-            onClick={() => switchTo(target)}
-          >
-            <ModeGlyph mode={target} />
-            {copy.modes[target]}
-          </button>
-        ))}
-      </div>
-
-      {/*
-        ── Mode A: the studio block as it has always been. The markup, the
-        reveal hooks and the metric animation are untouched — it is only wrapped
-        in a panel so the two modes can be swapped in and out of one section.
-      */}
-      <div className="about-panel about-panel--studio">
-        {/* The photograph is mounted the way the project cards and the craftsman
-          plate are, with fewer parts: a matt in hairline, the same ghost frame
-          displaced behind it, and one label on the rule under the picture. The
-          ghost is drawn first so the plate stacks over it. */}
-      <div className="about-visual">
-        <span className="about-frame" aria-hidden="true" />
-
-        <figure className="about-plate">
-          <div className="about-image" data-reveal="image-reveal">
-            <Image
-              src="/images/about-courtyard.png"
-              alt="فضای داخلی سنگی با نور طبیعی و دیوارهای مادهای"
-              fill
-              sizes="(max-width: 960px) 100vw, 48vw"
-              style={{ objectFit: "cover" }}
-            />
-          </div>
-
-          <figcaption className="about-caption">
-            <span className="about-label">
-              <i aria-hidden="true" />
-              فضای داخلی سنگی
-            </span>
-          </figcaption>
-        </figure>
-      </div>
-
-      {/* `dir="rtl"` is declared here rather than on the page: the shell stays
-          LTR, but this block is unmixed Persian prose, so the paragraph
-          direction, the alignment and the reading order of the metric pair are
-          RTL. Tablet and phone centre the column in the stylesheet. */}
-      <div className="about-copy" dir="rtl">
-        {/* One line, no break after «ماده»: the title is a single piece. */}
-        <h2 className="mask-title" data-reveal="mask-line" data-delay="120">
-          <span className="line">
-            <span>ماده و سکوت</span>
-          </span>
-        </h2>
-        <p className="lede" data-reveal="fade-up" data-delay="320">
-          کار ما میکروسمنت است؛ سطحی یکپارچه و بی‌درز که فضا را آرام و استوار
-          می‌کند. سنگ، چوب و نور همچون سازهایی کوک‌شده با مکان، اقلیم و ریتمِ
-          بی‌عجله‌ی زندگی روزمره به کار گرفته می‌شوند.
-        </p>
-        <p className="sub" data-reveal="fade-up" data-delay="460">
-          نورستا از سال ۱۴۰۱ با میکروسمنت کار می‌کند و بیش از ۳۰ پروژه را در
-          تهران به سرانجام رسانده است؛ به رهبری مهندس افسانه مردانی.
-        </p>
-
-        <div className="metrics" data-reveal="metrics-rule">
-          <div data-reveal="fade-up" data-delay="200">
-            <span className="num" data-count="1401" data-from="1395">
-              ۱۳۹۵
-            </span>
-            <span className="label">سال تأسیس</span>
-          </div>
-          <div data-reveal="fade-up" data-delay="340">
-            <span className="num" data-count="30" data-suffix="+">
-              ۰
-            </span>
-            <span className="label">پروژه‌های اجراشده</span>
-          </div>
-        </div>
-      </div>
-      </div>
-
-      {/*
-        ── Mode B: the same section, showing its own work. The selector is a row
-        of buttons rather than a box of tabs — three chips, one marked current,
-        each naming the space it shows.
-
-        The frame below holds two photographs of one space at the same box size:
-        the "after" one laid flat, the "before" one clipped from the block's
-        inline-start edge by the same custom property that pins the divider, so
-        the seam and the mask are one number written once per frame.
+        The showcase: a selector of comparisons and one frame holding two
+        photographs of one space at the same box size — the "after" one laid
+        flat, the "before" one clipped from the block's inline-start edge by
+        the same custom property that pins the divider, so the seam and the
+        mask are one number written once per frame.
 
         The frame is also the control's surface. Pressing anywhere on a picture
         moves the divider there and dragging anywhere on it keeps moving it, so a
@@ -460,132 +240,129 @@ export default function About() {
         stand-in labels, so nothing about what these pictures are is decided in
         this file.
       */}
-      {mode === "compare" ? (
-        <div className="about-panel about-panel--compare" dir="rtl">
-          <header className="about-compare-head">
-            <span className="eyebrow">{copy.eyebrow}</span>
-            <h2 className="about-compare-title">{copy.title}</h2>
-            <p className="about-compare-lede">{copy.lede}</p>
-          </header>
+      <div className="about-panel--compare" dir="rtl">
+        <header className="about-compare-head">
+          <span className="eyebrow">{copy.eyebrow}</span>
+          <h2 className="about-compare-title">{copy.title}</h2>
+          <p className="about-compare-lede">{copy.lede}</p>
+        </header>
 
-          <div className="about-samples" role="group" aria-label={copy.samplesLabel}>
-            {samples.map((sample, index) => (
-              <button
-                key={sample.id}
-                type="button"
-                className="about-sample"
-                aria-current={sample.id === active.id ? "true" : undefined}
-                onClick={() => selectSample(sample.id)}
-              >
-                <span className="about-sample-index" aria-hidden="true">
-                  {formatSampleNumber(index)}
-                </span>
-                {sample.name}
-              </button>
-            ))}
-          </div>
-
-          <div className="about-compare-wrap">
-            <div
-              className="about-compare"
-              ref={frameRef}
-              style={
-                {
-                  "--about-pos": `${pos}%`,
-                  "--about-pos-n": pos,
-                } as CSSProperties
-              }
-              onPointerDown={onPointerDown}
-              onPointerMove={onPointerMove}
-              onPointerUp={endDrag}
-              onPointerCancel={endDrag}
+        <div className="about-samples" role="group" aria-label={copy.samplesLabel}>
+          {samples.map((sample, index) => (
+            <button
+              key={sample.id}
+              type="button"
+              className="about-sample"
+              aria-current={sample.id === active.id ? "true" : undefined}
+              onClick={() => selectSample(sample.id)}
             >
-              <div className="about-compare-layer">
-                <Image
-                  src={active.after.src}
-                  alt={active.after.alt}
-                  fill
-                  sizes={FRAME_SIZES}
-                  draggable={false}
-                  style={{ objectFit: "cover" }}
-                />
-              </div>
-
-              <div className="about-compare-layer about-compare-layer--before">
-                <Image
-                  src={active.before.src}
-                  alt={active.before.alt}
-                  fill
-                  sizes={FRAME_SIZES}
-                  draggable={false}
-                  style={{ objectFit: "cover" }}
-                />
-              </div>
-
-              {/* The two badges ride the pictures themselves: the original space
-                  in the top corner of the half it owns, the finished one in the
-                  other, each a little inside the frame's own edge — so a label
-                  stands on the photograph it names at every width, rather than
-                  on the rule above the pair. They are drawn before the seam and
-                  the handle, which stay over them, and their pointer events
-                  belong to the frame: a press that starts on a badge still moves
-                  the divider. Each one fades out as its own half narrows past
-                  the width of the badge, from the same number that moves the
-                  seam. */}
-              <span className="about-compare-side about-compare-side--before">
-                {copy.before}
+              <span className="about-sample-index" aria-hidden="true">
+                {formatSampleNumber(index)}
               </span>
-              <span className="about-compare-side about-compare-side--after">
-                {copy.after}
-              </span>
+              {sample.name}
+            </button>
+          ))}
+        </div>
 
-              <span className="about-compare-seam" aria-hidden="true" />
-
-              <div
-                className="about-compare-handle"
-                role="slider"
-                tabIndex={0}
-                ref={sliderRef}
-                aria-label={copy.sliderLabel}
-                aria-orientation="horizontal"
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={Math.round(pos)}
-                aria-valuetext={valueText}
-                aria-describedby={standIn ? NOTE_ID : undefined}
-                onKeyDown={onDividerKeyDown}
-              >
-                <span className="about-compare-grip" aria-hidden="true">
-                  <i />
-                  <i />
-                </span>
-              </div>
+        <div className="about-compare-wrap">
+          <div
+            className="about-compare"
+            ref={frameRef}
+            style={
+              {
+                "--about-pos": `${pos}%`,
+                "--about-pos-n": pos,
+              } as CSSProperties
+            }
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+          >
+            <div className="about-compare-layer">
+              <Image
+                src={active.after.src}
+                alt={active.after.alt}
+                fill
+                sizes={FRAME_SIZES}
+                draggable={false}
+                style={{ objectFit: "cover" }}
+              />
             </div>
 
-            {/* The stand-in badge hangs on the wrap's lower rule, clear of the
-                pictures, and is the only label left outside the frame. */}
-            {standIn ? <span className="about-compare-badge">{copy.placeholder}</span> : null}
-          </div>
+            <div className="about-compare-layer about-compare-layer--before">
+              <Image
+                src={active.before.src}
+                alt={active.before.alt}
+                fill
+                sizes={FRAME_SIZES}
+                draggable={false}
+                style={{ objectFit: "cover" }}
+              />
+            </div>
 
-          <div className="about-compare-meta">
-            {/* The readout is written by the drag itself, so it never lags the
-                pictures; assistive layers read the slider's own value instead. */}
-            <span className="about-compare-value" ref={readoutRef} aria-hidden="true">
-              {valueText}
+            {/* The two badges ride the pictures themselves: the original space
+                in the top corner of the half it owns, the finished one in the
+                other, each a little inside the frame's own edge — so a label
+                stands on the photograph it names at every width, rather than
+                on the rule above the pair. They are drawn before the seam and
+                the handle, which stay over them, and their pointer events
+                belong to the frame: a press that starts on a badge still moves
+                the divider. Each one fades out as its own half narrows past
+                the width of the badge, from the same number that moves the
+                seam. */}
+            <span className="about-compare-side about-compare-side--before">
+              {copy.before}
             </span>
-            <span className="about-compare-hint">{copy.hint}</span>
+            <span className="about-compare-side about-compare-side--after">
+              {copy.after}
+            </span>
+
+            <span className="about-compare-seam" aria-hidden="true" />
+
+            <div
+              className="about-compare-handle"
+              role="slider"
+              tabIndex={0}
+              ref={sliderRef}
+              aria-label={copy.sliderLabel}
+              aria-orientation="horizontal"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(pos)}
+              aria-valuetext={valueText}
+              aria-describedby={standIn ? NOTE_ID : undefined}
+              onKeyDown={onDividerKeyDown}
+            >
+              <span className="about-compare-grip" aria-hidden="true">
+                <i />
+                <i />
+              </span>
+            </div>
           </div>
 
-          {/* The disclosure, shown only while a stand-in pair is on screen, and
-              pointed at by the handle: what these pictures are is never implied. */}
-          {standIn ? (
-            <p className="about-compare-note" id={NOTE_ID}>
-              {copy.placeholderNote}
-            </p>
-          ) : null}
+          {/* The stand-in badge hangs on the wrap's lower rule, clear of the
+              pictures, and is the only label left outside the frame. */}
+          {standIn ? <span className="about-compare-badge">{copy.placeholder}</span> : null}
         </div>
-      ) : null}
+
+        <div className="about-compare-meta">
+          {/* The readout is written by the drag itself, so it never lags the
+              pictures; assistive layers read the slider's own value instead. */}
+          <span className="about-compare-value" ref={readoutRef} aria-hidden="true">
+            {valueText}
+          </span>
+          <span className="about-compare-hint">{copy.hint}</span>
+        </div>
+
+        {/* The disclosure, shown only while a stand-in pair is on screen, and
+            pointed at by the handle: what these pictures are is never implied. */}
+        {standIn ? (
+          <p className="about-compare-note" id={NOTE_ID}>
+            {copy.placeholderNote}
+          </p>
+        ) : null}
+      </div>
     </section>
   );
 }
-

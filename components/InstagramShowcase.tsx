@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import InstagramMark from "@/components/InstagramMark";
 import { PROJECT_IMAGES } from "@/content/projects";
 import { WHATSAPP_CONFIGURED, WHATSAPP_URL } from "@/lib/contact";
 import {
@@ -239,56 +240,49 @@ export default function InstagramShowcase() {
             ۰۱
           </span>
 
-          <div className="conn-path-main">
-            <p className="conn-path-kicker">
-              <svg
-                className="conn-path-glyph"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                aria-hidden="true"
+          <div className="conn-ig">
+            {/* The 3D Instagram mark — the platform's gradient tile, floating
+                over the entry. The flat outline it replaces is gone; the mark
+                is the icon now, and the kicker below it is only the name. */}
+            <InstagramMark className="conn-ig-mark" />
+
+            <div className="conn-ig-body">
+              <p className="conn-path-kicker">اینستاگرام</p>
+
+              <h3 className="conn-path-title">دنیای نورستا در اینستاگرام</h3>
+
+              <p className="conn-path-copy">
+                پروژهها، جزئیات اجرا و بافت متریالها را همانطور که در کارگاه پیش
+                میروند ببین.
+              </p>
+
+              <p className="conn-handle">
+                {/* One Latin run inside an RTL block: `dir` keeps «@norsta.home» in
+                    reading order, the way every Persian block here declares its own
+                    direction (the page shell stays LTR). */}
+                <span dir="ltr">{`@${SITE_INSTAGRAM_HANDLE}`}</span>
+              </p>
+
+              <a
+                className="conn-cta conn-cta--solid"
+                href={SITE_INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <rect x="3" y="3" width="18" height="18" rx="5.2" />
-                <circle cx="12" cy="12" r="4.2" />
-                <circle cx="17.1" cy="6.9" r="1.05" fill="currentColor" stroke="none" />
-              </svg>
-              اینستاگرام
-            </p>
-
-            <h3 className="conn-path-title">دنیای نورستا در اینستاگرام</h3>
-
-            <p className="conn-path-copy">
-              پروژهها، جزئیات اجرا و بافت متریالها را همانطور که در کارگاه پیش
-              میروند ببین.
-            </p>
-
-            <p className="conn-handle">
-              {/* One Latin run inside an RTL block: `dir` keeps «@norsta.home» in
-                  reading order, the way every Persian block here declares its own
-                  direction (the page shell stays LTR). */}
-              <span dir="ltr">{`@${SITE_INSTAGRAM_HANDLE}`}</span>
-            </p>
-
-            <a
-              className="conn-cta conn-cta--solid"
-              href={SITE_INSTAGRAM_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="conn-cta-label">مشاهده صفحه اینستاگرام</span>
-              <svg
-                className="conn-cta-arrow"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                aria-hidden="true"
-              >
-                <path d="M16.5 16.5 7.5 7.5" />
-                <path d="M7.5 15V7.5H15" />
-              </svg>
-            </a>
+                <span className="conn-cta-label">مشاهده صفحه اینستاگرام</span>
+                <svg
+                  className="conn-cta-arrow"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  aria-hidden="true"
+                >
+                  <path d="M16.5 16.5 7.5 7.5" />
+                  <path d="M7.5 15V7.5H15" />
+                </svg>
+              </a>
+            </div>
           </div>
 
           {/* The same three frames the phone opens with: a rhyme, not a second

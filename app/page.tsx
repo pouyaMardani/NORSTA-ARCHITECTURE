@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import About from "@/components/About";
 import AcademyPromo from "@/components/AcademyPromo";
+import Applications from "@/components/Applications";
 import Articles from "@/components/Articles";
 import Contact from "@/components/Contact";
 import Craftsman from "@/components/Craftsman";
@@ -16,7 +17,6 @@ import ParallaxBand from "@/components/ParallaxBand";
 import Process from "@/components/Process";
 import SectionDivider from "@/components/SectionDivider";
 import SectionNav from "@/components/SectionNav";
-import Services from "@/components/Services";
 import SiteInteractions from "@/components/SiteInteractions";
 import Work from "@/components/Work";
 
@@ -46,10 +46,10 @@ export default function Page() {
             as a stripe of the wrong colour where two dark sections meet. See
             `components/SectionDivider.tsx`. */}
         <SectionDivider bg="var(--bg)" />
-        {/* The process sits directly under the hero, before the services. */}
+        {/* The process sits directly under the hero, before the applications. */}
         <Process />
         <SectionDivider bg="var(--bg-2)" />
-        <Services />
+        <Applications />
         <SectionDivider bg="var(--bg)" />
         <About />
         {/* The full-bleed parallax band stands in for the divider here: the

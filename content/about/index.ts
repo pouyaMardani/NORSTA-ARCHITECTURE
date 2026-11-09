@@ -1,5 +1,5 @@
 /**
- * The About section's second mode: the before/after showcase.
+ * The About section: the before/after showcase.
  *
  * ── WHAT LIVES HERE, AND WHY IT IS ONE FILE ────────────────────────────────
  * The About block is a single, small presentation: two or three comparisons and
@@ -87,10 +87,6 @@ export type AboutShowcaseCopy = {
   placeholder: string;
   /** The full disclosure under the frame while a stand-in is shown. */
   placeholderNote: string;
-  /** Accessible name of the two mode arrows, by direction. */
-  nav: { next: string; prev: string };
-  /** The name of each mode, used to say where an arrow leads. */
-  modes: { studio: string; compare: string };
 };
 
 export type AboutShowcase = {
@@ -118,8 +114,6 @@ export const ABOUT_SHOWCASE: AboutShowcase = {
     placeholder: "تصویر موقت",
     placeholderNote:
       "عکس‌های این بخش جانشین نمایشی‌اند: آرشیو استودیو تصویری از «قبل» ثبت نکرده بود، پس هیچیک از این جفت‌ها پیش و پسِ یک اجرای واقعی نیستند. این نمونه‌ها تنها کارکرد مقایسه را نشان می‌دهند و با عکس‌های واقعی جایگزین می‌شوند.",
-    nav: { next: "نمای بعدی", prev: "نمای قبلی" },
-    modes: { studio: "نمای استودیو", compare: "مقایسه‌ی قبل و بعد" },
   },
 
   samples: [
