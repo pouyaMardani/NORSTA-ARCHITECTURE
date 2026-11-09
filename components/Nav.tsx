@@ -46,6 +46,7 @@ const LINKS = [
   { href: "#academy", label: "آموزش میکروسمنت" },
   { href: "#journal", label: "مجله" },
   { href: "#products", label: "محصولات" },
+  { href: "/microcement", label: "میکروسمنت" },
   { href: "#work", label: "پروژه‌ها" },
   { href: "#about", label: "درباره ما" },
   { href: "#applications", label: "کاربردها" },
