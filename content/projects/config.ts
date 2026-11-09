@@ -67,6 +67,47 @@ export const PROJECT_IMAGES = {
     alt: "ویلایی با سطوح ساده و پنجره‌های بزرگ",
     caption: "سطوح سادهی ویلا",
   },
+  /**
+   * Still from the studio's own pool, added for the Tehran projects: the
+   * kitchen, the living room and the surface close-ups the Process section
+   * already shows, plus the two stair stills. The alt texts describe what
+   * each photograph actually shows.
+   */
+  kitchen: {
+    src: "/images/after.png",
+    alt: "آشپزخانه‌ی روشن با جزیره‌ی مرکزی و سطوح یکدست میکروسمنت",
+    caption: "آشپزخانه‌ی یکدست",
+  },
+  livingRoom: {
+    src: "/images/www/surface-floor-03.jpg",
+    alt: "نشیمن با کف تیره، دیوار چوبی و پنجره‌های بزرگ",
+    caption: "نشیمن با کف تیره",
+  },
+  sandFinish: {
+    src: "/images/www/finish-sand.jpg",
+    alt: "نمای نزدیک از بافت میکروسمنت با رد ماله",
+    caption: "بافت سطح با رد ماله",
+  },
+  surfaceDetail: {
+    src: "/images/www/detail-01.jpg",
+    alt: "جزئیات بافت سطح با دانه‌بندی و رد ماله",
+    caption: "جزئیات بافت سطح",
+  },
+  wetArea: {
+    src: "/images/www/microcement-wet-area .jpg",
+    alt: "حمام خاکستری با دوش شیشه‌ای و سطوح یکدست",
+    caption: "حمام خاکستری یکدست",
+  },
+  outdoorStairs: {
+    src: "/images/contact-stairs.png",
+    alt: "پلکان سنگی روشن در کنار درخت زیتون",
+    caption: "پلکان سنگی باغ",
+  },
+  stairArch: {
+    src: "/images/services-arch.png",
+    alt: "پلکان با طاق‌های کشیده و سطوح کرمی",
+    caption: "طاق‌های پلکان",
+  },
 } satisfies Record<string, ProjectImage>;
 
 /** The section's own copy (the home-page gallery and the pages' titles). */
