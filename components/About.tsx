@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useCallback, useRef, useState } from "react";
 import type { CSSProperties, KeyboardEvent, PointerEvent } from "react";
 
-import { ABOUT_SHOWCASE, formatCompareValue, formatSampleNumber } from "@/content/about";
+import { ABOUT_SHOWCASE, formatCompareValue, formatSampleNumber, formatSlideCounter } from "@/content/about";
 
 const { copy, samples } = ABOUT_SHOWCASE;
 
@@ -93,9 +93,11 @@ export default function About() {
   const draggingRef = useRef(false);
 
   const active = samples.find((sample) => sample.id === activeId) ?? samples[0];
+  const activeIndex = samples.findIndex((sample) => sample.id === active.id);
   /** Only the samples flagged as stand-ins carry the badge and the note. */
   const standIn = active.placeholder;
   const valueText = formatCompareValue(pos);
+  const counterText = formatSlideCounter(activeIndex, samples.length);
 
   /** Writes the divider's position, its readout and the slider's value. */
   const paint = useCallback((value: number) => {
@@ -222,6 +224,15 @@ export default function About() {
     setPos(50);
   };
 
+  /** The slider's own step: wraps around, so the last pair leads back to
+      the first. "Next" is onwards — leftwards in this RTL block. */
+  const goToSample = (index: number) => {
+    const next = (index + samples.length) % samples.length;
+    selectSample(samples[next].id);
+  };
+  const goNext = () => goToSample(activeIndex + 1);
+  const goPrev = () => goToSample(activeIndex - 1);
+
   return (
     <section id="about" className="about">
       {/*
@@ -347,6 +358,31 @@ export default function About() {
         </div>
 
         <div className="about-compare-meta">
+          {/* The slider's own step: previous, the counter, next. The arrows
+              follow the section's own directions — onwards is leftwards, back
+              is rightwards — and the counter reads in Persian digits. */}
+          <div className="about-slider-nav" role="group" aria-label={copy.samplesLabel}>
+            <button
+              type="button"
+              className="about-slider-arrow"
+              aria-label={copy.prevLabel}
+              onClick={goPrev}
+            >
+              →
+            </button>
+            <span className="about-slider-count" aria-label={copy.counterLabel}>
+              {counterText}
+            </span>
+            <button
+              type="button"
+              className="about-slider-arrow"
+              aria-label={copy.nextLabel}
+              onClick={goNext}
+            >
+              ←
+            </button>
+          </div>
+
           {/* The readout is written by the drag itself, so it never lags the
               pictures; assistive layers read the slider's own value instead. */}
           <span className="about-compare-value" ref={readoutRef} aria-hidden="true">

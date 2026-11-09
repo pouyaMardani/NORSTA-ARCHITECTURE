@@ -11,19 +11,34 @@
  * to walk through. If this ever grows a route of its own, it adopts that shape.
  *
  * ── HONESTY ABOUT THE PAIRS ────────────────────────────────────────────────
- * The repository ships no verified before/after photography: every still in
- * `public/images` is finished work, and pairing two of them into a "before" and
- * an "after" would be a claim about a transformation nobody photographed. So
- * each sample carries `placeholder: true` and the frame prints «تصویر موقت»
- * beside it — the badge `content/products` and `content/samples` already use for
- * their own stand-ins — and the section closes with a note that says so in full.
+ * One pair here is a verified before/after: the kitchen. `befor.png` and
+ * `after.png` are the same kitchen from the same camera position — the first
+ * shows it raw (bare concrete walls and island, open carcases, a hanging
+ * wire, tools on the island) and the second shows it finished (smooth warm
+ * microcement on the walls and the island, doors on, tap and lighting in).
+ * That pair carries `placeholder: false`, is named for what it is
+ * («آشپزخانه»), and prints no badge and no note.
+ *
+ * The other three pairs are stand-ins. The repository ships no other
+ * verified before/after photography: every other still in `public/images` is
+ * finished work, and pairing two of them into a "before" and an "after" would
+ * be a claim about a transformation nobody photographed. So each of those
+ * samples carries `placeholder: true` and the frame prints «تصویر موقت»
+ * beside it — the badge `content/products` and `content/samples` already use
+ * for their own stand-ins — and the section closes with a note that says so
+ * in full. They are chosen to read as a comparison all the same: both
+ * bathrooms, one light interior against one dark living room, two light
+ * exterior volumes.
  *
  * Replacing a pair is then one edit per side: point `src` at the real original
  * and the real finished shot, write their `alt` texts, and drop
  * `placeholder: true`. Nothing else changes — the frame, the slider, the labels
  * and the note all follow the flag. The `alt` texts below are the ones this
  * project already publishes for these photographs and describe what each still
- * shows; they deliberately do not assert that a still is somebody's "before".
+ * shows; they deliberately do not assert that a still is somebody's "before",
+ * except for the kitchen's original, whose `alt` is written here because the
+ * shared registry's caption for that file describes a surface detail, not the
+ * unfinished kitchen it actually shows.
  *
  * ── WHY THE PHOTOGRAPHS COME FROM `projects/config` AND NOT `projects` ─────
  * The pool is named once in `content/projects/config.ts`, so no path is spelled
@@ -73,6 +88,12 @@ export type AboutShowcaseCopy = {
   lede: string;
   /** Accessible name of the group of sample buttons. */
   samplesLabel: string;
+  /** Accessible label of the button that shows the previous comparison. */
+  prevLabel: string;
+  /** Accessible label of the button that shows the next comparison. */
+  nextLabel: string;
+  /** Accessible label of the slide counter, e.g. «نمونه‌ی جاری». */
+  counterLabel: string;
   /** Label of the original side of the frame. */
   before: string;
   /** Label of the finished side of the frame. */
@@ -106,6 +127,9 @@ export const ABOUT_SHOWCASE: AboutShowcase = {
     lede:
       "هر نمونه دو تصویر از یک فضاست: حالت اولیه‌ی آن و همان نما پس از اجرا. خط جداکننده را بکشید تا تفاوت سطح‌ها را ببینید.",
     samplesLabel: "نمونه‌های اجرا",
+    prevLabel: "نمونه‌ی قبلی",
+    nextLabel: "نمونه‌ی بعدی",
+    counterLabel: "نمونه‌ی جاری",
     before: "قبل اجرا",
     after: "بعد اجرا",
     sliderLabel: "جابه‌جایی خط مقایسه‌ی قبل و بعد",
@@ -113,22 +137,32 @@ export const ABOUT_SHOWCASE: AboutShowcase = {
     hint: "خط جداکننده را بکشید یا با کلیدهای جهت‌دار جابه‌جا کنید.",
     placeholder: "تصویر موقت",
     placeholderNote:
-      "عکس‌های این بخش جانشین نمایشی‌اند: آرشیو استودیو تصویری از «قبل» ثبت نکرده بود، پس هیچیک از این جفت‌ها پیش و پسِ یک اجرای واقعی نیستند. این نمونه‌ها تنها کارکرد مقایسه را نشان می‌دهند و با عکس‌های واقعی جایگزین می‌شوند.",
+      "این جفت جانشین نمایشی است: دو عکس، یک فضا از یک زاویه نیستند و تنها کارکرد مقایسه را نشان می‌دهند. جفت «آشپزخانه» پیش و پسِ واقعی یک اجراست؛ بقیه با عکس‌های واقعی جایگزین می‌شوند.",
   },
 
   samples: [
     {
-      id: "stone-stair",
-      name: "پلکان سنگی",
-      before: PROJECT_IMAGES.archDetail,
+      id: "kitchen",
+      name: "آشپزخانه",
+      before: {
+        src: PROJECT_IMAGES.archDetail.src,
+        alt: "آشپزخانه پیش از اجرا؛ دیوارها و جزیره‌ی بتنی خام، کابینت‌های بدون در و سیم آویخته",
+      },
       after: PROJECT_IMAGES.kitchen,
+      placeholder: false,
+    },
+    {
+      id: "bathroom",
+      name: "حمام",
+      before: PROJECT_IMAGES.residence,
+      after: PROJECT_IMAGES.courtyard,
       placeholder: true,
     },
     {
-      id: "stone-interior",
-      name: "فضای داخلی سنگی",
+      id: "living-room",
+      name: "نشیمن",
       before: PROJECT_IMAGES.teaPavilionDetail,
-      after: PROJECT_IMAGES.courtyard,
+      after: PROJECT_IMAGES.livingRoom,
       placeholder: true,
     },
     {
@@ -151,6 +185,11 @@ export function toPersianDigits(value: string | number): string {
 /** The sample's number on its button, two-up and in Persian digits: ۰۱, ۰۲, ... */
 export function formatSampleNumber(index: number): string {
   return toPersianDigits(String(index + 1).padStart(2, "0"));
+}
+
+/** The slide counter, e.g. «۱ از ۴». `index` is zero-based. */
+export function formatSlideCounter(index: number, total: number): string {
+  return `${toPersianDigits(index + 1)} از ${toPersianDigits(total)}`;
 }
 
 /**

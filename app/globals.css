@@ -360,31 +360,39 @@ a{color:inherit;text-decoration:none}
   text-align:justify;text-align-last:center;
 }
 
-/* The selector: a row of chips rather than a box of tabs, each naming the space
-   it shows, with the current one inked. Its own accessible name comes from the
-   data module, and the current chip is marked with `aria-current` in the markup,
-   which is what this rule styles — there is no separate class to keep in step.
-   The chips lift on hover and press, and the current one sits deepest in ink
-   with a shadow, so the selector reads as three small plates rather than three
-   flat labels. */
+/* The selector: one tidy row of four buttons, each carrying its number and
+   its name on a single line, side by side. The number is set a weight up
+   from the name and divided from it by a dot, so the pair reads as «۰۱ ·
+   آشپزخانه» at a glance. The row never wraps: on a narrow screen it scrolls
+   sideways instead, so a button's number and name are never split across
+   lines. Its own accessible name comes from the data module, and the current
+   button is marked with `aria-current` in the markup, which is what this
+   rule styles — there is no separate class to keep in step. The buttons lift
+   on hover and press, and the current one sits deepest in ink with a shadow,
+   so the selector reads as four small plates rather than four flat labels. */
 .about-samples{
-  display:flex;flex-wrap:wrap;justify-content:center;gap:10px;
+  display:flex;flex-wrap:nowrap;justify-content:center;gap:10px;
   margin-top:clamp(26px,3vw,40px);
 }
 .about-sample{
+  flex:none;
   display:inline-flex;align-items:center;gap:.7em;
   padding:.7em 1.1em;
   background:var(--bg-2);border:1px solid var(--hair);border-radius:999px;
   font-family:var(--fa);font-size:var(--fs-caption);letter-spacing:.1em;
   color:var(--ink-soft);
   cursor:pointer;
+  white-space:nowrap;
   box-shadow:0 1px 3px rgba(29,28,24,.06);
   transition:color .4s ease,background-color .4s ease,border-color .4s ease,
              transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s ease;
 }
 .about-sample-index{
-  font-size:.85em;letter-spacing:.06em;opacity:.6;
+  font-size:.9em;font-weight:700;letter-spacing:.06em;opacity:.75;
   font-variant-numeric:tabular-nums;
+}
+.about-sample-index::after{
+  content:"·";margin-inline-start:.7em;opacity:.55;font-weight:400;
 }
 .about-sample[aria-current="true"]{
   background:var(--ink);border-color:var(--ink);color:var(--bg);
@@ -531,12 +539,36 @@ a{color:inherit;text-decoration:none}
   white-space:nowrap;unicode-bidi:isolate;
 }
 
+/* The slider's own step, under the frame: previous, the counter, next. The
+   arrows follow the section's own directions — onwards is leftwards, back is
+   rightwards — and the counter reads in Persian digits. The arrows are the
+   same pill the sample buttons wear, so the whole control reads as one
+   family. */
+.about-slider-nav{
+  display:inline-flex;align-items:center;gap:10px;
+}
+.about-slider-arrow{
+  display:grid;place-items:center;
+  width:38px;height:38px;border-radius:999px;
+  background:var(--bg-2);border:1px solid var(--hair);
+  font-family:var(--fa);font-size:18px;line-height:1;color:var(--ink);
+  cursor:pointer;
+  transition:background-color .3s ease,border-color .3s ease,transform .3s cubic-bezier(.22,1,.36,1);
+}
+.about-slider-arrow:hover{border-color:var(--ink);transform:translateY(-2px)}
+.about-slider-arrow:active{transform:scale(.94)}
+.about-slider-arrow:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.about-slider-count{
+  min-width:4.5em;text-align:center;
+  font-variant-numeric:tabular-nums;color:var(--ink);
+}
+
 /* What the divider currently reads, and how it is moved. The readout is written
    by the drag itself, in the same frame as the pictures, so it can never lag
    behind them; the handle's own value is what assistive layers read. */
 .about-compare-meta{
-  display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px;
-  margin-top:clamp(4px,1vw,10px);
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;
+  margin-top:clamp(10px,1.4vw,16px);
   font-family:var(--fa);font-size:var(--fs-caption);letter-spacing:var(--track-meta);
   color:var(--ink-soft);
 }
@@ -1764,14 +1796,17 @@ body.menu-open{overflow:hidden}
   .about-compare-lede{font-size:clamp(19px,4.8vw,23px);line-height:1.65}
   .about-compare{aspect-ratio:4/5}
   .about-compare-handle{width:38px;height:38px}
-  /* The three sample chips share one row, as three equal cards with the number
-     over the name: the old wrapping row broke into two lines, two chips above
-     and one alone below. */
-  .about-samples{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-  .about-sample{
-    flex-direction:column;justify-content:center;gap:2px;
-    min-height:64px;padding:.8em .4em;text-align:center;
+  /* The four sample buttons stay one row on the phone too, each keeping its
+     number and its name on a single line: the row scrolls sideways instead
+     of breaking into cards, so a button's number is never stacked over its
+     name. The scrollbar is hidden — the row is a swipe, not a scroll bar. */
+  .about-samples{
+    display:flex;flex-wrap:nowrap;justify-content:flex-start;
+    overflow-x:auto;padding-bottom:6px;
+    scrollbar-width:none;-ms-overflow-style:none;
   }
+  .about-samples::-webkit-scrollbar{display:none}
+  .about-sample{flex:none;padding:.7em 1em}
   .about-sample-index{font-size:.8em}
   .metrics{gap:32px 48px;margin-top:54px}
   .metrics .num{font-size:clamp(44px,11.5vw,62px)}
