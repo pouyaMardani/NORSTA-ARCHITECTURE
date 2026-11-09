@@ -1,5 +1,3 @@
-import { Fragment } from "react";
-
 import SampleWall from "@/components/SampleWall";
 
 import { SAMPLE_CONFIG, getSampleCategories, getWallSamples, toPersianDigits } from "@/content/samples";
@@ -62,13 +60,11 @@ export default function MicrocementSamples() {
           </div>
 
           <div className="mfc-head-copy">
+            {/* One flowing paragraph, not three <br>-broken lines: a line broken
+                by <br> is always its own last line, and a last line can never be
+                justified. Joined, the lede justifies on desktop and on mobile. */}
             <p className="mfc-lede" data-reveal="fade-up" data-delay="200">
-              {section.intro.map((line, index) => (
-                <Fragment key={line}>
-                  {index > 0 ? <br /> : null}
-                  {line}
-                </Fragment>
-              ))}
+              {section.intro.join(" ")}
             </p>
 
             <p className="mfc-hint" data-reveal="fade-up" data-delay="280">

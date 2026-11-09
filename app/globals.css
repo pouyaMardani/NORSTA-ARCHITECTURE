@@ -3928,7 +3928,7 @@ body.lb-open .to-top{
   --mfc-hair:rgba(243,233,222,.14);
   --mfc-hair-2:rgba(243,233,222,.3);
   --mfc-accent:#c9ab84;                    /* muted beige, used sparingly    */
-  --mfc-radius:clamp(18px,1.8vw,28px) 2px clamp(18px,1.8vw,28px) 2px;
+  --mfc-radius:clamp(16px,1.6vw,24px);
   --mfc-pad-y:clamp(96px,9.6vw,150px);
   --mfc-gap:clamp(18px,2vw,30px);
   /* The wall's plaster grain: one tiny inline turbulence tile, turned into pure
@@ -3985,7 +3985,7 @@ body.lb-open .to-top{
   text-transform:uppercase;color:var(--mfc-muted);
 }
 .mfc-head-copy{display:flex;flex-direction:column;align-items:flex-start;gap:clamp(18px,2vw,26px)}
-.mfc-lede{max-width:56ch;font-size:clamp(16px,1.15vw,19px);line-height:1.95;color:var(--mfc-ink-soft)}
+.mfc-lede{max-width:56ch;font-size:clamp(16px,1.15vw,19px);line-height:1.95;color:var(--mfc-ink-soft);text-align:justify;text-justify:inter-word}
 .mfc-hint{display:flex;align-items:center;gap:.7em;font-size:var(--fs-meta);color:var(--mfc-muted)}
 .mfc-hint-glyph{display:inline-flex;width:1.15em;height:1.15em;color:var(--mfc-accent)}
 .mfc-hint-glyph svg{width:100%;height:100%}
@@ -4005,11 +4005,12 @@ body.lb-open .to-top{
   box-shadow:0 40px 80px -56px rgba(0,0,0,.95), inset 0 1px 0 rgba(243,233,222,.06);
 }
 .mfw-bar{
-  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
-  gap:14px 22px;
-  padding-bottom:clamp(14px,1.6vw,20px);
-  border-bottom:1px solid var(--mfc-hair);
-  margin-bottom:clamp(22px,2.6vw,38px);
+  display:flex;flex-wrap:wrap;align-items:center;
+  gap:8px 12px;
+  padding:10px 12px;
+  border:1px solid var(--mfc-hair);border-radius:999px;
+  background:rgba(243,233,222,.03);
+  margin-bottom:clamp(16px,1.8vw,24px);
 }
 
 /* The row is a fieldset, so the family it filters by is announced with it; its
@@ -4023,16 +4024,26 @@ body.lb-open .to-top{
   overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);
   white-space:nowrap;border:0;
 }
+.mfw-filters-label{
+  padding-inline-start:10px;
+  font-size:var(--fs-caption);font-weight:500;letter-spacing:var(--track-meta);
+  color:var(--mfc-muted);white-space:nowrap;
+}
 .mfw-chip{
   display:inline-flex;align-items:center;gap:.55em;
-  padding:.55em 1em;
-  border:1px solid var(--mfc-hair);border-radius:999px;
+  padding:.6em 1.1em;
+  border:1px solid transparent;border-radius:999px;
   background:transparent;color:var(--mfc-ink-soft);
-  font-family:var(--fa);font-size:var(--fs-meta);
+  font-family:var(--fa);font-size:var(--fs-ui);
   cursor:pointer;
   transition:background-color .35s ease,border-color .35s ease,color .35s ease;
 }
-.mfw-chip-count{font-size:var(--fs-caption);opacity:.6}
+.mfw-chip-count{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:22px;height:22px;padding:0 .4em;border-radius:999px;
+  background:rgba(243,233,222,.08);color:var(--mfc-ink-soft);
+  font-size:var(--fs-caption);
+}
 /* A chip is a pill: its label must never break inside it, or the pill turns into
    a rounded rectangle two lines tall. */
 .mfw-chip-name{white-space:nowrap}
@@ -4042,12 +4053,13 @@ body.lb-open .to-top{
 .mfw-chip[aria-pressed="true"]{
   background:var(--mfc-accent);border-color:var(--mfc-accent);color:#161310;
 }
-.mfw-chip[aria-pressed="true"] .mfw-chip-count{opacity:.72}
+.mfw-chip[aria-pressed="true"] .mfw-chip-count{background:rgba(22,19,16,.16);color:#161310}
 .mfw-chip:focus-visible{outline:2px solid var(--mfc-accent);outline-offset:3px}
 
 .mfw-note{
-  display:inline-flex;align-items:center;gap:.7em;
+  display:flex;align-items:center;justify-content:flex-end;gap:.7em;
   font-size:var(--fs-caption);color:var(--mfc-muted);
+  margin-bottom:clamp(20px,2.4vw,34px);
 }
 .mfw-note-rule{display:block;width:38px;height:1px;background:var(--mfc-hair-2)}
 
@@ -4057,9 +4069,25 @@ body.lb-open .to-top{
 .mfw-grid{
   display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
   gap:var(--mfc-gap);list-style:none;
+  perspective:1200px;
 }
-/* A grid stamp, so a cell with a longer label is still stretched to its row. */
-.mfw-cell{display:grid}
+/* A grid stamp, so a cell with a longer label is still stretched to its row.
+   The cell also carries the frame's entrance: it rises out of a forward tilt
+   as it scrolls into view, one frame after the next (`--i`, set by the wall).
+   The perspective lives here, on the grid — never on `.mfc`, `.mfc-inner` or
+   `.mfw`, which must stay free of stacking contexts or the viewer dialog
+   opened from this section would be trapped under the navigation. */
+.mfw-cell{
+  display:grid;
+  animation:mfw-in 1s cubic-bezier(.22,.61,.36,1) both;
+  animation-timeline:view();
+  animation-range:entry 0% entry 60%;
+  animation-delay:calc(var(--i,0) * 70ms);
+}
+@keyframes mfw-in{
+  from{opacity:.45;transform:translateY(36px) rotateX(7deg)}
+  to{opacity:1;transform:none}
+}
 
 /* ---------- One frame ----------
    Four nested boxes, one job each: `.mf-wood` is the moulding, `.mf-mount` the
@@ -4074,7 +4102,12 @@ body.lb-open .to-top{
 .mf{
   position:relative;
   display:flex;flex-direction:column;gap:clamp(12px,1.1vw,16px);
-  width:100%;padding:0;border:0;background:none;
+  /* `align-items:stretch` is the frame itself: without it the button's
+     user-agent `align-items:flex-start` shrink-wraps the wood, and the 4/5
+     window — which has no content width of its own — collapses to nothing, so
+     the wall showed a wooden chip and no photograph at all. */
+  align-items:stretch;
+  width:100%;height:100%;padding:0;border:0;background:none;
   color:var(--mfc-ink);font-family:var(--fa);text-align:start;
   cursor:pointer;-webkit-tap-highlight-color:transparent;
 }
@@ -4134,11 +4167,10 @@ body.lb-open .to-top{
     inset 0 0 0 1px rgba(122,99,70,.28),
     inset 0 -2px 6px rgba(90,70,45,.22);
 }
-.mf[data-mount="slim"] .mf-mount{padding:clamp(5px,.5vw,7px)}
-.mf[data-mount="wide"] .mf-mount{padding:clamp(10px,1vw,15px)}
-/* `double` keeps the depth of `wide` and adds the second lip to the opening
-   itself, three pixels inside the mat. */
-.mf[data-mount="double"] .mf-mount{padding:clamp(10px,1vw,15px)}
+/* One mat depth for every frame, so every window in a row is exactly the same
+   size. The `double` mount keeps its second lip on the opening itself, three
+   pixels inside the mat. */
+.mf-mount{padding:clamp(8px,.8vw,12px)}
 .mf[data-mount="double"] .mf-window{outline:1px solid rgba(122,99,70,.32);outline-offset:3px}
 
 /* The opening: the 4/5 the plates and the photographs are cut for, so `cover`
@@ -4167,10 +4199,13 @@ body.lb-open .to-top{
 }
 
 /* ---------- The label under the frame ----------
-   Three lines: the number and the name, the finish and its colour chip, and the
-   family with the invitation to open the sample. Every line is optional in the
-   record, so the block shrinks to whatever the sample actually claims. */
-.mf-meta{display:flex;flex-direction:column;gap:7px;padding-inline:2px}
+   Three lines, one fixed block: the number and the name, the finish and its
+   colour chip, and the family with the invitation to open the sample. The name
+   and the finish line are each exactly one line — a longer one is cut with an
+   ellipsis rather than wrapping and pushing the next frame's lines out of
+   step — and the foot is pinned to the bottom of the block, so a row's frames
+   end at one depth however their copy runs. */
+.mf-meta{display:flex;flex-direction:column;gap:7px;padding-inline:2px;flex:1}
 .mf-head{display:flex;align-items:baseline;gap:.6em}
 .mf-no{
   flex:none;
@@ -4178,17 +4213,21 @@ body.lb-open .to-top{
   color:var(--mfc-accent);
 }
 .mf-name{
+  min-width:0;
   font-size:clamp(15px,1.05vw,17px);font-weight:600;line-height:1.6;
   color:var(--mfc-ink);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .mf-line{
   display:flex;align-items:center;gap:.6em;
   font-size:var(--fs-meta);color:var(--mfc-muted);
+  flex-wrap:nowrap;overflow:hidden;
 }
 /* The finish is the sample's own name for its surface, so it reads a step
-   brighter than the colour that follows it. */
-.mf-finish{color:var(--mfc-ink-soft);white-space:nowrap}
-.mf-color{display:inline-flex;align-items:center;gap:.45em}
+   brighter than the colour that follows it. It takes the ellipsis when the
+   line runs short; the colour chip beside it never gives way. */
+.mf-finish{min-width:0;color:var(--mfc-ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mf-color{display:inline-flex;align-items:center;gap:.45em;flex:none}
 .mf-sep{display:block;flex:none;width:1px;height:11px;background:var(--mfc-hair-2)}
 /* The colour chip carries the record's own `colorHex` inline; the ring keeps a
    pale colour visible against the charcoal wall. */
@@ -4196,7 +4235,7 @@ body.lb-open .to-top{
   display:block;width:11px;height:11px;border-radius:50%;
   box-shadow:0 0 0 1px rgba(0,0,0,.4), 0 0 0 3px rgba(243,233,222,.1);
 }
-.mf-foot{display:flex;align-items:center;justify-content:space-between;gap:.8em}
+.mf-foot{display:flex;align-items:center;justify-content:space-between;gap:.8em;margin-top:auto}
 .mf-tag{
   font-size:var(--fs-caption);letter-spacing:var(--track-meta);
   color:var(--mfc-accent);
@@ -4382,7 +4421,7 @@ body.lb-open .to-top{
   font-size:clamp(23px,2.3vw,34px);line-height:var(--lh-heading);
   color:var(--mfc-ink);
 }
-.mv-desc{font-size:clamp(15px,1.02vw,17px);line-height:1.95;color:var(--mfc-ink-soft)}
+.mv-desc{font-size:clamp(15px,1.02vw,17px);line-height:1.95;color:var(--mfc-ink-soft);text-align:justify;text-justify:inter-word}
 /* The specification list is pushed to the bottom of the panel, so the name and
    the description own the top of it however long the copy runs. */
 .mv-specs{margin-top:auto;border-top:1px solid var(--mfc-hair)}
@@ -4457,6 +4496,16 @@ html:has(body.mv-open){overflow:hidden}
   .mv-hints{gap:10px;padding:.45em .8em;font-size:11px}
 }
 @media (max-width:640px){
+  .mfw-grid{grid-template-columns:1fr}
+  .mfw-bar{
+    flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+  .mfw-bar::-webkit-scrollbar{display:none}
+  /* The fieldset wraps its chips by default; on a phone it must stay one line
+     so the bar — not the chips — is what scrolls. */
+  .mfw-filters{flex-wrap:nowrap}
+  .mfw-chip{flex:none}
   /* Full-bleed on a phone: a dialog inset by 12px on every side leaves too
      little plate left to explore at the zoom levels this viewer offers. */
   .mv{padding:0}
@@ -4467,9 +4516,6 @@ html:has(body.mv-open){overflow:hidden}
 }
 @media (max-width:420px){
   .mfw{padding:14px 14px 22px}
-  .mfw-grid{gap:16px}
-  .mf-wood{padding:7px}
-  .mf-name{font-size:14px}
 }
 
 /* ---------- Reduced motion ----------
@@ -4479,6 +4525,7 @@ html:has(body.mv-open){overflow:hidden}
    its slow push-in — plus the dialog's entrance, which is an animation on an
    element that does not exist until it is opened. */
 @media (prefers-reduced-motion: reduce){
+  .mfw-cell{animation:none}
   .mf:hover .mf-wood,
   .mf:focus-visible .mf-wood{transform:none}
   .mf:hover .mf-window img,

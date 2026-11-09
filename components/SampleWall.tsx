@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 
 import SampleFrame from "@/components/SampleFrame";
 import SampleViewer from "@/components/SampleViewer";
@@ -92,6 +93,10 @@ export default function SampleWall({
         <fieldset className="mfw-filters">
           <legend className="mfw-legend">{legendLabel}</legend>
 
+          <span className="mfw-filters-label" aria-hidden="true">
+            {legendLabel}
+          </span>
+
           <button
             type="button"
             className="mfw-chip"
@@ -115,23 +120,23 @@ export default function SampleWall({
             </button>
           ))}
         </fieldset>
-
-        <p className="mfw-note" aria-hidden="true">
-          <span className="mfw-note-rule" />
-          {wallNote}
-        </p>
       </div>
 
-      {/* Each frame carries its own reveal, so the wall arrives frame by frame
-          instead of as one block. The stagger is capped, which keeps a long
-          library from ending in a slow trickle. */}
+      <p className="mfw-note" aria-hidden="true">
+        <span className="mfw-note-rule" />
+        {wallNote}
+      </p>
+
+      {/* Each frame arrives in three dimensions as it scrolls into view — the
+          scroll itself drives the entrance (`--i` staggers one frame after the
+          next), so the wall needs no reveal hook and no JavaScript to arrive
+          frame by frame instead of as one block. */}
       <ul className="mfw-grid" aria-label={wallLabel}>
         {wall.map((sample, index) => (
           <li
             className="mfw-cell"
             key={sample.id}
-            data-reveal="fade-up"
-            data-delay={String(Math.min(index, 7) * 90)}
+            style={{ "--i": index } as CSSProperties}
           >
             <SampleFrame
               sample={sample}
