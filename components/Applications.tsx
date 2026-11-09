@@ -7,25 +7,26 @@ import { PROJECT_IMAGES } from "@/content/projects";
 
 /**
  * The applications — where microcement goes — as the reference template's
- * stacked cards, the same "My Process" motion the Process section already
- * carries, measured against the live demo rather than remembered from it:
+ * stacked cards, the same "My Process" motion the Process section used to
+ * carry, measured against the live demo rather than remembered from it:
  *
  *   · The cards are pinned, not merely stacked. The reference pins its
  *     section with GSAP ScrollTrigger (`start: 'top top'`, the next card
  *     starting at `yPercent: 100` — exactly at the viewport's bottom edge);
  *     this site carries no GSAP, so the stack is `position: sticky` with a
- *     gap of a full viewport minus one card between the items. The next card
- *     therefore starts below the fold and travels the whole viewport up over
- *     the one before it, exactly as the reference's does.
- *   · The covered card settles in three dimensions: it tips back
- *     (`rotateX`) and shrinks toward 0.9 while the next one rises, and the
- *     rising card flattens out of a slight forward tilt as it arrives — the
- *     same 0.9 the reference animates to, with the depth the flat scale
- *     leaves out.
+ *     small gap between the items. The next card therefore starts below the
+ *     fold and travels the whole viewport up over the one before it, exactly
+ *     as the reference's does.
+ *   · Each box is full height (`min-height: 100svh`), so the stack reads as
+ *     a deck of full screens rather than a run of short cards.
+ *   · The motion is a halo's glide, not a snap: the covered card settles
+ *     with half the old tilt and half the old shrink, and a warm, soft glow
+ *     gathers around each card as it arrives (`--arrive` drives the glow's
+ *     opacity), so the card settles into light rather than into shadow.
  *   · The title fills with the scroll. Persian letters join, so a character
  *     split would break the script — instead the whole title is one gradient
  *     that sweeps from the inline start (right, here) to full ink over the
- *     same scroll window the Process title uses.
+ *     same scroll window the Process title used to use.
  *
  * The copy is the studio's own: five places a visitor can picture microcement
  * living — cafés and restaurants, private homes and villas, bathrooms,

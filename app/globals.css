@@ -642,8 +642,7 @@ a{color:inherit;text-decoration:none}
  * through the room drives the portrait's zoom, rise and tilt, the glow, the
  * name's masked rise and the copy's arrival — and scrolling back reverses
  * them all, because every value is a function of the room's position, never
- * a one-way trigger. Two infinite marquees run along the room's top and
- * bottom in opposite directions.
+ * a one-way trigger.
  *
  * The room is dark (#100e0b, the site's own dark ground) so the light and
  * shadow read: the warm portrait and the ivory name sit in a pool of light.
@@ -653,10 +652,12 @@ a{color:inherit;text-decoration:none}
  * box, so a replacement image lands in exactly the same silhouette.
  *
  * Without scripting the custom properties below hold their settled values,
- * so the room reads as plain content; the marquees are pure CSS and run
- * regardless. Below 960px the room stops being a pinned stage and flows as
- * a normal stacked section (see the responsive layer), and the same scroll
- * sync still drives the zoom and the reveals.
+ * so the room reads as plain content. Below 960px the room stops being a
+ * pinned stage and becomes a full-bleed portrait cover — the photograph
+ * fills the viewport, the name sits over its lower edge on a gradient, and
+ * the rest of the copy follows on the dark ground (see the responsive
+ * layer) — and the same scroll sync still drives a gentle zoom and the
+ * reveals.
  */
 .craft{
   --craft-radius:clamp(40px,8vw,148px) 2px clamp(16px,3vw,56px) 2px;
@@ -673,9 +674,7 @@ a{color:inherit;text-decoration:none}
 }
 
 /* The pinned viewport: one screen tall, the plate and the copy centred in it.
-   Its perspective is what the plate's tilt reads through. The vertical
-   padding is the marquees' own band, so the zooming plate never reaches
-   into their lines. */
+   Its perspective is what the plate's tilt reads through. */
 .craft-pin{
   position:sticky; top:0; height:100svh;
   display:grid; grid-template-columns:1.05fr 1fr;
@@ -683,32 +682,6 @@ a{color:inherit;text-decoration:none}
   padding:84px var(--pad-x);
   perspective:1400px;
 }
-
-/* Infinite marquees: two identical halves per track, so the -50% loop is
-   seamless. The top row runs one way, the bottom the other, and both drift
-   a little with the scroll on top of their own motion. */
-.craft-marquee{
-  position:absolute; inset-inline:0; overflow:hidden; white-space:nowrap;
-  pointer-events:none;
-  transform:translateX(calc(var(--craft-p) * -40px));
-}
-.craft-marquee--top{top:0; padding-top:clamp(18px,3vh,34px)}
-.craft-marquee--bottom{bottom:0; padding-bottom:clamp(18px,3vh,34px); transform:translateX(calc(var(--craft-p) * 40px))}
-.craft-marquee-track{
-  display:inline-flex; align-items:baseline;
-  animation:craft-marquee 36s linear infinite;
-  will-change:transform;
-}
-.craft-marquee-track--reverse{animation-direction:reverse}
-.craft-marquee-phrase{
-  font-weight:800; font-size:clamp(26px,3.6vw,54px); letter-spacing:-.01em;
-  color:rgba(243,233,222,.16); white-space:nowrap; padding-inline:.5em;
-}
-.craft-marquee-phrase i{
-  font-style:normal; font-size:.55em; vertical-align:middle;
-  color:rgba(214,178,132,.55); padding-inline:.7em;
-}
-@keyframes craft-marquee{to{transform:translateX(-50%)}}
 
 /* The plate owns the positioning context for the glow, the ghost frame and
    the mounted label, so all three are measured from the plate's own edges. */
@@ -844,7 +817,6 @@ a{color:inherit;text-decoration:none}
 @media (prefers-reduced-motion: reduce){
   .craft{height:auto; overflow:visible}
   .craft-pin{position:static; height:auto; padding:120px var(--pad-x)}
-  .craft-marquee-track{animation:none}
   .craft-glow{opacity:.5}
   .craft-figure, .craft-figure img, .craft-frame, .craft-badge,
   .craft .mask-title .line > span.craft-name-line,
@@ -1110,9 +1082,49 @@ a{color:inherit;text-decoration:none}
  * — the hold is scroll-driven, not animation, so it moves only when the
  * reader moves.
  */
-.pxband{position:relative;height:200svh}
-.pxband-sticky{position:sticky;top:0;height:100svh;overflow:hidden}
-.pxband-sticky img{object-fit:cover;object-position:center}
+/* The full-bleed band between About and Work — a photograph that stays put
+   while the page scrolls over it (see `components/ParallaxBand.tsx` for the
+   mechanism). The photograph is the build-time `band.jpg` (2000×1125), not
+   the 6 MB source: a CSS background cannot be optimised by `next/image`,
+   so the band gets its own cut. */
+.pxband{
+  position:relative;min-height:100svh;
+  display:flex;align-items:center;justify-content:center;
+  padding:120px var(--pad-x);
+  background-image:url(/images/og/band.jpg);
+  background-size:cover;background-repeat:no-repeat;
+  background-position:center var(--band-y,0px);
+  background-attachment:fixed;
+  overflow:clip;
+}
+/* The warm veil over the photograph, so the ivory statement reads. */
+.pxband-veil{
+  position:absolute;inset:0;z-index:0;
+  background:rgba(16,14,11,.45);
+}
+.pxband-content{
+  position:relative;z-index:1;
+  max-width:900px;text-align:center;
+  color:#f3e9de;
+}
+.pxband-eyebrow{
+  display:block;font-size:var(--fs-meta);font-weight:500;
+  letter-spacing:.14em;color:rgba(243,233,222,.75);
+  margin-bottom:28px;
+}
+.pxband-statement{
+  font-size:clamp(28px,3.4vw,46px);font-weight:600;line-height:1.5;
+  color:#f3e9de;text-align:center;
+}
+@media (max-width:768px){
+  /* iOS Safari ignores `fixed`, so the band degrades to a normal full-bleed
+     photograph here — never a broken one — and the drift is off. */
+  .pxband{background-attachment:scroll;background-position:center}
+  .pxband{min-height:80svh;padding:96px var(--pad-x)}
+}
+@media (prefers-reduced-motion: reduce){
+  .pxband{background-attachment:scroll;background-position:center}
+}
 @media (max-width:680px){
   .pxband{height:180svh}
   /* A portrait frame crops the wide still to its centre, which is mostly
@@ -1565,16 +1577,54 @@ a{color:inherit;text-decoration:none}
   .hero-image{height:54%}
   .about{padding-top:100px;padding-bottom:120px}
   .metrics{justify-content:center;text-align:center;margin-top:72px}
-  /* Craftsman: below the pin the room stops being a stage and flows as a
-     normal stacked section — the portrait above the copy, both centred. The
-     scroll sync still drives the zoom and the reveals from the room's own
-     rectangle, and the marquees are hidden so they cannot crowd the column.
-     The room keeps its `overflow:clip`, so the glow and the zooming plate —
-     both wider than their column — can never widen the page. */
+  /* Craftsman on mobile — a full-bleed portrait cover, not a stacked
+     column. The photograph fills the viewport (no rounded plate, no ghost
+     frame, no glow — they crowd a narrow screen), a gradient gathers at its
+     lower edge, and the name sits over that gradient in cover type, so the
+     portrait and the name read as one image. The rest of the copy — role,
+     biography, figures, call to action — follows below on the dark ground.
+     The scroll sync still drives a gentle zoom (the tilt and the rise are
+     switched off here: on a full-bleed photograph they would tilt the whole
+     frame) and the name and copy reveals, measured from the room's own
+     rectangle. The room keeps its `overflow:clip`, so the zooming
+     photograph — wider than its column — can never widen the page. */
   .craft{height:auto}
-  .craft-pin{position:static; height:auto; grid-template-columns:1fr; gap:44px; padding:100px var(--pad-x) 120px}
-  .craft-marquee{display:none}
-  .craft-visual{max-width:100%}
+  .craft-pin{
+    position:static; height:auto; display:block; padding:0;
+  }
+  .craft-visual{max-width:none;width:100%;position:relative}
+  /* The gradient the name sits on: dark at the portrait's lower edge,
+     fading to nothing a little above it, so the ivory name reads against
+     the photograph. */
+  .craft-visual::after{
+    content:"";position:absolute;inset-inline:0;bottom:0;height:52%;
+    background:linear-gradient(to top, rgba(16,14,11,.94) 0%, rgba(16,14,11,.55) 42%, transparent 100%);
+    z-index:2;pointer-events:none;
+  }
+  .craft-plate{padding:0}
+  .craft-glow,.craft-frame,.craft-badge,.craft-tags{display:none}
+  .craft-figure{
+    aspect-ratio:auto;height:84svh;max-height:none;width:100%;
+    border-radius:0;box-shadow:none;
+    /* Zoom only — no rise, no tilt — so the full-bleed photograph breathes
+       without tipping its frame. */
+    transform:scale(var(--craft-zoom));
+  }
+  .craft-copy{
+    position:relative;z-index:3;
+    margin-top:-30svh;
+    padding:0 var(--pad-x) 96px;
+  }
+  .craft-copy .eyebrow{margin-bottom:0}
+  .craft-copy h2{
+    font-size:clamp(52px,15vw,88px);line-height:1.04;
+    margin-top:14px;
+  }
+  .craft-role{margin-top:14px}
+  .craft-bio{margin-top:22px;max-width:none}
+  .craft-copy .metrics{gap:28px;margin-top:36px;padding-top:22px}
+  .craft-copy .metrics .num{font-size:clamp(30px,8vw,40px)}
+  .craft-copy .link-underline{margin-top:36px}
   .contact{grid-template-columns:1fr;min-height:auto}
   .contact-image{aspect-ratio:4/3}
   .metrics{gap:48px;margin-top:64px}
@@ -1821,25 +1871,21 @@ body.menu-open{overflow:hidden}
   .work-lede br{display:none}
   .arrow-link{font-size:19px}
 
-  /* Craftsman */
-  .craft-pin{padding:92px var(--pad-x) 104px;gap:36px}
-  /* Centred column: the plate, the label and the material rule all share the
-     copy's centre line. `width:100%` is required — the inline `auto` margins
-     would otherwise make this a shrink-to-fit grid item, and the plate would be
-     sized by the decorative tags row instead of by the column. */
-  .craft-visual{width:100%;max-width:min(100%,460px);margin-inline:auto}
-  /* The badge's box is the plate plus the ghost frame's offset, so the true
-     centre of the plate is half an offset to the left of 50%. */
-  .craft-badge{left:calc(50% - var(--craft-offset) / 2);transform:translate(-50%,50%)}
-  .craft-tags{justify-content:center;margin-top:34px}
-  .craft-copy{align-items:center;text-align:center}
-  .craft-copy h2{font-size:clamp(34px,9.8vw,56px);margin-top:16px}
-  .craft-name{font-size:clamp(23px,6.2vw,32px);margin-top:28px}
+  /* Craftsman — the same full-bleed portrait cover as the ≤960px block
+     above, tightened for a phone. The cover's rules live at ≤960px; this
+     block only re-asserts the ones a narrower query would otherwise
+     override: the pin stays unpadded and full-bleed, the name stays cover
+     type, and the copy stays start-aligned (never centred — the cover reads
+     from the inline start, as the rest of the site does). */
+  .craft-pin{padding:0}
+  .craft-visual{width:100%;max-width:none;margin-inline:0}
+  .craft-copy{align-items:flex-start;text-align:start}
+  .craft-copy h2{font-size:clamp(52px,15vw,88px);line-height:1.04;margin-top:14px}
   .craft-bio{max-width:none;margin-top:22px}
   .craft-copy .metrics{
-    max-width:none;gap:32px;margin-top:34px;padding-top:22px;justify-content:center;
+    max-width:none;gap:28px;margin-top:36px;padding-top:22px;justify-content:flex-start;
   }
-  .craft-copy .link-underline{margin-top:34px}
+  .craft-copy .link-underline{margin-top:36px}
 
   /* Contact */
   .contact-copy{padding:92px var(--pad-x) 72px}
@@ -5624,128 +5670,142 @@ html:has(body.mv-open){overflow:hidden}
 
 /* ============== PROCESS — STEP BY STEP ============== */
 /*
- * The studio's four steps, as the reference's “My Process”, measured against
- * the live demo rather than remembered from it:
+ * The studio's four steps, as the reference template's “Four systems. One
+ * spine.” section (TemplateMo 629, Nexus System) — four equal columns in a
+ * single horizontal row, not a vertical timeline. There is no literal spine
+ * line in the reference: the “spine” is the shared chassis the four systems
+ * plug into, and visually it is the row itself — four columns on one
+ * baseline, separated by hairlines.
  *
- *   · The cards are pinned, not merely stacked. The reference pins its
- *     section (`start: 'top top'`) with the next card starting at
- *     `yPercent: 100` — exactly at the viewport's bottom edge — so the stack
- *     here is `position: sticky` at the viewport's very top, with a gap of a
- *     full viewport minus one card between the items. The next card therefore
- *     starts below the fold and travels the whole viewport up over the one
- *     before it, exactly as the reference's does.
- *   · The covered card settles in three dimensions: it tips back (`rotateX`)
- *     and shrinks toward 0.9 while the next one rises, and the rising card
- *     flattens out of a slight forward tilt as it arrives — the same 0.9 the
- *     reference animates to, with the depth the flat scale leaves out. The
- *     progress (`--cover`, `--arrive`) is measured over the whole travel, so
- *     the tilt and the scale move through the entire journey.
- *   · The title fills with the scroll. The reference splits its heading into
- *     characters and scrubs them from opacity 0.4 to 1 as the heading travels
- *     from 80% to 20% of the viewport. Persian letters join, so a character
- *     split would break the script — instead the whole title is one gradient
- *     that sweeps from the inline start (right, here) to full ink over the
- *     same scroll window (`--fill`, set by `components/Process.tsx`).
- *   · After the last card, the numbers: the reference follows its cards with
- *     a row of counting stats, so this one repeats the numbers the About
- *     section already publishes, counted up by the site's own `[data-count]`
- *     system.
+ * Pointer-driven, not scroll-driven: hover a column (desktop) or tap it
+ * (touch) and it turns — it grows to about two and a half times its
+ * neighbours' width, its description fades and slides in, and the other
+ * three dim and recede. Only one column is active at a time; the first step
+ * starts active, and leaving the row keeps the last one active, so the
+ * section never sits empty. The motion is one ~600 ms ease
+ * (`cubic-bezier(0.22, 1, 0.36, 1)`) on the column's growth, its dimming
+ * and its description — the buttery part.
  *
- * Ground is the deeper sand (`--bg-2`) and the cards are the lighter ivory
- * (`--bg`): the same light-on-light card contrast the reference draws from
- * its own two neutrals. The section's sides are tighter than the site's usual
- * padding, so the cards run almost full-bleed, as the reference's do.
+ * Mobile is a horizontal scroll-snap row (one column ~80vw, snap) with the
+ * same tap-to-activate behaviour — the pattern the site's Recent Projects
+ * already uses — so nothing here is hover-only.
+ *
+ * Ground is the deeper sand (`--bg-2`) and the columns are the lighter ivory
+ * (`--bg`): the same light-on-light contrast the old stacked cards used.
+ * The section's sides are tighter than the site's usual padding, so the row
+ * runs almost full-bleed, as the reference's does.
  */
 .process{position:relative;padding:160px clamp(20px,2.5vw,36px) 160px;background:var(--bg-2)}
 .process-head{
   display:flex;align-items:flex-end;justify-content:space-between;gap:48px;
-  margin-bottom:96px;
+  margin-bottom:72px;
 }
-/* The title's fill: full ink by default (and without JavaScript), a gradient
-   sweep while `--fill` is being driven by the scroll. */
+.process-head-side{display:flex;flex-direction:column;align-items:flex-end;gap:16px}
 .process-title{
   font-size:var(--fs-subdisplay);font-weight:600;line-height:var(--lh-heading);
   color:var(--ink);margin-top:18px;
 }
-@supports ((background-clip:text) or (-webkit-background-clip:text)){
-  .process-title{
-    background:linear-gradient(to left,
-      var(--ink) 0%, var(--ink) var(--fill,100%),
-      rgba(29,28,24,.4) var(--fill,100%), rgba(29,28,24,.4) 100%);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-}
 .process-lede{
-  max-width:520px;padding-bottom:8px;
+  max-width:520px;
   font-size:clamp(18px,1.6vw,22px);font-weight:600;line-height:1.6;
   color:var(--ink-soft);text-align:end;
 }
-.process-stack{display:flex;flex-direction:column;gap:max(200px,calc(100svh - 440px));padding-bottom:65vh}
-.process-item{
-  position:sticky;top:0;will-change:transform;
-  transform:perspective(1400px)
-    rotateX(calc(-7deg * var(--cover,0) + 8deg * (1 - var(--arrive,1))))
-    scale(calc(1 - .1 * var(--cover,0) - .03 * (1 - var(--arrive,1))));
-  filter:brightness(calc(1 - .05 * var(--cover,0)));
+.process-hint{
+  font-size:var(--fs-meta);font-weight:500;color:var(--muted);
+  letter-spacing:.02em;text-align:end;
 }
-.process-card{
-  display:grid;grid-template-columns:4fr 8fr;gap:48px;align-items:stretch;
-  min-height:440px;padding:48px;background:var(--bg);border:1px solid var(--hair);
-  box-shadow:0 30px 60px -30px rgba(29,28,24,calc(.25 * (1 - var(--arrive,1))));
+/* The row: four columns on one baseline. `height` is the stage the columns
+   share; the active one takes ~2.6 shares of it and the rest take one each. */
+.process-row{
+  display:flex;align-items:stretch;
+  height:min(72svh,640px);min-height:520px;
+  border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
 }
-/* The photograph fills the card's full height, as the reference's does. No
-   aspect-ratio here: paired with a min-height it would widen the box past its
-   grid track (a 320px minimum at 16/10 needs 512px) and spill over the card. */
-.process-media{position:relative;height:100%;overflow:hidden}
-.process-content{min-width:0}
-.process-header{
-  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
-  gap:16px;padding-bottom:16px;margin-bottom:26px;border-bottom:1px solid var(--hair);
+.process-col{
+  position:relative;flex:1 1 0;min-width:0;
+  display:flex;flex-direction:column;
+  background:var(--bg);cursor:pointer;overflow:hidden;
+  border-inline-start:1px solid var(--hair);
+  opacity:.45;
+  transition:flex-grow .6s cubic-bezier(.22,1,.36,1), opacity .6s cubic-bezier(.22,1,.36,1);
 }
-.process-card-title{
-  font-size:clamp(26px,2.4vw,34px);font-weight:600;line-height:1.2;
-  letter-spacing:-.01em;color:var(--ink);
+.process-col:first-child{border-inline-start:none}
+.process-col.is-active{flex-grow:2.6;opacity:1}
+.process-col:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.process-col-media{position:relative;flex:1 1 0;min-height:0;overflow:hidden}
+.process-col-media img{transition:transform .6s cubic-bezier(.22,1,.36,1)}
+.process-col.is-active .process-col-media img{transform:scale(1.04)}
+.process-col-body{
+  padding:28px 24px 32px;min-width:0;
+  border-top:1px solid var(--hair);
 }
-.process-meta{display:flex;align-items:center;gap:12px;padding-top:8px}
-.process-meta-text{font-size:16px;font-weight:600;color:var(--ink)}
-.process-meta-label{font-weight:400;color:var(--muted);margin-inline-start:4px}
-.process-plus{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--bg);
-  font-size:20px;font-weight:400;line-height:1;
+.process-col-num{
+  display:block;font-family:var(--fa);font-size:15px;font-weight:500;
+  color:var(--muted);letter-spacing:.08em;margin-bottom:12px;
 }
-.process-desc{
-  font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-soft);
-  max-width:75%;text-align:justify;
+.process-col-title{
+  font-size:clamp(22px,2vw,28px);font-weight:600;line-height:1.25;
+  letter-spacing:-.01em;color:var(--ink);white-space:nowrap;
 }
-/* The numbers after the last card: three centred figures, counted up by the
+.process-col-meta{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;
+  margin-top:10px;font-size:var(--fs-ui);color:var(--ink-soft);
+}
+.process-col-focus{font-weight:600;color:var(--ink)}
+.process-col-label{font-weight:400;color:var(--muted)}
+/* The description opens with the grid-rows trick (0fr → 1fr), so it grows
+   smoothly instead of jumping, and fades/slides in as it does. */
+.process-col-desc-wrap{
+  display:grid;grid-template-rows:0fr;opacity:0;transform:translateY(8px);
+  transition:grid-template-rows .6s cubic-bezier(.22,1,.36,1), opacity .45s ease .12s, transform .6s cubic-bezier(.22,1,.36,1);
+}
+.process-col.is-active .process-col-desc-wrap{
+  grid-template-rows:1fr;opacity:1;transform:translateY(0);
+}
+.process-col-desc{
+  overflow:hidden;min-height:0;
+  padding-top:16px;font-size:var(--fs-body);line-height:var(--lh-body);
+  color:var(--ink-soft);text-align:justify;text-justify:inter-word;
+}
+/* The numbers after the row: three centred figures, counted up by the
    site's own `[data-count]` system. */
 .process-stats{
   display:grid;grid-template-columns:repeat(3,1fr);gap:48px;text-align:center;
+  margin-top:96px;
 }
 .process-stat-num{
   display:block;font-family:var(--fa);font-weight:500;line-height:1;
   font-size:var(--fs-display);color:var(--ink);
 }
 .process-stat-label{display:block;margin-top:16px;font-size:18px;font-weight:500;color:var(--ink-soft)}
+@media (max-width:960px){
+  .process-row{
+    height:auto;min-height:0;
+    overflow-x:auto;scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .process-row::-webkit-scrollbar{display:none}
+  .process-col{
+    flex:0 0 80vw;scroll-snap-align:start;
+    opacity:.45;
+  }
+  .process-col.is-active{flex-basis:80vw;opacity:1}
+  .process-col-media{height:220px;flex:none}
+}
 @media (max-width:680px){
   .process{padding:96px clamp(20px,2.5vw,36px) 120px}
   .process-head{flex-direction:column;align-items:flex-start;gap:24px;margin-bottom:48px}
+  .process-head-side{align-items:flex-start}
   .process-lede{text-align:start}
-  .process-stack{gap:max(160px,calc(100svh - 500px))}
-  .process-card{grid-template-columns:1fr;gap:24px;min-height:0;padding:24px}
-  .process-media{order:2;height:auto;aspect-ratio:16/10;min-height:180px}
-  .process-header{flex-direction:column;align-items:flex-start}
-  .process-desc{
-    max-width:none;display:-webkit-box;-webkit-line-clamp:3;
-    -webkit-box-orient:vertical;overflow:hidden;
-  }
-  .process-stats{grid-template-columns:repeat(2,1fr);gap:32px}
+  .process-hint{text-align:start}
+  .process-col-title{white-space:normal}
+  .process-stats{grid-template-columns:repeat(2,1fr);gap:32px;margin-top:64px}
 }
 @media (prefers-reduced-motion: reduce){
-  .process-item{position:static;transform:none;filter:none}
-  .process-stack{padding-bottom:0}
-  .process-card{box-shadow:none}
+  .process-col{transition:none}
+  .process-col-media img{transition:none}
+  .process-col-desc-wrap{transition:none}
 }
 
 /* ============== APPLICATIONS ============== */
@@ -5780,18 +5840,26 @@ html:has(body.mv-open){overflow:hidden}
   font-size:clamp(18px,1.6vw,22px);font-weight:600;line-height:1.6;
   color:var(--ink-soft);text-align:end;
 }
-.app-stack{display:flex;flex-direction:column;gap:max(200px,calc(100svh - 480px));padding-bottom:30vh}
+.app-stack{display:flex;flex-direction:column;gap:16px;padding-bottom:30vh}
 .app-item{
   position:sticky;top:0;will-change:transform;
+  /* A halo's glide, not a snap: half the old tilt and half the old shrink,
+     so the card settles softly instead of tipping. */
   transform:perspective(1400px)
-    rotateX(calc(-7deg * var(--cover,0) + 8deg * (1 - var(--arrive,1))))
-    scale(calc(1 - .1 * var(--cover,0) - .03 * (1 - var(--arrive,1))));
-  filter:brightness(calc(1 - .05 * var(--cover,0)));
+    rotateX(calc(-3deg * var(--cover,0) + 4deg * (1 - var(--arrive,1))))
+    scale(calc(1 - .05 * var(--cover,0) - .02 * (1 - var(--arrive,1))));
+  filter:brightness(calc(1 - .03 * var(--cover,0)));
 }
 .app-card{
   display:grid;grid-template-columns:5fr 7fr;gap:48px;align-items:stretch;
-  min-height:480px;padding:48px;background:var(--bg-2);border:1px solid var(--hair);
-  box-shadow:0 30px 60px -30px rgba(29,28,24,calc(.25 * (1 - var(--arrive,1))));
+  /* Full height: each box fills the viewport as it arrives, so the stack
+     reads as a deck of full screens rather than a run of short cards. */
+  min-height:100svh;padding:48px;background:var(--bg-2);border:1px solid var(--hair);
+  /* The halo: a warm, soft glow that gathers around the card as it settles
+     (driven by `--arrive`), over the dark drop shadow that fades as it does. */
+  box-shadow:
+    0 0 90px 10px rgba(214,178,132,calc(.28 * var(--arrive,1))),
+    0 30px 60px -30px rgba(29,28,24,calc(.25 * (1 - var(--arrive,1))));
 }
 /* The photograph fills the card's full height, as the reference's does. */
 .app-media{position:relative;height:100%;overflow:hidden}
@@ -5816,8 +5884,8 @@ html:has(body.mv-open){overflow:hidden}
   .applications{padding:96px clamp(20px,2.5vw,36px) 120px}
   .app-head{flex-direction:column;align-items:flex-start;gap:24px;margin-bottom:48px}
   .app-lede{text-align:start}
-  .app-stack{gap:max(160px,calc(100svh - 560px))}
-  .app-card{grid-template-columns:1fr;gap:24px;min-height:0;padding:24px}
+  .app-stack{gap:16px}
+  .app-card{grid-template-columns:1fr;gap:24px;min-height:100svh;padding:24px}
   .app-media{order:-1;height:auto;aspect-ratio:16/10;min-height:180px}
   .app-num{margin-bottom:12px}
 }
@@ -5825,355 +5893,4 @@ html:has(body.mv-open){overflow:hidden}
   .app-item{position:static;transform:none;filter:none}
   .app-stack{padding-bottom:0}
   .app-card{box-shadow:none}
-}
-
-/* ══════════════════════════════════════════════════════════════════════════
-   MICROCEMENT — the Jetton-style showcase (`/microcement`).
-   ──────────────────────────────────────────────────────────────────────────
-   A second visual language for one section of the site, scoped under `.mc`
-   so nothing here can leak into the warm stone register of the home page:
-   an off-white ground (#f5f5f5), black type, a vivid-orange accent used only
-   for the active states, huge Vazirmatn display lines, and monospace labels
-   (Latin in a mono face, Persian falling back to Vazirmatn). The layout
-   follows the Jetton template's structure — hero, pinned works, services
-   statement, next-page block, a Works gallery with a grid/list ("checkerboard")
-   switch and a categories filter, and project pages with a reading/visual
-   switch — rebuilt from scratch in this codebase, with Norsta's own projects,
-   copy and photographs. Nothing of Jetton's own text or imagery is copied:
-   the template belongs to a Stockholm fashion studio; this section is
-   Norsta's microcement work in Tehran, and it says so.
-   ──────────────────────────────────────────────────────────────────────────
-   RTL: the shell sets `dir="rtl"` (the root `<html>` carries none), so the
-   grid's first column and the toolbar's first item sit on the right, and the
-   stagger reads the same way a left-to-right reader reads Jetton's.
-   ──────────────────────────────────────────────────────────────────────────
-   Reveal: content is visible without scripting. `McReveal` adds `mc-js` to
-   the shell on mount; only then do `[data-mc-reveal]` elements start hidden
-   and fade in as they enter the viewport.
-   ══════════════════════════════════════════════════════════════════════════ */
-.mc{
-  --mc-bg:#f5f5f5; --mc-ink:#111; --mc-ink-soft:#3a3a3a; --mc-muted:#8a8a8a;
-  --mc-hair:#d8d8d8; --mc-accent:#ff4d00; --mc-pad:clamp(20px,4vw,64px);
-  --mc-mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,"Liberation Mono",monospace,var(--fa);
-  background:var(--mc-bg); color:var(--mc-ink);
-  font-family:var(--fa);
-}
-.mc a{color:inherit}
-.mc img{display:block;max-width:100%}
-
-/* ── Type ─────────────────────────────────────────────────────────────── */
-.mc-display{
-  font-weight:900; line-height:1.04; letter-spacing:-.015em; color:var(--mc-ink);
-  font-size:clamp(58px,12.5vw,210px);
-}
-.mc-display .mc-line{display:block}
-.mc-mono{
-  font-family:var(--mc-mono); font-size:13px; letter-spacing:.08em;
-  line-height:1.7; color:var(--mc-ink-soft); text-transform:uppercase;
-}
-.mc-mono--lat{letter-spacing:.14em}
-.mc-lede{
-  font-size:clamp(17px,1.5vw,20px); line-height:1.9; color:var(--mc-ink-soft);
-  text-align:justify; text-justify:inter-word;
-}
-.mc-kicker{
-  font-family:var(--mc-mono); font-size:12px; letter-spacing:.16em;
-  color:var(--mc-muted); text-transform:uppercase;
-}
-
-/* ── Toolbar strip: hairline top border, three items spread across ─────── */
-.mc-toolbar{
-  display:flex; align-items:center; justify-content:space-between; gap:16px;
-  border-top:1px solid var(--mc-ink); padding:14px 0; margin-top:48px;
-}
-.mc-toolbar .mc-mono{color:var(--mc-ink)}
-.mc-toolbar button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
-
-/* ── Reveal on scroll (only once `mc-js` is present) ───────────────────── */
-.mc-js [data-mc-reveal]{opacity:0; transform:translateY(26px); transition:opacity .8s ease, transform .8s cubic-bezier(.22,1,.36,1)}
-.mc-js [data-mc-reveal].mc-revealed{opacity:1; transform:none}
-
-/* ── Hero ─────────────────────────────────────────────────────────────── */
-.mc-hero{
-  min-height:100svh; padding:calc(96px + 4vh) var(--mc-pad) 32px;
-  display:flex; flex-direction:column; justify-content:flex-end;
-}
-.mc-hero-title{margin-bottom:clamp(36px,6vh,72px)}
-.mc-hero-foot{
-  display:flex; justify-content:space-between; gap:24px; flex-wrap:wrap;
-  padding-top:20px; border-top:1px solid var(--mc-hair);
-}
-.mc-hero-foot .mc-mono{max-width:420px}
-
-/* ── Studio intro: one huge statement, then the body ──────────────────── */
-.mc-intro{padding:clamp(96px,14vh,180px) var(--mc-pad)}
-.mc-intro h2{
-  font-weight:800; line-height:1.25; letter-spacing:-.01em;
-  font-size:clamp(30px,4.4vw,64px); max-width:1100px;
-}
-.mc-intro .mc-lede{max-width:760px; margin-top:36px}
-
-/* ── Pinned works: the image sticks for a viewport while the giant title
-   glides over it. Pure CSS — no scroll listener. ───────────────────────── */
-.mc-pin{position:relative; height:190svh}
-.mc-pin-media{position:sticky; top:0; height:100svh; overflow:hidden}
-.mc-pin-media img{width:100%; height:100%; object-fit:cover}
-.mc-pin-title{
-  position:absolute; top:58svh; inset-inline:0; padding-inline:var(--mc-pad);
-  pointer-events:none;
-}
-.mc-pin-title h3{
-  font-weight:900; line-height:1; letter-spacing:-.015em; color:var(--mc-ink);
-  font-size:clamp(56px,11vw,190px);
-  text-shadow:0 0 32px rgba(245,245,245,.75), 0 2px 18px rgba(245,245,245,.5);
-}
-.mc-pin-title .mc-mono{color:var(--mc-ink); margin-top:14px; text-shadow:0 0 18px rgba(245,245,245,.8)}
-.mc-pin-link{position:absolute; inset:0; z-index:2}
-.mc-pin-link span{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
-.mc-works-link{
-  display:flex; justify-content:space-between; align-items:center; gap:16px;
-  padding:28px var(--mc-pad); border-top:1px solid var(--mc-ink);
-  font-weight:800; font-size:clamp(22px,2.6vw,34px); letter-spacing:-.01em;
-}
-.mc-works-link:hover .mc-works-link-arrow{transform:translateX(-8px)}
-.mc-works-link-arrow{transition:transform .3s ease; font-weight:400}
-
-/* ── Services statement: staggered huge lines + two mono paragraphs ───── */
-.mc-services{padding:clamp(96px,14vh,180px) var(--mc-pad)}
-.mc-services-lines .mc-display{font-size:clamp(52px,10.5vw,180px)}
-.mc-services-lines .mc-line:nth-child(even){padding-inline-start:clamp(24px,8vw,160px)}
-.mc-services-body{
-  display:grid; grid-template-columns:1fr 1fr; gap:clamp(24px,4vw,64px);
-  margin-top:clamp(40px,6vh,72px); max-width:1100px;
-}
-.mc-services-body .mc-mono{font-size:14px; text-transform:none; letter-spacing:.02em}
-.mc-services-cta{display:inline-block; margin-top:36px; font-weight:800; font-size:clamp(18px,1.6vw,22px)}
-
-/* ── Next-page block: number, title, link, and the vertical letters ───── */
-.mc-next{
-  display:grid; grid-template-columns:1fr auto; gap:clamp(24px,4vw,64px);
-  align-items:end; padding:clamp(96px,14vh,180px) var(--mc-pad) clamp(72px,10vh,140px);
-  border-top:1px solid var(--mc-hair);
-}
-.mc-next-num{font-family:var(--mc-mono); font-size:13px; letter-spacing:.16em; color:var(--mc-muted)}
-.mc-next-title{
-  display:block; font-weight:900; line-height:1.05; letter-spacing:-.015em;
-  font-size:clamp(44px,8.5vw,150px); margin:18px 0 22px;
-}
-.mc-next-title:hover{color:var(--mc-accent)}
-.mc-next-sub{font-family:var(--mc-mono); font-size:13px; letter-spacing:.08em; color:var(--mc-ink-soft)}
-.mc-vertical{
-  display:flex; flex-direction:column; align-items:center; gap:0;
-  font-weight:900; font-size:clamp(28px,4.5vw,72px); line-height:1.05; color:var(--mc-ink);
-  user-select:none; padding-bottom:8px;
-}
-.mc-vertical span{display:block}
-
-/* ── Works gallery ─────────────────────────────────────────────────────── */
-.mc-works-hero{padding:calc(96px + 4vh) var(--mc-pad) 0}
-.mc-works-hero .mc-display{font-size:clamp(52px,10.5vw,180px)}
-.mc-works-hero-side{margin-top:28px; display:flex; justify-content:space-between; gap:24px; flex-wrap:wrap}
-.mc-works-hero-side .mc-mono{max-width:520px}
-.mc-strip{
-  display:flex; gap:14px; overflow-x:auto; padding:36px var(--mc-pad) 8px;
-  scrollbar-width:none;
-}
-.mc-strip::-webkit-scrollbar{display:none}
-.mc-strip a{flex:0 0 auto; width:120px; text-align:center}
-.mc-strip img{width:120px; height:150px; object-fit:cover; filter:grayscale(1); transition:filter .3s ease}
-.mc-strip a:hover img{filter:none}
-.mc-strip span{display:block; margin-top:8px; font-family:var(--mc-mono); font-size:11px; letter-spacing:.1em; color:var(--mc-ink-soft)}
-
-/* Toolbar: scroll hint · categories · grid/list toggle. */
-.mc-works-toolbar{display:flex; align-items:center; justify-content:space-between; gap:16px; margin:28px var(--mc-pad) 0}
-.mc-works-toolbar .mc-mono{color:var(--mc-ink)}
-.mc-toggle{display:flex; align-items:center; gap:6px}
-.mc-toggle button{
-  display:inline-flex; align-items:center; justify-content:center;
-  width:40px; height:40px; background:none; border:1px solid transparent; border-radius:8px;
-  color:var(--mc-muted); cursor:pointer; transition:color .2s ease, border-color .2s ease;
-}
-.mc-toggle button[aria-pressed="true"]{color:var(--mc-ink); border-color:var(--mc-ink)}
-.mc-toggle button:hover{color:var(--mc-ink)}
-.mc-toggle svg{width:20px; height:20px; display:block}
-.mc-cat-btn{display:inline-flex; align-items:center; gap:8px; font:inherit; background:none; border:0; cursor:pointer; padding:0; color:var(--mc-ink)}
-.mc-cat-btn .mc-caret{transition:transform .3s ease}
-.mc-cat-btn[aria-expanded="true"] .mc-caret{transform:rotate(180deg)}
-
-/* Categories panel: the category names as very large words. */
-.mc-filter-panel{
-  overflow:hidden; max-height:0; opacity:0;
-  transition:max-height .45s cubic-bezier(.22,1,.36,1), opacity .35s ease;
-}
-.mc-filter-panel[data-open="true"]{max-height:220px; opacity:1}
-.mc-filter-words{
-  display:flex; flex-wrap:wrap; gap:clamp(12px,2.5vw,32px); align-items:baseline;
-  padding:28px var(--mc-pad) 8px;
-}
-.mc-filter-words button{
-  font:inherit; font-weight:800; line-height:1.1; letter-spacing:-.01em;
-  font-size:clamp(30px,5vw,72px); color:var(--mc-muted); background:none; border:0;
-  cursor:pointer; padding:0; transition:color .2s ease;
-}
-.mc-filter-words button:hover{color:var(--mc-ink)}
-.mc-filter-words button[aria-pressed="true"]{color:var(--mc-ink)}
-.mc-filter-words button .mc-count{font-family:var(--mc-mono); font-size:13px; font-weight:400; letter-spacing:.08em; vertical-align:super; margin-inline-start:6px}
-
-/* The checkerboard grid: two columns, deliberately staggered — the right
-   column drops down and the items alternate in size, so no two neighbours
-   align. The title sits ABOVE the image; the caption row under it. */
-.mc-grid{
-  display:grid; grid-template-columns:1fr 1fr; column-gap:clamp(20px,3vw,48px);
-  padding:48px var(--mc-pad) clamp(72px,10vh,140px);
-}
-.mc-card{min-width:0}
-.mc-card:nth-child(even){margin-top:clamp(64px,10vw,170px)}
-.mc-card-media{position:relative; overflow:hidden; background:#e4e4e4}
-.mc-card-media img{width:100%; height:100%; object-fit:cover; transition:transform .6s cubic-bezier(.22,1,.36,1)}
-.mc-card:nth-child(odd) .mc-card-media{aspect-ratio:3/4}
-.mc-card:nth-child(even) .mc-card-media{aspect-ratio:4/3}
-.mc-card:nth-child(4n+3) .mc-card-media{aspect-ratio:1/1; width:88%; margin-inline:auto}
-.mc-card a{display:block}
-.mc-card a:hover .mc-card-media img{transform:scale(1.04)}
-.mc-card-title{
-  font-weight:800; line-height:1.15; letter-spacing:-.01em;
-  font-size:clamp(26px,3vw,44px); margin-bottom:14px;
-}
-.mc-card-cap{
-  display:flex; justify-content:space-between; gap:12px;
-  padding-top:12px; font-family:var(--mc-mono); font-size:12px; letter-spacing:.1em;
-  color:var(--mc-ink-soft); text-transform:uppercase;
-}
-.mc-card a:hover .mc-card-cap .mc-card-cat{color:var(--mc-accent)}
-.mc-grid-anim .mc-card{animation:mc-card-in .55s cubic-bezier(.22,1,.36,1) both}
-.mc-grid-anim .mc-card:nth-child(2){animation-delay:.05s}
-.mc-grid-anim .mc-card:nth-child(3){animation-delay:.1s}
-.mc-grid-anim .mc-card:nth-child(4){animation-delay:.15s}
-.mc-grid-anim .mc-card:nth-child(n+5){animation-delay:.2s}
-@keyframes mc-card-in{from{opacity:0; transform:translateY(28px)} to{opacity:1; transform:none}}
-
-/* List view: full-width rows, hairline-separated; hovering a row inverts it. */
-.mc-list{padding:48px var(--mc-pad) clamp(72px,10vh,140px)}
-.mc-list-row{
-  display:grid; grid-template-columns:56px 1fr auto auto; align-items:baseline; gap:clamp(12px,2.5vw,32px);
-  padding:20px 12px; border-top:1px solid var(--mc-hair); text-decoration:none;
-  transition:background .2s ease, color .2s ease;
-}
-.mc-list-row:last-child{border-bottom:1px solid var(--mc-hair)}
-.mc-list-row:hover{background:var(--mc-ink); color:var(--mc-bg)}
-.mc-list-num{font-family:var(--mc-mono); font-size:13px; letter-spacing:.1em; color:var(--mc-muted)}
-.mc-list-row:hover .mc-list-num{color:var(--mc-bg)}
-.mc-list-title{font-weight:800; font-size:clamp(20px,2.4vw,32px); letter-spacing:-.01em; line-height:1.2}
-.mc-list-cat, .mc-list-year{font-family:var(--mc-mono); font-size:12px; letter-spacing:.1em; color:var(--mc-ink-soft); text-transform:uppercase}
-.mc-list-row:hover .mc-list-cat, .mc-list-row:hover .mc-list-year{color:var(--mc-bg)}
-.mc-works-empty{padding:64px var(--mc-pad); font-size:18px; color:var(--mc-ink-soft)}
-
-/* ── Project pages ─────────────────────────────────────────────────────── */
-.mc-proj-hero{padding:calc(96px + 4vh) var(--mc-pad) 0; text-align:center}
-.mc-proj-hero .mc-display{font-size:clamp(56px,11vw,190px)}
-.mc-proj-tag{max-width:680px; margin:28px auto 0; font-family:var(--mc-mono); font-size:14px; letter-spacing:.06em; line-height:1.9; color:var(--mc-ink-soft); text-transform:none}
-.mc-proj-hero-img{position:relative; overflow:hidden; aspect-ratio:16/9; margin:48px var(--mc-pad) 0}
-.mc-proj-hero-img img{object-fit:cover}
-.mc-proj-meta{
-  display:grid; grid-template-columns:repeat(3,1fr); gap:24px;
-  margin:0 var(--mc-pad); padding:28px 0; border-bottom:1px solid var(--mc-ink);
-}
-.mc-proj-meta dt{font-family:var(--mc-mono); font-size:12px; letter-spacing:.16em; color:var(--mc-muted); text-transform:uppercase; margin-bottom:10px}
-.mc-proj-meta dd{font-weight:700; font-size:clamp(17px,1.6vw,21px)}
-.mc-proj-statement{
-  padding:clamp(72px,10vh,140px) var(--mc-pad);
-  font-weight:800; line-height:1.3; letter-spacing:-.01em;
-  font-size:clamp(26px,3.6vw,52px); max-width:1100px;
-}
-.mc-proj-gallery{padding:0 var(--mc-pad)}
-.mc-proj-shot{margin-bottom:clamp(48px,8vh,110px)}
-.mc-proj-shot-media{position:relative; overflow:hidden}
-.mc-proj-shot-media img{object-fit:cover}
-.mc-proj-shot--wide .mc-proj-shot-media{aspect-ratio:16/10}
-.mc-proj-shot--narrow{width:min(760px,86%); margin-inline:auto}
-.mc-proj-shot--narrow .mc-proj-shot-media{aspect-ratio:4/5}
-.mc-proj-shot--full{margin-inline:calc(var(--mc-pad) * -1)}
-.mc-proj-shot--full .mc-proj-shot-media{aspect-ratio:16/9}
-.mc-proj-shot figcaption{padding-top:12px; font-family:var(--mc-mono); font-size:12px; letter-spacing:.12em; color:var(--mc-muted); text-transform:uppercase}
-/* The full-bleed shot's frame runs to the viewport edge; its caption keeps
-   the page's own inset so the text never touches the edge. */
-.mc-proj-shot--full figcaption{padding-inline:var(--mc-pad)}
-
-/* Reading / visual switch: a black pill fixed at the bottom centre. */
-.mc-view-pill{
-  position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:60;
-  display:flex; align-items:center; gap:4px; padding:5px; border-radius:999px;
-  background:var(--mc-ink); color:var(--mc-bg);
-  box-shadow:0 12px 40px rgba(0,0,0,.28);
-}
-.mc-view-pill-label{font-family:var(--mc-mono); font-size:11px; letter-spacing:.14em; padding-inline:10px 4px; color:rgba(245,245,245,.65); text-transform:uppercase}
-.mc-view-pill button{
-  font:inherit; font-family:var(--mc-mono); font-size:12px; letter-spacing:.12em;
-  background:none; border:0; border-radius:999px; padding:9px 16px; cursor:pointer;
-  color:rgba(245,245,245,.75); text-transform:uppercase; transition:background .25s ease, color .25s ease;
-}
-.mc-view-pill button[aria-pressed="true"]{background:var(--mc-bg); color:var(--mc-ink)}
-.mc-view-pill button:disabled{opacity:.45; cursor:default}
-
-/* Visual mode: only the images, one after another in a centred column,
-   with a thumbnail rail on the right edge. */
-.mc-project--visual .mc-proj-statement,
-.mc-project--visual .mc-proj-meta,
-.mc-project--visual .mc-proj-tag,
-.mc-project--visual .mc-proj-shot figcaption,
-.mc-project--visual .mc-next{display:none}
-.mc-project--visual .mc-proj-gallery{padding-top:48px}
-.mc-project--visual .mc-proj-shot{width:min(740px,100%); margin-inline:auto}
-.mc-project--visual .mc-proj-hero-img{width:min(740px,100%); margin-inline:auto}
-.mc-project--visual .mc-proj-shot--full{margin-inline:auto}
-.mc-rail{
-  position:fixed; top:50%; transform:translateY(-50%); inset-inline-end:18px; z-index:55;
-  display:none; flex-direction:column; gap:10px;
-}
-.mc-project--visual .mc-rail{display:flex}
-.mc-rail button{padding:0; background:none; border:2px solid transparent; border-radius:4px; cursor:pointer; overflow:hidden; width:56px; height:70px}
-.mc-rail button[aria-current="true"]{border-color:var(--mc-accent)}
-.mc-rail img{width:100%; height:100%; object-fit:cover}
-
-/* Next project: a huge linked block that closes the case study. */
-.mc-next-proj{display:block; border-top:1px solid var(--mc-ink); padding:clamp(72px,10vh,140px) var(--mc-pad) clamp(72px,10vh,140px)}
-.mc-next-proj .mc-next-num{margin-bottom:18px}
-.mc-next-proj-title{
-  display:block; font-weight:900; line-height:1.02; letter-spacing:-.015em;
-  font-size:clamp(52px,11vw,190px);
-}
-.mc-next-proj:hover .mc-next-proj-title{color:var(--mc-accent)}
-.mc-next-proj-media{display:block; position:relative; overflow:hidden; aspect-ratio:21/9; margin-top:36px}
-.mc-next-proj-media img{object-fit:cover}
-.mc-proj-back{display:inline-block; margin:0 var(--mc-pad); padding-top:28px; font-family:var(--mc-mono); font-size:13px; letter-spacing:.1em; color:var(--mc-ink-soft); text-transform:uppercase}
-.mc-proj-back:hover{color:var(--mc-ink)}
-
-/* ── Microcement on small screens ─────────────────────────────────────── */
-@media (max-width:680px){
-  .mc-hero{padding-top:calc(84px + 3vh)}
-  .mc-toolbar{flex-wrap:wrap}
-  .mc-services-body{grid-template-columns:1fr}
-  .mc-next{grid-template-columns:1fr}
-  .mc-vertical{flex-direction:row; flex-wrap:wrap; gap:2px; justify-content:flex-start}
-  .mc-grid{grid-template-columns:1fr; padding-top:32px}
-  .mc-card:nth-child(even){margin-top:0}
-  .mc-card{margin-bottom:44px}
-  .mc-card:nth-child(odd) .mc-card-media, .mc-card:nth-child(even) .mc-card-media{aspect-ratio:4/5}
-  .mc-card:nth-child(4n+3) .mc-card-media{width:100%}
-  .mc-list-row{grid-template-columns:40px 1fr auto; }
-  .mc-list-year{display:none}
-  .mc-proj-meta{grid-template-columns:1fr; gap:18px}
-  .mc-proj-hero-img{aspect-ratio:4/3}
-  .mc-strip a{width:96px}
-  .mc-strip img{width:96px; height:120px}
-  .mc-view-pill{bottom:14px}
-  .mc-view-pill-label{display:none}
-}
-@media (prefers-reduced-motion: reduce){
-  .mc-js [data-mc-reveal]{opacity:1; transform:none; transition:none}
-  .mc-grid-anim .mc-card{animation:none}
-  .mc-pin{height:auto}
-  .mc-pin-media{position:static; height:auto; aspect-ratio:4/3}
-  .mc-pin-title{position:static; padding:24px var(--mc-pad) 40px}
-  .mc-pin-title h3{text-shadow:none}
 }

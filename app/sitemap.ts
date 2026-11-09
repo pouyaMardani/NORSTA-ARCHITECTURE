@@ -68,21 +68,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.8,
     },
-    {
-      url: absoluteUrl("/microcement"),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: absoluteUrl("/microcement/works"),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    ...getAllProjects().map((project) => ({
-      url: absoluteUrl(`/microcement/works/${project.slug}`),
-      changeFrequency: "yearly" as const,
-      priority: 0.6,
-    })),
     ...getAllProjects().map((project) => ({
       url: absoluteUrl(`/projects/${project.slug}`),
       changeFrequency: "yearly" as const,

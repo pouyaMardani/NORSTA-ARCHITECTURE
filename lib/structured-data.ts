@@ -114,7 +114,7 @@ function lessonNode(lesson: LessonDTO): JsonLdNode {
   };
 }
 
-function projectNode(project: ProjectDTO, pagePath?: string): JsonLdNode {
+function projectNode(project: ProjectDTO): JsonLdNode {
   return {
     "@type": "CreativeWork",
     name: project.title,
@@ -134,11 +134,8 @@ function projectNode(project: ProjectDTO, pagePath?: string): JsonLdNode {
     ...(project.materials?.length ? { keywords: project.materials.join("، ") } : {}),
     mainEntityOfPage: {
       "@type": "WebPage",
-      /* One project lives on two addresses — the classic page
-         (`/projects/<slug>`) and the showcase page
-         (`/microcement/works/<slug>`) — so the page that renders this node
-         names itself; the classic page is the default. */
-      "@id": `${SITE_URL}${pagePath ?? `/projects/${project.slug}`}`,
+      /* Each project lives on one address, the classic page. */
+      "@id": `${SITE_URL}/projects/${project.slug}`,
     },
     isPartOf: { "@id": `${SITE_URL}/#website` },
   };
@@ -158,8 +155,8 @@ export function lessonJsonLd(lesson: LessonDTO): JsonLdNode {
 }
 
 /** One project page's structured data. */
-export function projectJsonLd(project: ProjectDTO, pagePath?: string): JsonLdNode {
-  return { "@context": "https://schema.org", ...projectNode(project, pagePath) };
+export function projectJsonLd(project: ProjectDTO): JsonLdNode {
+  return { "@context": "https://schema.org", ...projectNode(project) };
 }
 
 /**

@@ -19,7 +19,7 @@
  * That pair carries `placeholder: false`, is named for what it is
  * («آشپزخانه»), and prints no badge and no note.
  *
- * The other three pairs are stand-ins. The repository ships no other
+ * The other two pairs are stand-ins. The repository ships no other
  * verified before/after photography: every other still in `public/images` is
  * finished work, and pairing two of them into a "before" and an "after" would
  * be a claim about a transformation nobody photographed. So each of those
@@ -27,8 +27,7 @@
  * beside it — the badge `content/products` and `content/samples` already use
  * for their own stand-ins — and the section closes with a note that says so
  * in full. They are chosen to read as a comparison all the same: both
- * bathrooms, one light interior against one dark living room, two light
- * exterior volumes.
+ * bathrooms, and one light interior against one dark living room.
  *
  * Replacing a pair is then one edit per side: point `src` at the real original
  * and the real finished shot, write their `alt` texts, and drop
@@ -165,13 +164,6 @@ export const ABOUT_SHOWCASE: AboutShowcase = {
       after: PROJECT_IMAGES.livingRoom,
       placeholder: true,
     },
-    {
-      id: "outer-volume",
-      name: "حجم بیرونی",
-      before: PROJECT_IMAGES.teaPavilion,
-      after: PROJECT_IMAGES.culturalCenter,
-      placeholder: true,
-    },
   ],
 };
 
@@ -187,7 +179,7 @@ export function formatSampleNumber(index: number): string {
   return toPersianDigits(String(index + 1).padStart(2, "0"));
 }
 
-/** The slide counter, e.g. «۱ از ۴». `index` is zero-based. */
+/** The slide counter, e.g. «۱ از ۳». `index` is zero-based. */
 export function formatSlideCounter(index: number, total: number): string {
   return `${toPersianDigits(index + 1)} از ${toPersianDigits(total)}`;
 }
