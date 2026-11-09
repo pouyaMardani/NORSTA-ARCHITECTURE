@@ -58,9 +58,8 @@ export default function Contact() {
           </a>
         </p>
         <p className="note">
-          هر سال شمارِ محدودی پروژه می‌پذیریم؛{" "}
-          <br />
-          پروژه‌هایی که برای عمق، بستر و نیتِ مشترکشان برگزیده می‌شوند.
+          هر سال شمارِ محدودی پروژه می‌پذیریم؛ پروژه‌هایی که برای عمق، بستر و
+          نیتِ مشترکشان برگزیده می‌شوند.
         </p>
         <a
           href={SITE_INSTAGRAM_URL}
@@ -68,7 +67,7 @@ export default function Contact() {
           rel="noopener noreferrer"
           className="link-underline strong"
         >
-          آغاز گفت‌وگو &nbsp;→
+          آغاز گفت‌وگو &nbsp;←
         </a>
       </div>
 

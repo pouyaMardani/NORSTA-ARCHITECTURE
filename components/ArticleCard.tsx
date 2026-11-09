@@ -61,8 +61,8 @@ export default function ArticleCard({
           <span>{readingTimeLabel(article.readingTime)}</span>
           <span className="art-card-arrow" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
-              <path d="M4 12h16" />
-              <path d="M14 6l6 6-6 6" />
+              <path d="M20 12H4" />
+              <path d="M10 6l-6 6 6 6" />
             </svg>
           </span>
         </p>

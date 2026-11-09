@@ -14,9 +14,10 @@ import {
  * back on itself, and a one-lesson academy would render nothing at all.
  *
  * The arrows follow the site's existing convention rather than a generic one —
- * `previous` reuses the left-pointing glyph of `.post-back` ("back") and `next`
- * the right-pointing glyph of `.art-all-arrow` — so the pager matches the back
- * link at the top of the same page.
+ * `previous` reuses the right-pointing glyph of `.post-back` ("back") and `next`
+ * the left-pointing glyph of `.art-all-arrow` — so the pager matches the back
+ * link at the top of the same page. In this register back is rightwards and
+ * onwards is leftwards, so a "next" arrow that pointed right would point back.
  */
 type LessonNavProps = {
   previous: LessonDTO | null;
@@ -35,8 +36,8 @@ export default function LessonNav({ previous, next }: LessonNavProps) {
           <span className="aca-pager-dir">
             <span className="aca-pager-arrow" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
-                <path d="M20 12H4" />
-                <path d="M10 6l-6 6 6 6" />
+                <path d="M4 12h16" />
+                <path d="M14 6l6 6-6 6" />
               </svg>
             </span>
             {labels.previous}
@@ -54,8 +55,8 @@ export default function LessonNav({ previous, next }: LessonNavProps) {
             {labels.next}
             <span className="aca-pager-arrow aca-pager-arrow-forward" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
-                <path d="M4 12h16" />
-                <path d="M14 6l6 6-6 6" />
+                <path d="M20 12H4" />
+                <path d="M10 6l-6 6 6 6" />
               </svg>
             </span>
           </span>

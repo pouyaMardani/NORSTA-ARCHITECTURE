@@ -98,8 +98,8 @@ export default function MaterialsShowcase() {
                 <span className="mats-all-count">{formatProductCount(total)}</span>
                 <span className="mats-all-arrow" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
-                    <path d="M4 12h16" />
-                    <path d="M14 6l6 6-6 6" />
+                    <path d="M20 12H4" />
+                    <path d="M10 6l-6 6 6 6" />
                   </svg>
                 </span>
               </Link>
@@ -159,8 +159,8 @@ export default function MaterialsShowcase() {
                   </span>
                   <span className="mats-card-arrow" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
-                      <path d="M4 12h16" />
-                      <path d="M14 6l6 6-6 6" />
+                      <path d="M20 12H4" />
+                      <path d="M10 6l-6 6 6 6" />
                     </svg>
                   </span>
                 </Link>

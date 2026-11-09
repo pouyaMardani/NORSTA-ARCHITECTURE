@@ -143,7 +143,7 @@ export default function Craftsman() {
         </div>
 
         <a className="link-underline strong" href="#contact" data-reveal-item>
-          گفت‌وگو درباره‌ی اجرا &nbsp;→
+          گفت‌وگو درباره‌ی اجرا &nbsp;←
         </a>
       </div>
 

@@ -61,7 +61,7 @@ export default function AcademyHero() {
         <div className="aca-hero-actions" data-reveal="fade-up" data-delay="330">
           <a className="aca-btn aca-btn-solid" href="#lessons">
             {copy.ctaPrimary}
-            <span className="aca-btn-arrow" aria-hidden="true">
+            <span className="aca-btn-arrow aca-btn-arrow-down" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M12 5v14" />
                 <path d="M6 13l6 6 6-6" />
@@ -78,8 +78,8 @@ export default function AcademyHero() {
             {copy.ctaSecondary}
             <span className="aca-btn-arrow" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M7.5 16.5 16.5 7.5" />
-                <path d="M9 7.5h7.5V15" />
+                <path d="M16.5 16.5 7.5 7.5" />
+                <path d="M16.5 9v7.5H9" />
               </svg>
             </span>
           </a>

@@ -365,6 +365,11 @@ a{color:inherit;text-decoration:none}
 }
 .service-list p{
   font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-soft);max-width:380px;
+  text-align:justify;text-justify:inter-word;
+  /* Three lines, always: the longest body wraps to three, so a shorter one
+     leaves its row shorter than its neighbours. A fixed floor keeps the four
+     rows one height on every width. */
+  min-height:calc(3 * var(--lh-body) * 1em);
 }
 
 .services-edge{
@@ -956,6 +961,7 @@ a{color:inherit;text-decoration:none}
 .craft-bio{
   margin-top:30px;max-width:540px;
   font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-soft);
+  text-align:justify;text-justify:inter-word;
 }
 /* The metric reuses the Studio block, trimmed to a single figure. */
 .craft-copy .metrics{
@@ -1130,6 +1136,7 @@ a{color:inherit;text-decoration:none}
 .conn-lede{
   font-family:var(--fa);font-size:var(--fs-lede);
   line-height:1.62;color:var(--ink);max-width:32ch;
+  text-align:justify;text-justify:inter-word;
 }
 /* The studio's own address, as a printed line rather than a link: this section
    is already the page itself. */
@@ -1366,6 +1373,7 @@ a{color:inherit;text-decoration:none}
 .conn-path-copy{
   font-size:var(--fs-body);line-height:var(--lh-body);
   color:var(--ink-soft);max-width:44ch;
+  text-align:justify;text-justify:inter-word;
 }
 .conn-handle{
   margin-block-start:clamp(14px,1.6vw,22px);
@@ -1402,6 +1410,7 @@ a{color:inherit;text-decoration:none}
   background:var(--bg-2);
   font-size:var(--fs-meta);line-height:1.9;color:var(--ink-soft);
   max-width:44ch;
+  text-align:justify;text-justify:inter-word;
 }
 
 /* The strip that closes the Instagram entry: three 4/5 frames of the feed. */
@@ -1704,9 +1713,6 @@ body.menu-open{overflow:hidden}
   }
   /* Overrides the two-column span set at ≤960px, which no longer exists. */
   .service-list li p{font-size:1rem;line-height:var(--lh-body);grid-column:auto;max-width:46ch}
-  /* Authored line breaks read as orphans on a phone; the source keeps a
-     trailing space before each <br> so dropping them never joins words. */
-  .service-list p br{display:none}
 
   /* Studio */
   .about{padding-top:96px;padding-bottom:110px}
@@ -1960,6 +1966,7 @@ body.menu-open{overflow:hidden}
   max-width:54ch;
   font-size:clamp(16px,1.15vw,19px);line-height:1.9;
   color:var(--art-ink-soft);
+  text-align:justify;text-justify:inter-word;
 }
 
 /* The link to the archive: an underlined label with a live arrow. */
@@ -2051,6 +2058,7 @@ body.menu-open{overflow:hidden}
 .art-card-link::after{content:"";position:absolute;inset:0;z-index:3}
 .art-card-excerpt{
   font-size:var(--fs-body);line-height:1.8;color:var(--art-ink-soft);
+  text-align:justify;text-justify:inter-word;
   /* Clamped to three lines so every card in a row stays the same height. */
   display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;
   line-clamp:3;overflow:hidden;
@@ -2485,6 +2493,7 @@ body.menu-open{overflow:hidden}
 .pcard-desc{
   font-size:var(--fs-meta);line-height:1.7;
   color:var(--mrq-ink-soft);unicode-bidi:isolate;
+  text-align:justify;text-justify:inter-word;
   display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
   line-clamp:2;overflow:hidden;
 }
@@ -2707,8 +2716,9 @@ body.menu-open{overflow:hidden}
 }
 .pj-back-arrow svg{width:100%;height:100%}
 .pj-back:hover{color:var(--ink);background:var(--bg)}
-/* Going back is travelling the other way in a right-to-left register. */
-.pj-back:hover .pj-back-arrow{transform:translate3d(-4px,0,0)}
+/* Going back is travelling the other way in a right-to-left register: back is
+   rightwards, the opposite of onwards. */
+.pj-back:hover .pj-back-arrow{transform:translate3d(4px,0,0)}
 .pj-back:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 
 .pj-cat{
@@ -3157,8 +3167,11 @@ body.lb-open .to-top{
 @media (hover:hover){
   .aca-btn-solid:hover{background:var(--aca-accent);border-color:var(--aca-accent)}
   .aca-btn-ghost:hover{border-color:var(--aca-ink)}
-  /* Both arrows travel to the left: in this register onwards is leftwards. */
-  .aca-btn:hover .aca-btn-arrow{transform:translate3d(-4px,0,0)}
+  /* The external arrow points up and out to the left: in this register out of
+     the page is up-leftwards. The down arrow travels down instead (see
+     `.aca-btn-arrow-down` below). */
+  .aca-btn:hover .aca-btn-arrow{transform:translate3d(-4px,-4px,0)}
+  .aca-btn:hover .aca-btn-arrow-down{transform:translate3d(0,4px,0)}
 }
 /* ---------- The home-page block ----------
    It is not a banner: it is an index of what the academy contains — the three
@@ -3194,6 +3207,7 @@ body.lb-open .to-top{
   max-width:52ch;
   font-size:clamp(16px,1.15vw,19px);line-height:1.9;
   color:var(--aca-ink-soft);
+  text-align:justify;text-justify:inter-word;
 }
 
 /* The link into the academy: the magazine's underlined label, with the count
@@ -3260,6 +3274,12 @@ body.lb-open .to-top{
 .aca-index-summary{
   margin-top:10px;max-width:70ch;
   font-size:var(--fs-body);line-height:1.8;color:var(--aca-ink-soft);
+  text-align:justify;text-justify:inter-word;
+  /* Clamped to three lines so the rows stay one height on a phone, where the
+     first lesson's summary used to wrap to five and stand a head taller than
+     its neighbours — the same reason the magazine and project cards clamp. */
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;
+  line-clamp:3;overflow:hidden;
 }
 .aca-index-arrow{
   display:inline-flex;width:1.15em;height:1.15em;
@@ -4936,8 +4956,9 @@ html:has(body.mv-open){overflow:hidden}
 @media (hover:hover){
   .prd-btn-solid:hover{background-color:#0f0e0b}
   .prd-btn-ghost:hover{border-color:var(--prd-ink);background-color:rgba(29,28,24,.05)}
-  /* The diagonal arrow points out of the page, so it travels up and out. */
-  .prd-btn:hover .prd-btn-arrow{transform:translate3d(3px,-3px,0)}
+  /* The diagonal arrow points out of the page, so it travels up and out — to
+     the left, in this register. */
+  .prd-btn:hover .prd-btn-arrow{transform:translate3d(-3px,-3px,0)}
 }
 
 /* =====================================================================
@@ -5339,7 +5360,7 @@ html:has(body.mv-open){overflow:hidden}
 @media (hover:hover){
   /* As on the showcase's cards: the rule darkens, the label stays legible. */
   .pdc-cta:hover{border-top-color:var(--prd-ink)}
-  .pdc-cta:hover .pdc-cta-arrow{transform:translate3d(3px,-3px,0)}
+  .pdc-cta:hover .pdc-cta-arrow{transform:translate3d(-3px,-3px,0)}
   .pdc:hover{transform:translateY(-6px);box-shadow:0 34px 60px -28px rgba(29,28,24,.5)}
   .pdc:hover .pdc-media img{transform:scale(1.05)}
 }
