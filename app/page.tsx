@@ -14,6 +14,7 @@ import MicrocementSamples from "@/components/MicrocementSamples";
 import Nav from "@/components/Nav";
 import Process from "@/components/Process";
 import SectionDivider from "@/components/SectionDivider";
+import SectionNav from "@/components/SectionNav";
 import Services from "@/components/Services";
 import SiteInteractions from "@/components/SiteInteractions";
 import Work from "@/components/Work";
@@ -69,6 +70,7 @@ export default function Page() {
       </main>
       <Lightbox />
       <Footer />
+      <SectionNav />
       <SiteInteractions />
     </>
   );

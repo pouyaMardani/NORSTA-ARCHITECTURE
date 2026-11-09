@@ -1048,6 +1048,114 @@ a{color:inherit;text-decoration:none}
 }
 .divider[data-tone="dark"]::after{background:var(--bg);opacity:.7}
 
+/* ============== SECTION NAVIGATOR ============== */
+/*
+ * The home page's own index, on the right edge.
+ *
+ * At rest it is a single circle — a list mark with a thin ring that fills as
+ * the page is read. A finger (or a hover) opens it into a vertical track of
+ * one dot per home section; dragging up and down the track glides the page to
+ * the section under the finger, and the section's name rides beside the track
+ * only while the widget is open, so the page itself stays unlabelled.
+ * Releasing the track folds it back into the circle.
+ *
+ * The pill grows from 48px to its open height, and the dots spread by
+ * `space-between`, so the track reads as the circle unfolding rather than as
+ * a second element appearing. The label slides in from the pill. The dots
+ * follow the page even while closed (a scroll spy in the component), so
+ * opening it always lands on the section the reader is already in.
+ *
+ * The widget lives under the dialogs (z-90 against their z-120), so it never
+ * floats over the image viewer or the video player, and it is home-only: it
+ * is mounted in `app/page.tsx`, nowhere else.
+ */
+.secnav{
+  /* Physical `right`, not `inset-inline-end`: the widget sits on the screen's
+     right edge in either direction — the `direction:rtl` below only orders the
+     pill (against the edge) and the label (reaching left into the page).
+     `touch-action:none` is what makes the drag the widget's own: without it
+     the browser takes a vertical drag over for a native page scroll, fires
+     `pointercancel`, and the track stops following the finger. */
+  position:fixed;right:14px;top:50%;transform:translateY(-50%);
+  z-index:90;display:flex;align-items:center;gap:10px;direction:rtl;
+  touch-action:none;
+}
+.secnav-pill{
+  position:relative;width:48px;height:48px;border-radius:999px;
+  background:var(--bg);border:1px solid var(--hair);
+  box-shadow:0 14px 34px -16px rgba(29,28,24,.45);
+  transition:height .38s cubic-bezier(.22,.61,.36,1),box-shadow .38s ease;
+}
+.secnav[data-open="true"] .secnav-pill{
+  height:clamp(200px,34svh,340px);
+  box-shadow:0 22px 48px -20px rgba(29,28,24,.5);
+}
+.secnav-btn{
+  position:absolute;top:0;left:0;width:100%;height:48px;
+  border:0;border-radius:50%;background:transparent;color:var(--ink);
+  cursor:pointer;display:grid;place-items:center;
+  opacity:1;transform:scale(1);
+  transition:opacity .25s ease,transform .25s ease;
+}
+.secnav[data-open="true"] .secnav-btn{
+  opacity:0;transform:scale(.6);pointer-events:none;
+}
+.secnav-ring{
+  position:absolute;inset:0;width:100%;height:100%;
+  transform:rotate(-90deg);pointer-events:none;
+}
+.secnav-ring-track{fill:none;stroke:var(--hair);stroke-width:1.5}
+.secnav-ring-fill{fill:none;stroke:#c9ab84;stroke-width:1.5;stroke-linecap:round}
+.secnav-glyph{position:relative;width:20px;height:20px;z-index:1}
+.secnav-track{
+  position:absolute;inset:0;list-style:none;margin:0;padding:15px 0;
+  display:flex;flex-direction:column;justify-content:space-between;align-items:center;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .25s ease,visibility 0s linear .25s;
+}
+.secnav[data-open="true"] .secnav-track{
+  opacity:1;visibility:visible;pointer-events:auto;
+  transition:opacity .3s ease .12s,visibility 0s linear 0s;
+}
+.secnav-track li{display:flex}
+.secnav-dot{
+  width:6px;height:6px;border:0;border-radius:50%;padding:0;cursor:pointer;
+  background:var(--muted);opacity:.55;
+  transition:transform .25s cubic-bezier(.22,.61,.36,1),
+             background-color .25s ease,opacity .25s ease,box-shadow .25s ease;
+}
+.secnav-dot:hover{opacity:1;transform:scale(1.4)}
+.secnav-dot[data-active="true"]{
+  background:#c9ab84;opacity:1;transform:scale(1.6);
+  box-shadow:0 0 0 3px rgba(201,171,132,.25);
+}
+.secnav-dot:focus-visible{outline:2px solid #c9ab84;outline-offset:3px}
+.secnav-label{
+  /* Absolutely placed against the pill, at the active dot's height — the top
+     is set from the dot itself (see the component), so the name rides the
+     finger the way a phonebook index's letter does. */
+  position:absolute;right:calc(100% + 10px);top:50%;
+  pointer-events:none;white-space:nowrap;
+  background:var(--ink);color:var(--bg);
+  font-family:var(--fa);font-size:var(--fs-meta);line-height:1.4;
+  padding:.55em 1em;border-radius:999px;
+  box-shadow:0 12px 28px -12px rgba(29,28,24,.5);
+  opacity:0;transform:translateY(-50%) translateX(10px);
+  transition:opacity .25s ease,
+             transform .25s cubic-bezier(.22,.61,.36,1),
+             top .25s cubic-bezier(.22,.61,.36,1);
+}
+.secnav[data-open="true"] .secnav-label{opacity:1;transform:translateY(-50%) translateX(0)}
+@media (max-width:680px){
+  .secnav{right:10px}
+}
+@media print{.secnav{display:none}}
+@media (prefers-reduced-motion:reduce){
+  .secnav-pill,.secnav-btn,.secnav-track,.secnav-label,.secnav-dot{
+    transition:none;
+  }
+}
+
 /* ============== FOOT ============== */
 .foot{
   display:flex;justify-content:space-between;align-items:center;
