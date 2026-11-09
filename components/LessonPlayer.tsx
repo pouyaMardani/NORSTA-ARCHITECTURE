@@ -1,7 +1,12 @@
-import Image from "next/image";
+"use client";
 
+import Image from "next/image";
+import { useCallback, useRef, useState } from "react";
+
+import VideoPlayer from "@/components/VideoPlayer";
 import {
   ACADEMY_CONFIG,
+  formatLessonDuration,
   resolveLessonVideo,
   type LessonDTO,
 } from "@/content/academy";
@@ -16,8 +21,9 @@ import {
  * instead of rendering a player that cannot play.
  *
  * The source is rendered faithfully rather than guessed at:
- *   · `kind:"file"`    → a native `<video>` with controls and a poster that
- *                        falls back to the lesson's own cover;
+ *   · `kind:"file"`    → the lesson's own cover with a play button; pressing it
+ *                        opens the custom player — a dialog in the image
+ *                        viewer's own register — which plays the file;
  *   · `kind:"embed"`   → a titled `<iframe>`, lazily loaded, so a third-party
  *                        player costs nothing until the reader reaches it.
  *
@@ -31,6 +37,15 @@ import {
  */
 export default function LessonPlayer({ lesson }: { lesson: LessonDTO }) {
   const video = resolveLessonVideo(lesson);
+  const [open, setOpen] = useState(false);
+  const playButton = useRef<HTMLButtonElement | null>(null);
+
+  // Closing hands the focus back to the play button that opened the player, so
+  // a keyboard reader lands exactly where they left the page.
+  const close = useCallback(() => {
+    setOpen(false);
+    requestAnimationFrame(() => playButton.current?.focus());
+  }, []);
 
   if (!video) {
     const { labels } = ACADEMY_CONFIG;
@@ -64,23 +79,55 @@ export default function LessonPlayer({ lesson }: { lesson: LessonDTO }) {
   }
 
   if (video.kind === "file") {
+    const { labels } = ACADEMY_CONFIG;
+    const duration = formatLessonDuration(lesson.durationMinutes);
+
     return (
-      <div className="aca-player">
-        <video
-          className="aca-video"
-          controls
-          preload="metadata"
-          playsInline
-          poster={video.poster ?? lesson.coverImage.src}
+      <>
+        {/* The whole plate is the play button: the cover, a veil for contrast,
+            the play disc and the two badges. It is a plain block button — no
+            flex — so the button's own user-agent `align-items` can never
+            shrink-wrap its children the way it did to the gallery's frames. */}
+        <button
+          type="button"
+          className="aca-player aca-player-play"
+          ref={playButton}
+          onClick={() => setOpen(true)}
+          aria-label={`${labels.playVideo}: ${lesson.title}`}
         >
-          <source src={video.src} type={video.mimeType} />
-          {/* The fallback is a link, so a browser that cannot play the file still
-              gives the reader a way to the media. */}
-          <a className="aca-video-fallback" href={video.src} target="_blank" rel="noopener noreferrer">
-            {lesson.title}
-          </a>
-        </video>
-      </div>
+          <span className="aca-player-cover" aria-hidden="true">
+            <Image
+              src={lesson.coverImage.src}
+              alt=""
+              fill
+              sizes="(max-width: 900px) 100vw, 900px"
+              style={{ objectFit: "cover" }}
+            />
+          </span>
+          <span className="aca-player-veil" aria-hidden="true" />
+          <span className="aca-player-playbtn" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8.5 5.8v12.4c0 .9 1 1.5 1.8 1L19 13a1.2 1.2 0 0 0 0-2L10.3 4.8c-.8-.5-1.8.1-1.8 1Z" />
+            </svg>
+          </span>
+          <span className="aca-player-badges" aria-hidden="true">
+            {duration ? (
+              <span className="aca-player-duration">{duration}</span>
+            ) : null}
+            <span className="aca-player-test">{labels.testVideo}</span>
+          </span>
+        </button>
+
+        {open ? (
+          <VideoPlayer
+            video={video}
+            title={lesson.title}
+            poster={video.poster ?? lesson.coverImage.src}
+            labels={labels}
+            onClose={close}
+          />
+        ) : null}
+      </>
     );
   }
 

@@ -3745,6 +3745,321 @@ body.lb-open .to-top{
   font-size:var(--fs-meta);line-height:1.95;color:var(--aca-ink-soft);
 }
 
+/* ---------- The lesson's play plate ----------
+   The cover with a play disc on it: the whole plate is the button, so the
+   lesson is one large, unmissable tap target. The children are all absolutely
+   positioned over a plain block button — no flex — so the button's own
+   user-agent `align-items` can never shrink-wrap them the way it did to the
+   gallery's frames. */
+.aca-player-play{
+  display:block;width:100%;aspect-ratio:16/9;
+  padding:0;font-family:var(--fa);text-align:start;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.aca-player-play:focus-visible{outline:2px solid var(--aca-accent);outline-offset:4px}
+.aca-player-cover{position:absolute;inset:0}
+.aca-player-cover img{transition:transform 1.2s cubic-bezier(.22,.61,.36,1)}
+.aca-player-veil{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(58% 58% at 50% 50%, rgba(16,14,11,.42), rgba(16,14,11,.72)),
+    linear-gradient(180deg, rgba(16,14,11,.12), rgba(16,14,11,0) 32%, rgba(16,14,11,0) 62%, rgba(16,14,11,.55));
+}
+.aca-player-playbtn{
+  position:absolute;left:50%;top:50%;z-index:2;
+  display:grid;place-items:center;
+  width:76px;height:76px;margin:-38px 0 0 -38px;
+  border-radius:50%;
+  background:rgba(243,233,222,.95);color:#171310;
+  box-shadow:0 18px 44px -12px rgba(0,0,0,.85);
+  transition:transform .45s cubic-bezier(.22,.61,.36,1), background-color .45s ease;
+}
+.aca-player-playbtn svg{width:30px;height:30px;margin-inline-start:3px}
+.aca-player-badges{
+  position:absolute;inset-block-end:14px;inset-inline-start:14px;z-index:2;
+  display:flex;align-items:center;gap:8px;
+}
+.aca-player-duration,
+.aca-player-test{
+  padding:.35em .8em;border-radius:999px;
+  font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  white-space:nowrap;
+}
+.aca-player-duration{background:rgba(12,10,8,.72);color:var(--aca-ink)}
+.aca-player-test{background:rgba(201,171,132,.94);color:#161310}
+@media (hover:hover){
+  .aca-player-play:hover .aca-player-cover img{transform:scale(1.04)}
+  .aca-player-play:hover .aca-player-playbtn{transform:scale(1.07);background:var(--aca-accent)}
+}
+
+/* =====================================================================
+   VIDEO PLAYER  (the lesson dialog, in the image viewer's own register)
+
+   Layout contract
+   ──────────────
+   • `.vp`          the fixed overlay: scrim + dialog
+   • `.vp-dialog`   the panel: bar, stage, controls
+   • `.vp-stage`    the picture, the spinner, the big play disc, the hints
+   • `.vp-controls` the seek bar and the row of options
+   • `.vp-speed`    the playback-rate menu
+
+   The dialog is the image viewer's sibling, not its child: the same charcoal,
+   the same ivory, the same hairlines, the same 42px round close control and the
+   same entrance — so watching a lesson feels like opening a sample. What the
+   viewer does with a pinch and a drag, this dialog does with a seek bar, skip
+   buttons and a speed menu.
+
+   The seek bar fills from the inline start (the right edge, in this register),
+   and the time bubble and the knob are centred on their point with a
+   `translateX(50%)` — the mirror of the left-to-right player's `translateX(-50%)`.
+   ===================================================================== */
+
+.vp{
+  position:fixed;inset:0;z-index:120;
+  display:grid;place-items:center;
+  padding:clamp(12px,2.4vw,32px);
+}
+.vp-scrim{
+  position:absolute;inset:0;
+  background:rgba(10,9,7,.93);
+  -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+  animation:vp-fade .3s ease both;
+}
+.vp-dialog{
+  position:relative;
+  display:grid;grid-template-rows:auto minmax(0,1fr) auto;
+  width:min(1280px,100%);
+  height:min(100%,calc(100vh - clamp(24px,4.8vw,64px)));
+  overflow:hidden;
+  background:var(--aca-bg-2);
+  border:1px solid var(--aca-hair);
+  border-radius:clamp(16px,1.6vw,24px);
+  box-shadow:0 60px 120px -50px rgba(0,0,0,.95), inset 0 1px 0 rgba(243,233,222,.06);
+  animation:vp-rise .42s cubic-bezier(.22,.61,.36,1) both;
+}
+@keyframes vp-fade{from{opacity:0}}
+@keyframes vp-rise{from{opacity:0;transform:translate3d(0,16px,0) scale(.99)}}
+/* `dvh` where the browser has it: a mobile URL bar that slides away must not
+   leave the dialog taller than the window it is centred in. */
+@supports (height:100dvh){
+  .vp-dialog{height:min(100%,calc(100dvh - clamp(24px,4.8vw,64px)))}
+}
+/* Fullscreen is the dialog itself, so it drops its frame and fills the screen. */
+.vp-dialog:fullscreen{width:100%;height:100%;border:0;border-radius:0}
+
+/* ---------- Bar ---------- */
+.vp-bar{
+  display:flex;align-items:center;gap:14px;
+  padding:clamp(12px,1.4vw,16px) clamp(14px,1.8vw,22px);
+  border-bottom:1px solid var(--aca-hair);
+}
+.vp-title{
+  flex:1;min-width:0;
+  font-family:var(--fa);font-weight:600;
+  font-size:clamp(15px,1.2vw,18px);line-height:var(--lh-heading);
+  color:var(--aca-ink);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.vp-badge{
+  flex:none;padding:.35em .8em;border-radius:999px;
+  background:rgba(201,171,132,.16);border:1px solid rgba(201,171,132,.5);
+  color:var(--aca-accent);
+  font-family:var(--fa);font-size:var(--fs-caption);letter-spacing:var(--track-meta);
+  white-space:nowrap;
+}
+.vp-tools{display:flex;align-items:center;gap:8px;flex:none}
+.vp-close{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:42px;height:42px;flex:none;
+  border:1px solid var(--aca-hair);border-radius:50%;
+  background:transparent;color:var(--aca-ink);
+  cursor:pointer;
+  transition:background-color .25s ease,border-color .25s ease,transform .25s ease;
+}
+.vp-close svg{width:19px;height:19px}
+.vp-close:hover{background:rgba(243,233,222,.1);border-color:var(--aca-hair-2);transform:scale(1.05)}
+.vp-close:focus-visible{outline:2px solid var(--aca-accent);outline-offset:3px}
+
+/* ---------- Stage ---------- */
+.vp-stage{
+  position:relative;min-height:0;
+  background:#0c0a08;
+  overflow:hidden;
+}
+.vp-video{display:block;width:100%;height:100%;object-fit:contain;background:#000;cursor:pointer}
+.vp-spinner{
+  position:absolute;left:50%;top:50%;z-index:2;
+  width:44px;height:44px;margin:-22px 0 0 -22px;
+  border-radius:50%;
+  border:2px solid rgba(243,233,222,.25);border-top-color:var(--aca-accent);
+  animation:vp-spin .8s linear infinite;pointer-events:none;
+}
+@keyframes vp-spin{to{transform:rotate(360deg)}}
+.vp-bigplay{
+  position:absolute;left:50%;top:50%;z-index:3;
+  display:grid;place-items:center;
+  width:76px;height:76px;margin:-38px 0 0 -38px;
+  border:0;border-radius:50%;
+  background:rgba(243,233,222,.95);color:#171310;
+  cursor:pointer;
+  box-shadow:0 18px 44px -12px rgba(0,0,0,.85);
+  transition:transform .35s cubic-bezier(.22,.61,.36,1), background-color .35s ease;
+}
+.vp-bigplay svg{width:30px;height:30px;margin-inline-start:3px}
+.vp-bigplay:hover{transform:scale(1.07);background:var(--aca-accent)}
+.vp-bigplay:focus-visible{outline:2px solid var(--aca-accent);outline-offset:4px}
+.vp-hints{
+  position:absolute;inset-block-end:16px;left:50%;transform:translateX(-50%);z-index:2;
+  padding:.55em 1em;border-radius:999px;
+  background:rgba(12,10,8,.62);
+  font-family:var(--fa);font-size:var(--fs-caption);color:var(--aca-muted);
+  white-space:nowrap;
+  transition:opacity .7s ease;
+}
+/* The hints have done their job the moment the picture has been touched. */
+.vp[data-touched="true"] .vp-hints{opacity:0}
+.vp-error{
+  position:absolute;inset:0;z-index:4;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  padding:24px;text-align:center;
+  background:rgba(12,10,8,.72);
+}
+.vp-error p{font-size:var(--fs-meta);line-height:1.9;color:var(--aca-ink-soft)}
+.vp-retry{
+  display:inline-flex;padding:.7em 1.4em;
+  border:1px solid var(--aca-hair-2);border-radius:999px;
+  background:transparent;color:var(--aca-ink);
+  font-family:var(--fa);font-size:var(--fs-meta);
+  cursor:pointer;
+  transition:background-color .25s ease,border-color .25s ease;
+}
+.vp-retry:hover{background:rgba(243,233,222,.08);border-color:var(--aca-ink)}
+.vp-retry:focus-visible{outline:2px solid var(--aca-accent);outline-offset:3px}
+
+/* ---------- Controls ---------- */
+.vp-controls{
+  padding:clamp(10px,1.2vw,14px) clamp(14px,1.8vw,22px) clamp(12px,1.4vw,16px);
+  border-top:1px solid var(--aca-hair);
+  background:var(--aca-bg-2);
+}
+.vp-bar,.vp-controls{transition:opacity .4s ease}
+/* While the picture plays, the chrome gets out of the way after three seconds
+   without a movement; any movement brings it back. */
+.vp[data-controls="hidden"] .vp-bar,
+.vp[data-controls="hidden"] .vp-controls{opacity:0;pointer-events:none}
+.vp[data-controls="hidden"] .vp-stage{cursor:none}
+
+/* The seek bar: a 22px hit area around a 4px track, so a thumb can grab it and
+   a cursor cannot miss it. */
+.vp-seek{
+  position:relative;height:22px;
+  cursor:pointer;touch-action:none;
+}
+.vp-seek:focus-visible{outline:2px solid var(--aca-accent);outline-offset:4px;border-radius:6px}
+.vp-seek-track,.vp-seek-buffered,.vp-seek-played{
+  position:absolute;inset-inline-start:0;top:50%;
+  height:4px;margin-top:-2px;border-radius:999px;
+}
+.vp-seek-track{inset-inline:0;background:rgba(243,233,222,.18)}
+.vp-seek-buffered{background:rgba(243,233,222,.35)}
+.vp-seek-played{background:var(--aca-accent)}
+.vp-seek-knob{
+  position:absolute;top:50%;
+  width:14px;height:14px;margin-top:-7px;
+  transform:translateX(50%);
+  border-radius:50%;background:var(--aca-ink);
+  box-shadow:0 1px 6px rgba(0,0,0,.6);
+  opacity:0;transition:opacity .25s ease;
+  pointer-events:none;
+}
+.vp-seek:hover .vp-seek-knob,
+.vp-seek:focus-visible .vp-seek-knob{opacity:1}
+.vp-seek-bubble{
+  position:absolute;bottom:22px;
+  transform:translateX(50%);
+  padding:.3em .6em;border-radius:8px;
+  background:rgba(243,233,222,.94);color:#171310;
+  font-family:var(--fa);font-size:var(--fs-caption);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+  opacity:0;pointer-events:none;
+  transition:opacity .2s ease;
+}
+.vp-seek-bubble[data-visible="true"]{opacity:1}
+
+.vp-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}
+.vp-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:40px;height:40px;flex:none;
+  border:1px solid transparent;border-radius:50%;
+  background:transparent;color:var(--aca-ink);
+  font-family:var(--fa);font-size:var(--fs-meta);
+  cursor:pointer;
+  transition:background-color .25s ease,color .25s ease;
+}
+.vp-btn svg{width:20px;height:20px}
+.vp-btn:hover{background:rgba(243,233,222,.08)}
+.vp-btn:focus-visible{outline:2px solid var(--aca-accent);outline-offset:3px}
+.vp-time{
+  margin-inline-start:6px;
+  font-size:var(--fs-caption);color:var(--aca-muted);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.vp-spacer{flex:1}
+.vp-volume{display:inline-flex;align-items:center;gap:2px;flex:none}
+.vp-volume-range{width:84px;accent-color:var(--aca-accent);cursor:pointer}
+.vp-speed{position:relative;display:inline-flex;flex:none}
+.vp-speed-btn{
+  width:auto;min-width:52px;padding:0 .7em;
+  border:1px solid var(--aca-hair);border-radius:999px;
+  font-size:var(--fs-caption);
+}
+.vp-speed-menu{
+  position:absolute;bottom:calc(100% + 10px);inset-inline-end:0;z-index:6;
+  display:flex;flex-direction:column;min-width:96px;
+  padding:6px;
+  border:1px solid var(--aca-hair);border-radius:12px;
+  background:#1d1915;
+  box-shadow:0 18px 40px -12px rgba(0,0,0,.8);
+}
+.vp-speed-item{
+  display:block;width:100%;padding:8px 14px;
+  border:0;border-radius:8px;
+  background:transparent;color:var(--aca-ink-soft);
+  font-family:var(--fa);font-size:var(--fs-meta);text-align:start;
+  cursor:pointer;
+}
+.vp-speed-item:hover{background:rgba(243,233,222,.08)}
+.vp-speed-item[aria-checked="true"]{background:rgba(201,171,132,.16);color:var(--aca-accent)}
+
+/* The page behind the player does not scroll while it is open — the same lock
+   the site's lightbox and image viewer take. */
+body.vp-open{overflow:hidden;overscroll-behavior:none}
+html:has(body.vp-open){overflow:hidden}
+
+/* ---------- Responsive ----------
+   Full-bleed on a phone, and a row that fits a thumb: the volume slider and the
+   picture-in-picture button step aside, the buttons shrink, and the row is
+   allowed to wrap rather than pushing anything off the panel. */
+@media (max-width:640px){
+  .vp{padding:0}
+  .vp-dialog{width:100%;height:100%;border:0;border-radius:0}
+  .vp-bar,.vp-controls{padding-inline:16px}
+  .vp-hints{font-size:11px;padding:.45em .8em}
+  .vp-btn{width:36px;height:36px}
+  .vp-btn svg{width:18px;height:18px}
+  .vp-volume-range{display:none}
+  .vp-btn[aria-label="تصویر در تصویر"]{display:none}
+}
+
+/* ---------- Reduced motion ----------
+   The site-wide block near the top of this file already flattens every
+   transition and animation to nothing. What is left for this dialog is its own
+   entrance, which is an animation on an element that does not exist until it is
+   opened. */
+@media (prefers-reduced-motion: reduce){
+  .vp-scrim,.vp-dialog{animation:none}
+}
+
 /* ---------- The sequence controls ----------
    Two plates at the foot of a lesson: the previous lesson on the reading side
    and the next one opposite. Both ends of the sequence are nullable, so the

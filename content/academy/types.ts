@@ -225,6 +225,27 @@ export type AcademyLabels = {
   /** The placeholder shown while a lesson has no recording. */
   videoSoonTitle: string;
   videoSoonBody: string;
+  /** The player: the dialog that opens from a lesson's play button. */
+  play: string;
+  pause: string;
+  skipBack: string;
+  skipForward: string;
+  mute: string;
+  unmute: string;
+  speed: string;
+  fullscreen: string;
+  exitFullscreen: string;
+  pip: string;
+  closePlayer: string;
+  seek: string;
+  volume: string;
+  playVideo: string;
+  /** Badge printed on a lesson whose video is a stand-in for the real recording. */
+  testVideo: string;
+  playerLoading: string;
+  playerError: string;
+  playerRetry: string;
+  playerHint: string;
   /** The instructor's credit line, e.g. «مدرس: افسانه مردانی». */
   instructorBy: string;
   /** The label above the collection's purchase note. */

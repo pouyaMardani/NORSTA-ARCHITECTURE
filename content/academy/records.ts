@@ -20,10 +20,19 @@
  * videos. Each one is written as what the lesson introduces, and no record
  * claims a runtime, a recording date or a delivered outcome.
  *
- * ── Adding a video (and a duration) later ───────────────────────────────────
- * Both fields are simply absent below, which is what makes the lesson pages show
- * their own "coming soon" panel instead of an empty player. When a recording
- * exists, add it to that lesson's record and nothing else has to change:
+ * ── The test video ─────────────────────────────────────────────────────────
+ * The studio has not filmed its own lessons yet, so the three records below
+ * share one stand-in recording: a Pexels clip (free to use, Pexels licence) of
+ * a craftsman plastering a ceiling with a trowel — the same gesture the lessons
+ * teach. It is labelled «ویدیوی آزمایشی» wherever it plays, it is 43 seconds
+ * long (which is why every record carries `durationMinutes: 1`), and it is
+ * hotlinked from Pexels' own CDN, so no binary is stored in this repository.
+ *
+ * Source page: https://www.pexels.com/video/a-man-renovating-a-ceiling-9807763/
+ * (Arsel Ozgurdal, "A Man Renovating a Ceiling", 1280×720, H.264 + AAC, 30fps,
+ * 12.3 MB). Replacing it with the studio's own recording is one edit per
+ * record: point `video.src` at the real file, correct the duration, and drop
+ * the test badge by giving that lesson its own video instead of `TEST_VIDEO`.
  *
  *   video: { kind: "file", src: "/videos/lesson-01.mp4" },
  *   // or, for a provider's player page:
@@ -35,7 +44,14 @@
  */
 
 import { ACADEMY_IMAGES } from "./config";
-import type { LessonDTO } from "./types";
+import type { LessonDTO, LessonVideoDTO } from "./types";
+
+/** The one test recording every lesson plays until the studio films its own. */
+const TEST_VIDEO: LessonVideoDTO = {
+  kind: "file",
+  src: "https://videos.pexels.com/video-files/9807763/9807763-hd_1280_720_30fps.mp4",
+  mimeType: "video/mp4",
+};
 
 export const LESSONS: LessonDTO[] = [
   {
@@ -55,6 +71,8 @@ export const LESSONS: LessonDTO[] = [
       "چه انتظاری از این متریال منطقی است و چه انتظاری نیست",
     ],
     coverImage: ACADEMY_IMAGES.microcementDetail,
+    video: TEST_VIDEO,
+    durationMinutes: 1,
     access: "free",
     seoTitle: "میکروسمنت چیست؟ درس آغازین آکادمی نورستا",
     seoDescription:
@@ -77,6 +95,8 @@ export const LESSONS: LessonDTO[] = [
       "اشتباههای رایج در انتخاب ابزار و متریال",
     ],
     coverImage: ACADEMY_IMAGES.materials,
+    video: TEST_VIDEO,
+    durationMinutes: 1,
     access: "free",
     seoTitle: "ابزار و متریال میکروسمنت | درس آغازین آکادمی نورستا",
     seoDescription:
@@ -99,6 +119,8 @@ export const LESSONS: LessonDTO[] = [
       "شرایطی که باید پیش از شروع، متوقف شد",
     ],
     coverImage: ACADEMY_IMAGES.substrate,
+    video: TEST_VIDEO,
+    durationMinutes: 1,
     access: "free",
     seoTitle: "آماده‌سازی زیرکار و شروع اجرا | درس آغازین آکادمی نورستا",
     seoDescription:
