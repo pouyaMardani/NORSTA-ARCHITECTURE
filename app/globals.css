@@ -604,107 +604,220 @@ a{color:inherit;text-decoration:none}
 
 /* ============== CRAFT MASTER ============== */
 /*
- * The craftsman section: an asymmetric plate on the left, the person's details
- * on the right, on the deeper `--bg-2` so the block reads as its own register
- * between the projects and the contact copy.
+ * The craftsman section — a scroll-driven portrait stage.
  *
- * The plate is content-agnostic on purpose. `--craft-radius` shapes the figure
- * *and* the hairline ghost frame displaced behind it, `--craft-offset` is that
- * displacement, and both travel together at every width. A photograph is cropped
- * by `object-fit:cover` inside the fixed 4/5 box, so any replacement image lands
- * in exactly the same silhouette without a stylesheet change.
+ * A tall dark room (320svh) with one sticky viewport inside it. Scrolling
+ * through the room drives the portrait's zoom, rise and tilt, the glow, the
+ * name's masked rise and the copy's arrival — and scrolling back reverses
+ * them all, because every value is a function of the room's position, never
+ * a one-way trigger. Two infinite marquees run along the room's top and
+ * bottom in opposite directions.
+ *
+ * The room is dark (#100e0b, the site's own dark ground) so the light and
+ * shadow read: the warm portrait and the ivory name sit in a pool of light.
+ * The plate keeps its established silhouette (--craft-radius shapes the
+ * figure and the ghost frame together; --craft-offset is their displacement),
+ * and the photograph is cropped by object-fit:cover inside the fixed 4/5
+ * box, so a replacement image lands in exactly the same silhouette.
+ *
+ * Without scripting the custom properties below hold their settled values,
+ * so the room reads as plain content; the marquees are pure CSS and run
+ * regardless. Below 960px the room stops being a pinned stage and flows as
+ * a normal stacked section (see the responsive layer), and the same scroll
+ * sync still drives the zoom and the reveals.
  */
 .craft{
   --craft-radius:clamp(40px,8vw,148px) 2px clamp(16px,3vw,56px) 2px;
   --craft-offset:clamp(16px,2.2vw,34px);
-  display:grid;grid-template-columns:1.05fr 1fr;
-  gap:clamp(48px,7vw,140px);
-  align-items:center;
-  padding:140px var(--pad-x) 160px;
-  background:var(--bg-2);
+  /* Settled values, so the room is fully visible when the scroll sync never
+     runs. The sync overwrites them on mount. */
+  --craft-p:0; --craft-zoom:1; --craft-rise:0px; --craft-tilt:0deg;
+  --craft-glow:0.7; --craft-name1:1; --craft-name2:1; --craft-copy:1;
+  position:relative;
+  height:320svh;
+  background:#100e0b;
+  color:#f3e9de;
+  overflow:clip;
 }
 
-/* The plate owns the positioning context for the ghost frame and the mounted
-   label, so both are measured from the plate's own edges rather than from the
-   section. The asymmetric padding is the room the ghost frame hangs into on the
-   right and below — keeping it on this box (instead of negative insets) is what
-   stops the displaced frame from widening the page at narrow widths. */
-.craft-visual{position:relative}
+/* The pinned viewport: one screen tall, the plate and the copy centred in it.
+   Its perspective is what the plate's tilt reads through. The vertical
+   padding is the marquees' own band, so the zooming plate never reaches
+   into their lines. */
+.craft-pin{
+  position:sticky; top:0; height:100svh;
+  display:grid; grid-template-columns:1.05fr 1fr;
+  gap:clamp(48px,7vw,140px); align-items:center;
+  padding:84px var(--pad-x);
+  perspective:1400px;
+}
+
+/* Infinite marquees: two identical halves per track, so the -50% loop is
+   seamless. The top row runs one way, the bottom the other, and both drift
+   a little with the scroll on top of their own motion. */
+.craft-marquee{
+  position:absolute; inset-inline:0; overflow:hidden; white-space:nowrap;
+  pointer-events:none;
+  transform:translateX(calc(var(--craft-p) * -40px));
+}
+.craft-marquee--top{top:0; padding-top:clamp(18px,3vh,34px)}
+.craft-marquee--bottom{bottom:0; padding-bottom:clamp(18px,3vh,34px); transform:translateX(calc(var(--craft-p) * 40px))}
+.craft-marquee-track{
+  display:inline-flex; align-items:baseline;
+  animation:craft-marquee 36s linear infinite;
+  will-change:transform;
+}
+.craft-marquee-track--reverse{animation-direction:reverse}
+.craft-marquee-phrase{
+  font-weight:800; font-size:clamp(26px,3.6vw,54px); letter-spacing:-.01em;
+  color:rgba(243,233,222,.16); white-space:nowrap; padding-inline:.5em;
+}
+.craft-marquee-phrase i{
+  font-style:normal; font-size:.55em; vertical-align:middle;
+  color:rgba(214,178,132,.55); padding-inline:.7em;
+}
+@keyframes craft-marquee{to{transform:translateX(-50%)}}
+
+/* The plate owns the positioning context for the glow, the ghost frame and
+   the mounted label, so all three are measured from the plate's own edges. */
+.craft-visual{position:relative; width:100%; max-width:520px; justify-self:center}
 .craft-plate{position:relative;padding:0 var(--craft-offset) var(--craft-offset) 0}
 
-.craft-figure{
-  position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;
-  border-radius:var(--craft-radius);
-  background:#d9d3c5;                 /* inert tone until the photo decodes */
+/* The pool of light: a warm radial glow behind the plate, brightest at the
+   middle of the room, widening as it brightens. */
+.craft-glow{
+  position:absolute; inset:-10% -14%; z-index:0;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(214,178,132,.5) 0%, rgba(214,178,132,.18) 40%, transparent 65%);
+  filter:blur(10px);
+  opacity:calc(.15 + var(--craft-glow) * .85);
+  transform:scale(calc(.85 + var(--craft-glow) * .3));
+  pointer-events:none;
 }
-.craft-figure img{transition:transform 1.6s cubic-bezier(.22,.61,.36,1)}
+
+.craft-figure{
+  position:relative; z-index:1;
+  width:100%; aspect-ratio:4/5; max-height:58svh; overflow:hidden;
+  border-radius:var(--craft-radius);
+  background:#2a2620;                 /* inert tone until the photo decodes */
+  /* Zoom in, then out again; drifting up; tipping in three dimensions. The
+     shadow deepens with the glow, so the plate lifts as it nears. */
+  transform:scale(var(--craft-zoom)) translateY(var(--craft-rise)) rotateX(var(--craft-tilt));
+  transform-style:preserve-3d;
+  will-change:transform;
+  box-shadow:0 calc(24px + var(--craft-glow) * 28px) calc(60px + var(--craft-glow) * 40px) rgba(0,0,0,.6);
+}
+/* The photograph drifts inside its frame — a slow Ken Burns parallax. The
+   overscan keeps the drift from ever revealing an edge. */
+.craft-figure img{
+  transform:translateY(calc(var(--craft-p) * -34px)) scale(1.14);
+  will-change:transform;
+}
 
 /* Ghost frame: the plate's own silhouette, displaced and drawn in hairline.
-   Painted before the plate, which is why the two overlap rather than double. */
+   It drifts the other way from the plate, so the two sit at different
+   depths as the room is scrolled. */
 .craft-frame{
-  position:absolute;inset:var(--craft-offset) 0 0 var(--craft-offset);
-  border:1px solid var(--hair);border-radius:var(--craft-radius);
+  position:absolute; inset:var(--craft-offset) 0 0 var(--craft-offset);
+  border:1px solid rgba(243,233,222,.32); border-radius:var(--craft-radius);
   pointer-events:none;
-  transition:transform 1.6s cubic-bezier(.22,.61,.36,1);
+  transform:translate3d(calc(var(--craft-p) * 16px), calc(var(--craft-p) * 26px), 0);
 }
 
 /* Mounted label: its centre sits on the plate's lower edge, so the plate's
-   outline runs into the label instead of around it. The containing block is
-   `.craft-plate`, whose padding box reaches `--craft-offset` past the plate, so
-   `bottom` is offset by exactly that much to land back on the figure's edge. */
+   outline runs into the label instead of around it. */
 .craft-badge{
   position:absolute;
   left:clamp(20px,2.4vw,34px);
   bottom:var(--craft-offset);
-  transform:translateY(50%);
+  transform:translateY(50%) translateY(calc(var(--craft-p) * -14px));
   display:inline-flex;align-items:center;gap:.75em;
   padding:.72em 1.1em;
-  background:var(--bg-2);border:1px solid var(--hair);border-radius:2px;
+  background:#100e0b;border:1px solid rgba(243,233,222,.28);border-radius:2px;
   font-family:var(--sans);font-size:var(--fs-caption);
-  letter-spacing:.18em;color:var(--ink-soft);
+  letter-spacing:.18em;color:rgba(243,233,222,.72);
   white-space:nowrap;unicode-bidi:isolate;
 }
-.craft-badge i{display:block;width:6px;height:6px;background:var(--ink);opacity:.5}
+.craft-badge i{display:block;width:6px;height:6px;background:#d6b284;opacity:.85}
 
 /* Material rule under the plate: same width as the plate, so the hairline and
-   the plate's left edge share one vertical. `.craft-tags` sits outside
-   `.craft-plate`, which is what allows it to line up with the plate rather than
-   with the ghost frame's overhang — hence the right margin. */
+   the plate's left edge share one vertical. */
 .craft-tags{
   display:flex;align-items:baseline;gap:clamp(20px,2.6vw,38px);
   margin-top:clamp(30px,3.6vw,54px);margin-right:var(--craft-offset);
-  padding-top:14px;border-top:1px solid var(--hair);
+  padding-top:14px;border-top:1px solid rgba(243,233,222,.22);
   font-family:var(--sans);font-size:var(--fs-caption);
-  letter-spacing:.16em;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.16em;color:rgba(243,233,222,.5);text-transform:uppercase;
 }
 
 .craft-copy{display:flex;flex-direction:column;align-items:flex-start}
-.craft-copy h2{font-size:var(--fs-subdisplay);margin-top:20px}
-.craft-name{
-  margin-top:36px;font-family:var(--fa);font-weight:600;
-  font-size:var(--fs-title);line-height:var(--lh-heading);color:var(--ink);
+.craft-copy h2{font-size:var(--fs-subdisplay);margin-top:20px;color:#f3e9de}
+.craft-copy .eyebrow{
+  color:rgba(243,233,222,.6);
+  opacity:var(--craft-name1);
+  transform:translateY(calc((1 - var(--craft-name1)) * 20px));
 }
+
+/* The name is driven by the scroll, not by the reveal system: the mask still
+   clips the rise (the line's clip-path), but each line's transform and
+   opacity come from the room's progress, with the transition removed so the
+   scroll — not a timer — moves it. */
+.craft .mask-title .line{perspective:900px}
+.craft .mask-title .line > span.craft-name-line{transition:none; will-change:transform,opacity}
+.craft .mask-title .line > span.craft-name-line--1{
+  transform:translate3d(0, calc((1 - var(--craft-name1)) * 72px), 0) rotateX(calc((1 - var(--craft-name1)) * 68deg));
+  opacity:var(--craft-name1);
+}
+.craft .mask-title .line > span.craft-name-line--2{
+  transform:translate3d(0, calc((1 - var(--craft-name2)) * 72px), 0) rotateX(calc((1 - var(--craft-name2)) * 68deg));
+  opacity:var(--craft-name2);
+}
+
 .craft-role{
   margin-top:12px;font-size:var(--fs-meta);letter-spacing:var(--track-meta);
-  color:var(--muted);unicode-bidi:isolate;
+  color:rgba(243,233,222,.65);unicode-bidi:isolate;
+  opacity:var(--craft-copy);
+  transform:translateY(calc((1 - var(--craft-copy)) * 28px));
 }
 .craft-bio{
   margin-top:30px;max-width:540px;
-  font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-soft);
+  font-size:var(--fs-body);line-height:var(--lh-body);color:rgba(243,233,222,.85);
   text-align:justify;text-justify:inter-word;
+  opacity:var(--craft-copy);
+  transform:translateY(calc((1 - var(--craft-copy)) * 28px));
 }
-/* The metric reuses the Studio block, trimmed to a single figure. */
+/* The metric reuses the Studio block, trimmed to a single figure. The figures
+   flip in one by one: each item's progress is the copy's progress stretched
+   across three and offset by its index. */
 .craft-copy .metrics{
   gap:56px;margin-top:46px;padding-top:26px;width:100%;max-width:420px;
-  border-top:1px solid var(--hair);
+  border-top:1px solid rgba(243,233,222,.22);
+  perspective:800px;
 }
-.craft-copy .metrics .num{font-size:clamp(34px,3.4vw,52px)}
-.craft-copy .link-underline{margin-top:44px}
+.craft-copy .metrics .num{font-size:clamp(34px,3.4vw,52px);color:#f3e9de}
+.craft-copy .metrics .label{color:rgba(243,233,222,.6)}
+.craft-metric{
+  --mp:clamp(0, calc(var(--craft-copy) * 3 - var(--i)), 1);
+  opacity:var(--mp);
+  transform:translateY(calc((1 - var(--mp)) * 26px)) rotateX(calc((1 - var(--mp)) * 70deg));
+  transform-style:preserve-3d;
+  will-change:transform,opacity;
+}
+.craft-copy .link-underline{
+  margin-top:44px;color:#f3e9de;border-bottom-color:rgba(243,233,222,.5);
+  opacity:var(--craft-copy);
+  transform:translateY(calc((1 - var(--craft-copy)) * 28px));
+}
 
-/* Restrained movement, and only where a cursor can actually hover. */
-@media (hover:hover){
-  .craft-visual:hover .craft-figure img{transform:scale(1.035)}
-  .craft-visual:hover .craft-frame{transform:translate3d(6px,6px,0)}
+@media (prefers-reduced-motion: reduce){
+  .craft{height:auto; overflow:visible}
+  .craft-pin{position:static; height:auto; padding:120px var(--pad-x)}
+  .craft-marquee-track{animation:none}
+  .craft-glow{opacity:.5}
+  .craft-figure, .craft-figure img, .craft-frame, .craft-badge,
+  .craft .mask-title .line > span.craft-name-line,
+  .craft-role, .craft-bio, .craft-copy .eyebrow, .craft-copy .link-underline,
+  .craft-metric{transform:none; opacity:1}
 }
 
 /* ============== CONTACT ============== */
@@ -1420,11 +1533,15 @@ a{color:inherit;text-decoration:none}
   .hero-image{height:54%}
   .about{padding-top:100px;padding-bottom:120px}
   .metrics{justify-content:center;text-align:center;margin-top:72px}
-  /* Craftsman: the plate stacks above its copy and runs the full column width,
-     like the project figures above it, so the plate, its ghost frame and the
-     material rule keep the copy's measure instead of leaving a dead gutter
-     beside a capped portrait. */
-  .craft{grid-template-columns:1fr;gap:44px;padding-top:100px;padding-bottom:120px}
+  /* Craftsman: below the pin the room stops being a stage and flows as a
+     normal stacked section — the portrait above the copy, both centred. The
+     scroll sync still drives the zoom and the reveals from the room's own
+     rectangle, and the marquees are hidden so they cannot crowd the column.
+     The room keeps its `overflow:clip`, so the glow and the zooming plate —
+     both wider than their column — can never widen the page. */
+  .craft{height:auto}
+  .craft-pin{position:static; height:auto; grid-template-columns:1fr; gap:44px; padding:100px var(--pad-x) 120px}
+  .craft-marquee{display:none}
   .craft-visual{max-width:100%}
   .contact{grid-template-columns:1fr;min-height:auto}
   .contact-image{aspect-ratio:4/3}
@@ -1670,7 +1787,7 @@ body.menu-open{overflow:hidden}
   .arrow-link{font-size:19px}
 
   /* Craftsman */
-  .craft{padding:92px var(--pad-x) 104px;gap:36px}
+  .craft-pin{padding:92px var(--pad-x) 104px;gap:36px}
   /* Centred column: the plate, the label and the material rule all share the
      copy's centre line. `width:100%` is required — the inline `auto` margins
      would otherwise make this a shrink-to-fit grid item, and the plate would be

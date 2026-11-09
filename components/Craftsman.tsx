@@ -1,40 +1,61 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect, useRef, type CSSProperties } from "react";
 
 /**
- * Master craftsman.
+ * Master craftsman — the portrait stage.
  *
- * The section that introduces the craftsman behind Norsta's microcement and
- * patina work: a layered plate on the left, the person's details on the right.
- * It sits between `Work` and `Contact`, so the finished projects are followed by
- * the hands that made them, and the quiet CTA hands over to the contact block.
+ * The section that introduces the engineer behind Norsta's microcement and
+ * patina work, rebuilt as a scroll-driven stage: a tall dark room
+ * (`320svh`) with one sticky viewport inside it. Scrolling through the room
+ * drives everything, and scrolling back reverses it — the motion is a
+ * function of where the room sits in the viewport, never a one-way trigger.
+ *
+ *   · The portrait zooms IN as the room is entered and zooms OUT again as
+ *     it is left (`--craft-zoom` is a sine over the room), drifting upward
+ *     (`--craft-rise`) and tipping in three dimensions (`--craft-tilt`,
+ *     read through the pin's perspective), while the photograph itself
+ *     drifts inside its frame — a slow Ken Burns parallax.
+ *   · A warm glow behind the plate brightens to its peak at the middle of
+ *     the room (`--craft-glow`) and the ghost frame drifts the other way,
+ *     so the plate, its frame and its light sit at three different depths.
+ *   · The name rises out of its mask line by line (`--craft-name1`,
+ *     `--craft-name2`), then the role, the biography, the three figures and
+ *     the CTA arrive (`--craft-copy`, the figures flipping in one by one).
+ *   · Two infinite marquees — her name and the material, repeated — run
+ *     along the top and the bottom of the room in opposite directions, so
+ *     the room never stops moving even when the scroll does.
+ *
+ * The room is dark (`#100e0b`, the site's own dark ground) so the light and
+ * the shadow Pouya asked for actually read: the warm portrait and the ivory
+ * name sit in a pool of light, and the marquees are a low-contrast texture
+ * behind them.
  *
  * ── CONTENT ────────────────────────────────────────────────────────────────
- * The name, the role and the biography below are the owner's own facts: the
+ * The name, the role and the biography are the owner's own facts: the
  * engineer who leads Norsta's microcement and patina work is مهندس افسانه
  * مردانی, and the studio's work in the material runs from ۱۴۰۱. The three
  * figures under the biography are the site's own published numbers (founded
- * ۱۴۰۱, ۳۰+ projects, ۸ finishes), so nothing here is a guess.
- *
- * The only copy that is not a person-specific fact is the material heading and
- * the two material tags. They name microcement and patina in general — the
- * subject of the business, already stated in the Instagram section — and make
- * no claim about a specific person or project.
+ * ۱۴۰۱, ۳۰+ projects, ۸ finishes), so nothing here is a guess. The marquee
+ * repeats only those two facts — her name and the material — so it invents
+ * nothing.
  *
  * ── IMAGE ──────────────────────────────────────────────────────────────────
  * `CRAFTSMAN.image` is her portrait — مهندس افسانه مردانی outdoors, beside
  * the olive tree — so the alt text names her, and the plate is captioned as
- * her portrait rather than as a material detail. The composition is built from
- * `--craft-radius` and `--craft-offset` in `globals.css` (the plate and the
- * hairline ghost frame behind it share both values), and the photograph is
- * cropped by `object-fit:cover` inside a fixed `4/5` plate, so a different
- * source image lands in exactly the same silhouette.
+ * her portrait rather than as a material detail. The photograph is cropped
+ * by `object-fit:cover` inside a fixed `4/5` plate, so a different source
+ * image lands in exactly the same silhouette.
  *
- * ── MOTION ─────────────────────────────────────────────────────────────────
- * `data-reveal-cycle` marks the section as reversible: `SiteInteractions` adds
- * `is-in` while it overlaps the viewport and removes it again on the way out, so
- * the plate and the copy fade in and back out. `data-reveal-item` marks the
- * blocks that move. All timing values live in the stylesheet, next to the
- * existing `[data-reveal]` contract.
+ * ── WITHOUT SCRIPTING ──────────────────────────────────────────────────────
+ * The custom properties default to their settled values in the stylesheet
+ * (full size, name and copy in, a steady glow), so the room reads as plain
+ * content when the scroll sync never runs. The marquees are pure CSS and
+ * run regardless. Below `960px` the room stops being a pinned stage and
+ * flows as a normal stacked section; the same scroll sync still drives the
+ * zoom and the reveals, because the progress is measured from the room's
+ * own rectangle, not from the pin.
  */
 
 type CraftsmanContent = {
@@ -71,88 +92,190 @@ const CRAFTSMAN: CraftsmanContent = {
   tags: ["MICROCEMENT", "PATINA"],
 };
 
-export default function Craftsman() {
+/** One half of a marquee track: the phrase repeated enough to cover a wide viewport. */
+function MarqueeHalf() {
   return (
-    <section id="craft" className="craft" data-reveal-cycle>
-      {/* The ghost frame is drawn first so the plate stacks over it. */}
-      <div className="craft-visual" data-reveal-item>
-        <div className="craft-plate">
-          <span className="craft-frame" aria-hidden="true" />
+    <>
+      {Array.from({ length: 4 }).map((_, index) => (
+        <span key={index} className="craft-marquee-phrase">
+          مهندس افسانه مردانی
+          <i aria-hidden="true">✦</i>
+          میکروسمنت و پتینه
+          <i aria-hidden="true">✦</i>
+        </span>
+      ))}
+    </>
+  );
+}
 
-          <div className="craft-figure">
-            <Image
-              src={CRAFTSMAN.image.src}
-              alt={CRAFTSMAN.image.alt}
-              fill
-              sizes="(max-width: 960px) 100vw, 41vw"
-              style={{ objectFit: "cover" }}
-            />
+export default function Craftsman() {
+  const stageRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    const setSettled = () => {
+      stage.style.setProperty("--craft-zoom", "1");
+      stage.style.setProperty("--craft-rise", "0px");
+      stage.style.setProperty("--craft-tilt", "0deg");
+      stage.style.setProperty("--craft-glow", "0.7");
+      stage.style.setProperty("--craft-name1", "1");
+      stage.style.setProperty("--craft-name2", "1");
+      stage.style.setProperty("--craft-copy", "1");
+    };
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      // Full size, name and copy in, a steady glow: the room reads as plain
+      // content, and the stylesheet's reduced-motion block un-pins it.
+      setSettled();
+      return;
+    }
+
+    let raf = 0;
+    const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
+
+    const sync = () => {
+      raf = 0;
+      const rect = stage.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // 0 when the room's top reaches the viewport's top, 1 when its bottom
+      // reaches the viewport's bottom — the whole scroll through the room.
+      const travel = Math.max(1, rect.height - vh);
+      const p = clamp01(-rect.top / travel);
+
+      // Zoom: in from far, out again — a sine over the room, so scrolling
+      // back reverses it exactly. Kept to a 1.08 peak so the plate never
+      // reaches into the marquees' band.
+      const zoom = 0.84 + 0.24 * Math.sin(p * Math.PI);
+      // The portrait drifts upward through the room.
+      const rise = (0.5 - p) * 80;
+      // Tipped back on entry, flat at the middle, forward on exit.
+      const tilt = (0.5 - p) * 14;
+      // The glow is brightest at the middle.
+      const glow = Math.sin(p * Math.PI);
+      // The name: line one over p 0–0.35, line two over p 0.12–0.47.
+      const name1 = clamp01(p / 0.35);
+      const name2 = clamp01((p - 0.12) / 0.35);
+      // Role, biography, figures and CTA over p 0.25–0.6, so the room's
+      // middle already holds the name and most of the copy.
+      const copy = clamp01((p - 0.25) / 0.35);
+
+      stage.style.setProperty("--craft-p", p.toFixed(3));
+      stage.style.setProperty("--craft-zoom", zoom.toFixed(3));
+      stage.style.setProperty("--craft-rise", `${rise.toFixed(1)}px`);
+      stage.style.setProperty("--craft-tilt", `${tilt.toFixed(2)}deg`);
+      stage.style.setProperty("--craft-glow", glow.toFixed(3));
+      stage.style.setProperty("--craft-name1", name1.toFixed(3));
+      stage.style.setProperty("--craft-name2", name2.toFixed(3));
+      stage.style.setProperty("--craft-copy", copy.toFixed(3));
+    };
+
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(sync);
+    };
+
+    sync();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return (
+    <section id="craft" className="craft" ref={stageRef}>
+      <div className="craft-pin">
+        {/* The marquees are decorative — the name is already the heading. */}
+        <div className="craft-marquee craft-marquee--top" aria-hidden="true">
+          <div className="craft-marquee-track">
+            <MarqueeHalf />
+            <MarqueeHalf />
+          </div>
+        </div>
+
+        <div className="craft-visual">
+          <div className="craft-glow" aria-hidden="true" />
+          <div className="craft-plate">
+            <span className="craft-frame" aria-hidden="true" />
+
+            <div className="craft-figure">
+              <Image
+                src={CRAFTSMAN.image.src}
+                alt={CRAFTSMAN.image.alt}
+                fill
+                sizes="(max-width: 960px) 100vw, 41vw"
+                priority
+                style={{ objectFit: "cover" }}
+              />
+            </div>
+
+            {/* Straddles the plate's lower edge, so it reads as a mounted label
+                rather than as a caption sitting inside the photograph. */}
+            <span className="craft-badge">
+              <i aria-hidden="true" />
+              {CRAFTSMAN.label}
+            </span>
           </div>
 
-          {/* Straddles the plate's lower edge, so it reads as a mounted label
-              rather than as a caption sitting inside the photograph. It is a
-              sibling of the frame, not of the tags, so it measures against the
-              plate and never collides with the material rule below. */}
-          <span className="craft-badge">
-            <i aria-hidden="true" />
-            {CRAFTSMAN.label}
-          </span>
+          {/* Material tags repeat the heading in Latin, so they stay decorative. */}
+          <p className="craft-tags" aria-hidden="true">
+            {CRAFTSMAN.tags.map((tag) => (
+              <span key={tag}>{tag}</span>
+            ))}
+          </p>
         </div>
 
-        {/* Material tags repeat the heading in Latin, so they stay decorative. */}
-        <p className="craft-tags" aria-hidden="true">
-          {CRAFTSMAN.tags.map((tag) => (
-            <span key={tag}>{tag}</span>
-          ))}
-        </p>
-      </div>
+        <div className="craft-copy">
+          <span className="eyebrow">استادکار</span>
 
-      <div className="craft-copy">
-        <span className="eyebrow" data-reveal-item>
-          استادکار
-        </span>
+          <h2 className="mask-title">
+            <span className="line">
+              <span className="craft-name-line craft-name-line--1">
+                مهندس افسانه
+              </span>
+            </span>
+            <span className="line">
+              <span className="craft-name-line craft-name-line--2">
+                مردانی
+              </span>
+            </span>
+          </h2>
 
-        <h2 className="mask-title" data-reveal-item>
-          <span className="line">
-            <span>مهندس افسانه</span>
-          </span>
-          <span className="line">
-            <span>مردانی</span>
-          </span>
-        </h2>
+          <p className="craft-role">{CRAFTSMAN.title}</p>
+          <p className="craft-bio">{CRAFTSMAN.bio}</p>
 
-        <p className="craft-role" data-reveal-item>
-          {CRAFTSMAN.title}
-        </p>
-        <p className="craft-bio" data-reveal-item>
-          {CRAFTSMAN.bio}
-        </p>
+          <div className="metrics">
+            {CRAFTSMAN.metrics.map((metric, index) => (
+              <div
+                key={metric.label}
+                className="craft-metric"
+                style={{ "--i": index } as CSSProperties}
+              >
+                <span className="num">{metric.value}</span>
+                <span className="label">{metric.label}</span>
+              </div>
+            ))}
+          </div>
 
-        <div className="metrics" data-reveal-item>
-          {CRAFTSMAN.metrics.map((metric) => (
-            <div key={metric.label}>
-              <span className="num">{metric.value}</span>
-              <span className="label">{metric.label}</span>
-            </div>
-          ))}
+          <a className="link-underline strong" href="#contact">
+            گفت‌وگو درباره‌ی اجرا &nbsp;←
+          </a>
         </div>
 
-        <a className="link-underline strong" href="#contact" data-reveal-item>
-          گفت‌وگو درباره‌ی اجرا &nbsp;←
-        </a>
+        <div
+          className="craft-marquee craft-marquee--bottom"
+          aria-hidden="true"
+        >
+          <div className="craft-marquee-track craft-marquee-track--reverse">
+            <MarqueeHalf />
+            <MarqueeHalf />
+          </div>
+        </div>
       </div>
-
-      {/* Without scripting the section never receives `is-in`, so it would stay
-          hidden; reveal it outright instead. */}
-      <noscript>
-        <style
-          dangerouslySetInnerHTML={{
-            __html:
-              ".craft [data-reveal-item]{opacity:1;transform:none}" +
-              ".craft .mask-title .line>span{transform:none}",
-          }}
-        />
-      </noscript>
     </section>
   );
 }
