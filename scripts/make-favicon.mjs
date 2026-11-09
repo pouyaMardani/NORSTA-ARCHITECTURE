@@ -8,7 +8,7 @@
  * #f3e9de, lifted straight out of `app/globals.css`): a full-bleed square of
  * warm stone carrying a deep charcoal `N`. The two vertical piers are the
  * architectural planes — flat, equal, absolutely square — and the spine is one
- * curved wall, a 26-unit bow across a 407-unit span, the way a plastered reveal
+ * curved wall, a 28-unit bow across a 431-unit span, the way a plastered reveal
  * curves rather than breaks. Nothing else: no rim, no outline, no gradient, no
  * second idea.
  *
@@ -21,19 +21,19 @@
  * `public/favicon.svg` inverts to the charcoal plaque under
  * `prefers-color-scheme: dark`, which keeps a dark tab quiet.
  *
- * The letter is drawn, not typed. It is exactly three shapes: two 72 × 380
+ * The letter is drawn, not typed. It is exactly three shapes: two 88 × 400
  * piers and one band between two concentric arcs.
  *
- *      (110,66)┌────┐(254,66)              piers    72 wide, 380 tall — 14% of
- *             │    ╰───╮                     the tile, i.e. 2.25px at 16×16,
+ *      (88,56)┌────┐(264,56)               piers    88 wide, 400 tall — 17% of
+ *             │    ╰───╮                     the tile, i.e. 2.75px at 16×16,
  *             │        ╰───╮                 where the previous mark's stems
- *             │            ╰───╮             measured 1.7px
- *             │                ╰───╮        cap bar  144 wide: the pier plus the
+ *             │            ╰───╮             measured 2.25px
+ *             │                ╰───╮        cap bar  176 wide: the pier plus the
  *             │                    ╰──╮       band's head, which is flush with
  *             └──╮                    ╰──╮    the cap line, as a stencil `N` is
- *                ╰──╮                   ╰──╮ spine    67 units across the stroke
- *                   ╰─────────────────────┘  — 93% of a pier's 72, which is how
- *      (110,446)                    (402,446) a type designer stops a diagonal
+ *                ╰──╮                   ╰──╮ spine    82 units across the stroke
+ *                   ╰─────────────────────┘  — 93% of a pier's 88, which is how
+ *      (88,456)                     (424,456) a type designer stops a diagonal
  *                                                from looking heavier than a stem
  *
  *     (a sketch, not to scale — every coordinate below is the real one)
@@ -45,7 +45,10 @@
  * below is the single source of truth, rasterised analytically (supersampled
  * point-in-shape tests — no font, no canvas, no image library), so the SVG
  * favicon Chrome uses, the ICO Safari uses and the 180px iOS tile can never
- * drift apart. Re-run this after touching any constant.
+ * drift apart. Re-run this after touching any constant. The build runs it too
+ * (`prebuild` in `package.json`), so a deploy always cuts the rasters from the
+ * geometry on disk instead of shipping whatever binaries happen to be checked
+ * in.
  *
  * Every variant carries the same drawing: the iOS tile needs no inset, because
  * the plaque *is* the square it is masked in, so the squircle crops the tile's
@@ -78,26 +81,26 @@ const CENTER = VIEWBOX / 2;
 const PLATE = { x: 0, y: 0, w: VIEWBOX, h: VIEWBOX };
 
 /**
- * The letter: a cap-height box of 292 × 380, centred on the plate, with 72-unit
- * piers. Against the previous mark (54-unit stems inside a 512 disc) that is a
- * third more ink in a smaller silhouette — which is the whole difference at
- * 16px, where the stems now measure 2.25 pixels instead of 1.7.
+ * The letter: a cap-height box of 336 × 400, centred on the plate, with 88-unit
+ * piers. Against the previous mark (72-unit stems) that is a fifth more ink in
+ * a larger silhouette — which is the whole difference at 16px, where the stems
+ * now measure 2.75 pixels instead of 2.25.
  */
 const LETTER = {
-  x0: 110,
-  x1: 402,
-  y0: 66,
-  y1: 446,
-  stem: 72,
+  x0: 88,
+  x1: 424,
+  y0: 56,
+  y1: 456,
+  stem: 88,
 };
 
 /**
- * The spine's curvature: a 26-unit bow toward the upper right, sampled as a
- * 20-segment polyline. The polyline leaves the true arc by 0.09 units — three
- * hundredths of a pixel at 16px — so one point list can serve as both the SVG
+ * The spine's curvature: a 28-unit bow toward the upper right, sampled as a
+ * 20-segment polyline. The polyline leaves the true arc by 0.07 units — a few
+ * thousandths of a pixel at 16px — so one point list can serve as both the SVG
  * path and the rasteriser's shape without either drifting from the other.
  */
-const SPINE = { bow: 26, segments: 20 };
+const SPINE = { bow: 28, segments: 20 };
 
 /**
  * Brand colours, taken from the site's own tokens in `app/globals.css`:
@@ -137,7 +140,7 @@ function round2(value) {
 /**
  * The band's two long edges, as `[from, to]` chord pairs in master coordinates.
  * Both run from the cap line to the baseline with the same direction, so they
- * stay parallel and the band measures a constant 67 units across the stroke.
+ * stay parallel and the band measures a constant 82 units across the stroke.
  *
  *   right — the cap bar's outer corner down to the right pier's outer foot
  *   left  — the left pier's inner cap corner down to the band's own foot, which
@@ -538,8 +541,8 @@ function smallestFeature() {
  * `N` carved into a plaque, not a blob.
  *
  * The 16px probes are limited to the features that survive at 32 units to a
- * pixel: the spine is only 2.25px wide there and no whole pixel of it is one
- * colour, so its turn comes at 32px, where it is 4.5px across.
+ * pixel: the spine is only 2.56px wide there and no whole pixel of it is one
+ * colour, so its turn comes at 32px, where it is 5.1px across.
  */
 const PROBES = [
   { size: 16, at: [16, 16], hex: PALETTE.ivory, what: "plate at the tile's corner" },
@@ -551,7 +554,7 @@ const PROBES = [
     hex: PALETTE.ivory,
     what: "the stone the spine leaves open at the foot",
   },
-  { size: 32, at: [296, 88], hex: PALETTE.ivory, what: "the stone beside the cap bar" },
+  { size: 32, at: [312, 88], hex: PALETTE.ivory, what: "the stone beside the cap bar" },
   { size: 32, at: [328, 312], hex: PALETTE.ink, what: "the bowed spine across the middle" },
   { size: 32, at: [376, 200], hex: PALETTE.ink, what: "right pier" },
   { size: 32, at: [256, 40], hex: PALETTE.ivory, what: "plate above the cap bar" },

@@ -5,6 +5,7 @@
   "description": "Norsta — the Persian (fa-IR) website of the microcement and patina studio: Instagram showcase, project gallery, magazine and academy. Next.js (App Router) + React + TypeScript.",
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/make-favicon.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",

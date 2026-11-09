@@ -52,11 +52,6 @@ export const PROJECT_IMAGES = {
     alt: "فضای داخلی سنگی با نور طبیعی و دیوار‌های ماده‌ای",
     caption: "فضای داخلی سنگی",
   },
-  stairs: {
-    src: "/images/after.png",
-    alt: "پلکان سنگی روشن در کنار درخت زیتون",
-    caption: "پلکان سنگی",
-  },
   archDetail: {
     src: "/images/befor.png",
     alt: "جزئیات معماری و بافت سطوح نما",

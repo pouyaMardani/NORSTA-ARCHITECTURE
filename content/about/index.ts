@@ -127,7 +127,7 @@ export const ABOUT_SHOWCASE: AboutShowcase = {
       id: "stone-stair",
       name: "پلکان سنگی",
       before: PROJECT_IMAGES.archDetail,
-      after: PROJECT_IMAGES.stairs,
+      after: PROJECT_IMAGES.kitchen,
       placeholder: true,
     },
     {

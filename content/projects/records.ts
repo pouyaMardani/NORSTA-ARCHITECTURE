@@ -84,7 +84,7 @@ export const PROJECTS: ProjectDTO[] = [
     ],
     coverImage: PROJECT_IMAGES.headquarters,
     galleryImages: [
-      PROJECT_IMAGES.stairs,
+      PROJECT_IMAGES.outdoorStairs,
       PROJECT_IMAGES.archDetail,
       PROJECT_IMAGES.courtyard,
     ],
@@ -110,7 +110,7 @@ export const PROJECTS: ProjectDTO[] = [
     coverImage: PROJECT_IMAGES.culturalCenter,
     galleryImages: [
       PROJECT_IMAGES.courtyard,
-      PROJECT_IMAGES.stairs,
+      PROJECT_IMAGES.outdoorStairs,
       PROJECT_IMAGES.archDetail,
     ],
     featured: true,

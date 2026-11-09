@@ -67,16 +67,16 @@ export default function InstagramShowcase() {
     PROJECT_IMAGES.teaPavilion,
     PROJECT_IMAGES.teaPavilionDetail,
     PROJECT_IMAGES.courtyard,
-    PROJECT_IMAGES.stairs,
+    PROJECT_IMAGES.outdoorStairs,
     PROJECT_IMAGES.archDetail,
     PROJECT_IMAGES.villa,
     PROJECT_IMAGES.residence,
-    PROJECT_IMAGES.stairs,
+    PROJECT_IMAGES.outdoorStairs,
     PROJECT_IMAGES.courtyard,
   ];
 
   /** Three of those frames again, as the strip that closes the Instagram entry. */
-  const strip = [PROJECT_IMAGES.residence, PROJECT_IMAGES.stairs, PROJECT_IMAGES.courtyard];
+  const strip = [PROJECT_IMAGES.residence, PROJECT_IMAGES.outdoorStairs, PROJECT_IMAGES.courtyard];
 
   /** The plate the composition is built around. */
   const plate = PROJECT_IMAGES.culturalCenter;
