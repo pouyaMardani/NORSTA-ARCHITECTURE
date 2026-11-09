@@ -5,7 +5,6 @@ import AcademyPromo from "@/components/AcademyPromo";
 import Articles from "@/components/Articles";
 import Contact from "@/components/Contact";
 import Craftsman from "@/components/Craftsman";
-import Faq from "@/components/Faq";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import InstagramShowcase from "@/components/InstagramShowcase";
@@ -45,12 +44,9 @@ export default function Page() {
             as a stripe of the wrong colour where two dark sections meet. See
             `components/SectionDivider.tsx`. */}
         <SectionDivider bg="var(--bg)" />
-        {/* The process and the questions sit directly under the hero: the
-            four steps first, then the answers — before the services. */}
+        {/* The process sits directly under the hero, before the services. */}
         <Process />
         <SectionDivider bg="var(--bg-2)" />
-        <Faq />
-        <SectionDivider bg="var(--bg)" />
         <Services />
         <SectionDivider bg="var(--bg)" />
         <About />

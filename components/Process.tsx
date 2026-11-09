@@ -5,16 +5,31 @@ import { useEffect, useRef, type CSSProperties } from "react";
 
 /**
  * The process — «قدم به قدم» — the studio's four steps, as the reference
- * template's “My Process” section: a pinned stack of cards, each one sliding
- * up over the last while the covered card shrinks a little.
+ * template's “My Process” section, measured against the live demo rather than
+ * remembered from it:
  *
- * The reference does the pin with GSAP ScrollTrigger; this site carries no
- * GSAP, so the stack is `position: sticky` instead — each card sticks at the
- * top of the viewport and the next one scrolls up over it — with a small
- * scroll listener that shrinks a card in proportion to how far the next one
- * has covered it, which is the same 0.9 settle the reference animates to.
- * Without JavaScript the cards still stack (sticky is CSS); without motion
- * they flow one after another, unpinned.
+ *   · The cards are pinned, not merely stacked. The reference pins its
+ *     section with GSAP ScrollTrigger (`start: 'top top'`, the next card
+ *     starting at `yPercent: 100` — exactly at the viewport's bottom edge);
+ *     this site carries no GSAP, so the stack is `position: sticky` with a
+ *     gap of a full viewport minus one card between the items. The next card
+ *     therefore starts below the fold and travels the whole viewport up over
+ *     the one before it, exactly as the reference's does.
+ *   · The covered card settles in three dimensions: it tips back
+ *     (`rotateX`) and shrinks toward 0.9 while the next one rises, and the
+ *     rising card flattens out of a slight forward tilt as it arrives — the
+ *     same 0.9 the reference animates to, with the depth the flat scale
+ *     leaves out.
+ *   · The title fills with the scroll. The reference splits its heading into
+ *     characters and scrubs them from opacity 0.4 to 1 as the heading travels
+ *     from 80% to 20% of the viewport. Persian letters join, so a character
+ *     split would break the script — instead the whole title is one gradient
+ *     that sweeps from the inline start (right, here) to full ink over the
+ *     same scroll window.
+ *   · After the last card, the numbers. The reference follows its cards with
+ *     a row of counting stats; this one repeats the numbers the About section
+ *     already publishes (founded 2008, 140+ projects) beside the size of the
+ *     sample library (8), counted up by the site's own `[data-count]` system.
  *
  * The copy is the studio's own: the step order and the vocabulary come from
  * the site itself — the samples catalogue (“پنل‌های نمونه برای دیدن رنگ، بافت
@@ -75,21 +90,35 @@ const STEPS: ProcessStep[] = [
   },
 ];
 
-/** How far a covered card shrinks — the reference settles at 0.9. */
-const COVER_SCALE = 0.9;
-/** The sticky line the cards settle on, in pixels from the viewport top. */
-const STICK_TOP = 24;
+/** The numbers after the last card — the site's own published figures. */
+const STATS = [
+  { value: "2008", from: "2000", suffix: "", label: "سال تأسیس" },
+  { value: "140", from: undefined, suffix: "+", label: "پروژه‌های اجراشده" },
+  { value: "8", from: undefined, suffix: "", label: "نمونه‌ی رنگ و بافت" },
+];
+
+/**
+ * The sticky line the cards settle on. The reference pins at the viewport's
+ * very top (`start: 'top top'`), so this is 0 — the card's top edge meets the
+ * top of the screen.
+ */
+const STICK_TOP = 0;
 
 export default function Process() {
   const stackRef = useRef<HTMLDivElement | null>(null);
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
 
   useEffect(() => {
     const stack = stackRef.current;
+    const title = titleRef.current;
     if (
-      !stack ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    )
+    ) {
+      // Full ink, flat cards, no pin: the section reads as plain content.
+      title?.style.setProperty("--fill", "100%");
       return;
+    }
+    if (!stack) return;
 
     const items = Array.from(
       stack.querySelectorAll<HTMLElement>(".process-item")
@@ -98,23 +127,51 @@ export default function Process() {
 
     const sync = () => {
       raf = 0;
+      const vh = window.innerHeight;
+      // The pitch — one card plus the gap after it — is the travel each card
+      // makes: measured, so the progress spans the whole journey from below
+      // the fold to the sticky line, not just the last card-height of it.
+      // Measured from the card's layout height plus the stack's computed gap:
+      // `offsetTop` is no good here, because Chrome reports a stuck sticky
+      // element's offsetTop at its stuck position, so the pitch would collapse
+      // to nothing exactly as the first card settles.
+      const gapPx = parseFloat(getComputedStyle(stack).rowGap || "0") || 0;
+      const step = (items[0]?.offsetHeight ?? vh) + gapPx;
       items.forEach((item, i) => {
         const next = items[i + 1];
-        if (!next) {
-          item.style.setProperty("--cover", "0");
-          return;
-        }
+        const top = item.getBoundingClientRect().top;
         // How far the next card has travelled over this one: 0 while it is
-        // still a full card-height below the sticky line, 1 once it has
-        // arrived on the line.
-        const nextTop = next.getBoundingClientRect().top;
-        const height = item.getBoundingClientRect().height;
-        const p = Math.min(
-          1,
-          Math.max(0, (STICK_TOP + height - nextTop) / height)
-        );
-        item.style.setProperty("--cover", p.toFixed(3));
+        // still a full pitch below the sticky line, 1 once it has arrived.
+        const cover = next
+          ? Math.min(
+              1,
+              Math.max(
+                0,
+                (STICK_TOP + step - next.getBoundingClientRect().top) / step
+              )
+            )
+          : 0;
+        // How far this card itself has arrived at the line. The first card
+        // is already there when the stack begins; the others flatten out of
+        // their forward tilt as they arrive.
+        const arrive =
+          i === 0
+            ? 1
+            : Math.min(
+                1,
+                Math.max(0, (STICK_TOP + step - top) / step)
+              );
+        item.style.setProperty("--cover", cover.toFixed(3));
+        item.style.setProperty("--arrive", arrive.toFixed(3));
       });
+
+      // The title fills as its top travels from 80% to 20% of the viewport —
+      // the reference's scrub window, measured the same way.
+      if (title) {
+        const top = title.getBoundingClientRect().top;
+        const p = Math.min(1, Math.max(0, (vh * 0.8 - top) / (vh * 0.6)));
+        title.style.setProperty("--fill", `${(p * 100).toFixed(1)}%`);
+      }
     };
 
     const onScroll = () => {
@@ -162,14 +219,8 @@ export default function Process() {
             </span>
             <span className="sr-only">قدم به قدم</span>
           </span>
-          <h2
-            id="process-title"
-            className="process-title mask-title"
-            data-reveal="mask-line"
-          >
-            <span className="line">
-              <span>روند کار ما</span>
-            </span>
+          <h2 id="process-title" className="process-title" ref={titleRef}>
+            روند کار ما
           </h2>
         </div>
         <p className="process-lede" data-reveal="fade-up" data-delay="120">
@@ -183,7 +234,7 @@ export default function Process() {
           <article
             key={step.num}
             className="process-item"
-            style={{ zIndex: i + 1, "--cover-scale": COVER_SCALE } as CSSProperties}
+            style={{ zIndex: i + 1 } as CSSProperties}
             aria-label={`گام ${step.num}: ${step.title}`}
           >
             <div className="process-card" data-reveal="fade-up">
@@ -215,6 +266,27 @@ export default function Process() {
               </div>
             </div>
           </article>
+        ))}
+      </div>
+
+      <div className="process-stats">
+        {STATS.map((stat, i) => (
+          <div
+            key={stat.label}
+            className="process-stat"
+            data-reveal="fade-up"
+            data-delay={i ? String(i * 120) : undefined}
+          >
+            <span
+              className="process-stat-num"
+              data-count={stat.value}
+              data-from={stat.from}
+              data-suffix={stat.suffix || undefined}
+            >
+              {stat.from ?? "0"}
+            </span>
+            <span className="process-stat-label">{stat.label}</span>
+          </div>
         ))}
       </div>
     </section>
