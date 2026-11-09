@@ -12,6 +12,7 @@ import Lightbox from "@/components/Lightbox";
 import MaterialsShowcase from "@/components/MaterialsShowcase";
 import MicrocementSamples from "@/components/MicrocementSamples";
 import Nav from "@/components/Nav";
+import ParallaxBand from "@/components/ParallaxBand";
 import Process from "@/components/Process";
 import SectionDivider from "@/components/SectionDivider";
 import SectionNav from "@/components/SectionNav";
@@ -51,7 +52,10 @@ export default function Page() {
         <Services />
         <SectionDivider bg="var(--bg)" />
         <About />
-        <SectionDivider bg="var(--bg)" />
+        {/* The full-bleed parallax band stands in for the divider here: the
+            villa photograph holds still while the page scrolls, then Work
+            slides over it — the joint between the story and the projects. */}
+        <ParallaxBand />
         <Work />
         <SectionDivider bg="var(--bg)" />
         <MaterialsShowcase />

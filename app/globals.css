@@ -1221,6 +1221,34 @@ a{color:inherit;text-decoration:none}
 .err-secondary:focus-visible{outline:2px solid #c9ab84;outline-offset:4px}
 .err-secondary span{font-size:1.15em;line-height:1}
 
+/* ============== PARALLAX BAND ============== */
+/*
+ * The full-bleed image between About and Work: a photograph that seems fixed
+ * while the page scrolls past it, then lets the next section slide over it —
+ * the infinite-window effect.
+ *
+ * `background-attachment: fixed` is the old way and iOS Safari ignores it, so
+ * the band is built from a sticky window instead: a tall section (200svh)
+ * whose inner frame sticks to the viewport top at 100svh, so the photograph
+ * holds still for a full viewport of scrolling and Work then covers it like a
+ * curtain. Pure CSS, no JavaScript, and nothing to disable for reduced motion
+ * — the hold is scroll-driven, not animation, so it moves only when the
+ * reader moves.
+ */
+.pxband{position:relative;height:200svh}
+.pxband-sticky{position:sticky;top:0;height:100svh;overflow:hidden}
+.pxband-sticky img{object-fit:cover;object-position:center}
+@media (max-width:680px){
+  .pxband{height:180svh}
+  /* A portrait frame crops the wide still to its centre, which is mostly
+     sky — and `object-position` cannot fix that, because the scaled still is
+     exactly as tall as the frame, so there is no vertical slack to shift.
+     Zoom into the lower part instead, pivoting on the villa and the pool, so
+     the pale sky stops filling the window. (`sizes` in the component asks for
+     a 140vw variant on phones, so the zoom still has pixels to spend.) */
+  .pxband-sticky img{transform:scale(1.35);transform-origin:center 68%}
+}
+
 /* ============== FOOT ============== */
 .foot{
   display:flex;justify-content:space-between;align-items:center;
