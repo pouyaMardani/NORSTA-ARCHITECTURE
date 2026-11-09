@@ -15,11 +15,14 @@ export const SAMPLE_PLACEHOLDER_DIR = "/images/samples";
 /**
  * The temporary plates.
  *
- * Every record in `records.ts` starts out pointing at one of these: a tinted
- * plate that carries the sample's name and the words «تصویر موقت» (temporary
- * image), so a stand-in can never be mistaken for a photograph of the real
- * material. They are ordinary PNG files in `public/images/samples/`, 1600×2000
- * (the 4/5 the frames are cut for) and large enough to be worth zooming into.
+ * A record whose photograph does not exist yet points at one of these: a
+ * tinted plate that carries the sample's name and the words «تصویر موقت»
+ * (temporary image), so a stand-in can never be mistaken for a photograph of
+ * the real material. They are ordinary PNG files in `public/images/samples/`,
+ * 1600×2000 (the 4/5 the frames are cut for) and large enough to be worth
+ * zooming into. The gallery's records now use real photographs (see
+ * `pexelsPhoto` below); the plates stay as the fallback for any future sample
+ * that arrives before its photograph does.
  *
  * Replacing one is a single edit in `records.ts` — point `image.src` at the real
  * photograph, correct `width`/`height` and `alt`, and drop `placeholder: true`.
@@ -44,6 +47,43 @@ export function placeholderImage(slug: string, alt: string): SampleImage {
     height: SAMPLE_PLACEHOLDER.height,
     alt,
     placeholder: true,
+  };
+}
+
+/**
+ * A real photograph hotlinked from Pexels (free licence, free to use).
+ *
+ * The studio's own close-ups of these finishes do not exist in the repository
+ * yet, and a binary cannot be added through the usual push, so the wall's
+ * photographs come from Pexels' CDN instead of `public/`: each record names
+ * the photo's Pexels id, and this builds the CDN URL that serves it already
+ * cut to the frame's 4/5 at 1600px wide — the size the zoom viewer needs, and
+ * large enough that the viewer's 600% zoom still has pixels to spend.
+ * `next/image` then optimises that URL further (WebP, sized per screen) under
+ * the `images.pexels.com` allow-list in `next.config.ts`.
+ *
+ * `height` is 2000 by default (the frame's 4/5). Pass a shorter height with
+ * `cropTop` when the photograph's own lower edge would otherwise show
+ * something that is not the surface (the raw-earth clay, for instance, is
+ * piled on a dark sheet whose edge creeps into a full-height crop).
+ *
+ * Swapping in the studio's own photograph is one edit in `records.ts`:
+ * replace the `pexelsPhoto(...)` call with
+ * `{ src: "/images/samples/<file>", width, height, alt }` and the frame, the
+ * label and the viewer all follow — no component change is needed.
+ */
+export function pexelsPhoto(
+  id: number,
+  alt: string,
+  height = 2000,
+  cropTop = false,
+): SampleImage {
+  const crop = cropTop ? "&crop=top" : "";
+  return {
+    src: `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=1600&h=${height}&fit=crop${crop}`,
+    width: 1600,
+    height,
+    alt,
   };
 }
 

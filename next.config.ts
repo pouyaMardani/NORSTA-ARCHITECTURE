@@ -28,6 +28,24 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  /**
+   * Remote photographs the site is allowed to optimise.
+   *
+   * The material gallery's sample photographs are hotlinked from Pexels
+   * (free licence) rather than stored in the repository, so `next/image` needs
+   * this allow-list to fetch, resize and serve them as WebP. Nothing else on
+   * the site loads a remote image; add a host here only when a record starts
+   * pointing at one.
+   */
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
+        pathname: "/photos/**",
+      },
+    ],
+  },
   async headers() {
     return [
       {

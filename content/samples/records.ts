@@ -6,25 +6,33 @@
  * grid closes the gap on its own — the gallery, the filter row, the frame
  * variants and the zoom viewer all read this list and nothing else.
  *
- * ── THE STARTER LABELS ─────────────────────────────────────────────────────
- * The names, finishes and colours below are the studio's *editable starters*:
- * short, descriptive, Persian words chosen so the library reads as a real
- * material wall from the first minute. They are not product names and they
- * describe an appearance only — no record states a technical property of the
- * material, because the studio has not published any yet. Replace them
- * word-for-word with the studio's own names whenever they exist.
+ * ── THE NAMES ──────────────────────────────────────────────────────────────
+ * The names below are the studio's own finish names, given by the owner:
+ * بامبو، کرمی، جزیره، پوست پرتقالی، طلایی — plus خاکِ خام، سنگِ زیتونی and
+ * دودِ خاکستری kept from the library to round out the wall. Each one describes
+ * an appearance only — no record states a technical property of the material,
+ * because the studio has not published any yet. Replace a name word-for-word
+ * with the studio's own whenever it changes.
  *
  * ── THE PHOTOGRAPHS ────────────────────────────────────────────────────────
- * Real close-ups of these finishes do not exist in the repository yet, so every
- * record points at a temporary plate built by `placeholderImage()` — a tinted
- * image that says «تصویر موقت» on its face. To publish a real photograph: add it
- * under `public/images/samples/`, then replace the record's `image` with
+ * Every record points at a real close-up photograph, hotlinked from Pexels
+ * (free licence) through `pexelsPhoto()` in `config.ts` — the studio's own
+ * close-ups of these finishes do not exist in the repository yet, and a binary
+ * cannot be added through the usual push, so the wall's photographs come from
+ * Pexels' CDN instead of `public/`. Each one is already cut to the frame's 4/5
+ * at 1600px wide, which is the size the zoom viewer needs; `next/image` then
+ * optimises it further (WebP, sized per screen) under the `images.pexels.com`
+ * allow-list in `next.config.ts`. To publish the studio's own photograph for a
+ * sample: add it under `public/images/samples/`, then replace that record's
+ * `image` with
  *
- *   image: { src: "/images/samples/sand-light.png", width: 1600, height: 2000,
- *            alt: "سطح ماسه‌ای روشن با بافت ریز" },
+ *   image: { src: "/images/samples/bamboo.png", width: 1600, height: 2000,
+ *            alt: "بافتِ بافته‌شده‌ی بامبو با نوارهای روشن" },
  *
  * No component or stylesheet change is needed — the frame, its 4/5 crop and the
- * zoom viewer take whatever image the record names.
+ * zoom viewer take whatever image the record names. A sample with no photograph
+ * at all falls back to a temporary plate via `placeholderImage()` in
+ * `config.ts`, which prints «تصویر موقت» on its face.
  *
  * ── THE FRAMES ─────────────────────────────────────────────────────────────
  * `wood` and `mount` are the curator's knobs: they vary the frame the sample
@@ -33,22 +41,22 @@
  * that omits them simply gets the oak-and-slim default.
  */
 
-import { placeholderImage } from "./config";
+import { pexelsPhoto } from "./config";
 
 import type { SampleDTO } from "./types";
 
 export const SAMPLES: SampleDTO[] = [
   {
     id: 1,
-    slug: "sand-light",
-    name: "ماسه‌ی روشن",
+    slug: "bamboo",
+    name: "بامبو",
     category: "مات",
-    finish: "مات مخملی",
-    color: "ماسه‌ای روشن",
-    colorHex: "#cfc0a8",
+    finish: "بافتِ خطیِ بافته",
+    color: "کاهیِ روشن",
+    colorHex: "#d6cba9",
     description:
-      "پرداختی کم‌رنگ با دانه‌بندی ریز؛ زمینه‌ای آرام برای دیوارهایی که باید در سایه بمانند.",
-    image: placeholderImage("sand-light", "نمونه‌ی موقت سطح ماسه‌ای روشن"),
+      "نوارهای بافته‌شده‌ی بامبو؛ خط‌های باریک که نور را می‌شکنند و سطحی گرم و زنده می‌سازند.",
+    image: pexelsPhoto(36165506, "بافتِ بافته‌شده‌ی بامبو با نوارهای روشن"),
     featured: true,
     sortOrder: 10,
     wood: "oak",
@@ -56,15 +64,15 @@ export const SAMPLES: SampleDTO[] = [
   },
   {
     id: 2,
-    slug: "almond-matte",
-    name: "بادامِ مات",
-    category: "مات",
-    finish: "مات نرم",
-    color: "بادامی گرم",
-    colorHex: "#cbb094",
+    slug: "cream",
+    name: "کرمی",
+    category: "نیمه‌صیقلی",
+    finish: "نیمه‌صیقلیِ نرم",
+    color: "کرمِ گرم",
+    colorHex: "#dec39b",
     description:
-      "تُنی گرم و مات با بازتابِ کم؛ سطحی که نور را در خود نگه می‌دارد و آن را بازنمی‌گرداند.",
-    image: placeholderImage("almond-matte", "نمونه‌ی موقت سطح بادامی گرم"),
+      "کرمیِ گرم با دانه‌بندیِ ریز؛ سطحی یک‌دست و آرام که نور را نرم پخش می‌کند.",
+    image: pexelsPhoto(4913801, "سطحِ کرمیِ گرم با دانه‌بندیِ ریز"),
     featured: true,
     sortOrder: 20,
     wood: "walnut",
@@ -72,15 +80,15 @@ export const SAMPLES: SampleDTO[] = [
   },
   {
     id: 3,
-    slug: "chalk-white",
-    name: "سفید گچی",
-    category: "نیمه‌صیقلی",
-    finish: "نیمه‌صیقلی ری‌زدانه",
-    color: "سفید گچی",
-    colorHex: "#e2dccf",
+    slug: "island",
+    name: "جزیره",
+    category: "مات",
+    finish: "ماتِ دانه‌ریز",
+    color: "شنیِ طلایی",
+    colorHex: "#c4a26d",
     description:
-      "روشن‌ترین نمونه‌ی گالری؛ سطحی یک‌دست با پرداختی نیمه‌مات و لکه‌های بسیار کم‌رنگ.",
-    image: placeholderImage("chalk-white", "نمونه‌ی موقت سطح سفید گچی"),
+      "دانه‌های ریزِ شنِ طلایی؛ یادِ ساحل و جزیره — سطحی یک‌دست که زیر نور گرم می‌درخشد.",
+    image: pexelsPhoto(34208459, "دانه‌های ریزِ شنِ طلایی"),
     featured: true,
     sortOrder: 30,
     wood: "smoked",
@@ -88,76 +96,76 @@ export const SAMPLES: SampleDTO[] = [
   },
   {
     id: 4,
-    slug: "smoke-grey",
-    name: "دودِ خاکستری",
-    category: "صیقلی",
-    finish: "صیقلی نرم",
-    color: "دودی خاکستری",
-    colorHex: "#9d9891",
+    slug: "orange-peel",
+    name: "پوست پرتقالی",
+    category: "مات",
+    finish: "ماتِ حفره‌دار",
+    color: "سفیدِ سرد",
+    colorHex: "#d9dde0",
     description:
-      "خاکستریِ دودی با بازتابِ ملایم؛ رگه‌های محو حرکت ماله در آن خوانده می‌شود.",
-    image: placeholderImage("smoke-grey", "نمونه‌ی موقت سطح دودی خاکستری"),
+      "سطحی حفره‌دار و برجسته، چون پوستِ پرتقال؛ برآمدگی‌های ریز که با حرکتِ نور سایه‌روشن می‌سازند.",
+    image: pexelsPhoto(5497877, "سطحِ سفیدِ حفره‌دار چون پوستِ پرتقال"),
     sortOrder: 40,
     wood: "walnut",
     mount: "wide",
   },
   {
     id: 5,
-    slug: "raw-earth",
-    name: "خاکِ خام",
-    category: "مات",
-    finish: "مات خشن",
-    color: "خاکی گرم",
-    colorHex: "#a9927a",
+    slug: "golden",
+    name: "طلایی",
+    category: "صیقلی",
+    finish: "صیقلیِ فلزی",
+    color: "طلاییِ براق",
+    colorHex: "#d9a441",
     description:
-      "خاکیِ گرم با بافتِ محسوس و لبه‌های آرام؛ نزدیک‌ترین نمونه‌ی گالری به خاکِ خام.",
-    image: placeholderImage("raw-earth", "نمونه‌ی موقت سطح خاکی گرم"),
+      "طلاییِ براق با چین‌و‌تای فلزی؛ سطحی که نور را می‌گیرد و به‌صورتِ لکه‌های گرم برمی‌گرداند.",
+    image: pexelsPhoto(7430598, "ورقِ طلاییِ چین‌خورده با بازتابِ فلزی"),
+    featured: true,
     sortOrder: 50,
     wood: "oak",
     mount: "double",
   },
   {
     id: 6,
-    slug: "olive-stone",
-    name: "سنگِ زیتونی",
-    category: "پتینه",
-    finish: "پتینه‌ی کهنه",
-    color: "زیتونی تیره",
-    colorHex: "#7d7b62",
+    slug: "raw-earth",
+    name: "خاکِ خام",
+    category: "مات",
+    finish: "ماتِ خشن",
+    color: "خاکِ رسیِ سرخ",
+    colorHex: "#a05a36",
     description:
-      "زیتونیِ تیره با سایه‌روشنِ کهنه؛ پرداختی که گذرِ زمان در آن خوانده می‌شود.",
-    image: placeholderImage("olive-stone", "نمونه‌ی موقت سطح زیتونی تیره"),
-    featured: true,
+      "خاکِ رسیِ سرخ با دانه‌بندیِ محسوس؛ نزدیک‌ترین نمونه‌ی گالری به خاکِ خام.",
+    image: pexelsPhoto(6104931, "خاکِ رسیِ سرخ با بافتِ دانه‌ای", 1700, true),
     sortOrder: 60,
     wood: "smoked",
     mount: "wide",
   },
   {
     id: 7,
-    slug: "walnut-brown",
-    name: "قهوه‌ای گردویی",
+    slug: "olive-stone",
+    name: "سنگِ زیتونی",
     category: "پتینه",
-    finish: "پتینه‌ی دودی",
-    color: "قهوه‌ای گردویی",
-    colorHex: "#6d4d35",
+    finish: "پتینه‌ی کهنه",
+    color: "زیتونیِ تیره",
+    colorHex: "#3d5a43",
     description:
-      "قهوه‌ایِ گردویی با عمقِ تیره و لکه‌های دودی؛ سطحی گرم برای نورِ کم.",
-    image: placeholderImage("walnut-brown", "نمونه‌ی موقت سطح قهوه‌ای گردویی"),
+      "زیتونیِ تیره با سایه‌روشنِ کهنه؛ پرداختی که گذرِ زمان در آن خوانده می‌شود.",
+    image: pexelsPhoto(6127318, "دیوارِ سبزِ کهنه با لکه‌های روشنِ پتینه"),
     sortOrder: 70,
     wood: "walnut",
     mount: "double",
   },
   {
     id: 8,
-    slug: "travertine-cream",
-    name: "تراورتنِ کرم",
-    category: "نیمه‌صیقلی",
-    finish: "نیمه‌صیقلی مات",
-    color: "کرمِ روشن",
-    colorHex: "#ddd2bd",
+    slug: "smoke-grey",
+    name: "دودِ خاکستری",
+    category: "صیقلی",
+    finish: "صیقلیِ نرم",
+    color: "دودیِ خاکستری",
+    colorHex: "#8e8982",
     description:
-      "کرمِ روشن با بافتِ سنگی و رگه‌های کم‌رنگ؛ ایستاده میان سفید و خاکی.",
-    image: placeholderImage("travertine-cream", "نمونه‌ی موقت سطح کرم روشن"),
+      "خاکستریِ دودی با بازتابِ ملایم؛ رگه‌های محو حرکت ماله در آن خوانده می‌شود.",
+    image: pexelsPhoto(6788341, "دیوارِ بتنیِ خاکستری با ترک‌ها و خراش‌های ظریف"),
     sortOrder: 80,
     wood: "oak",
     mount: "slim",
