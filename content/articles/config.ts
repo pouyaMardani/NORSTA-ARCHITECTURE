@@ -10,12 +10,19 @@
 import type { ArticleAuthor, ArticleImage } from "./types";
 
 /**
- * The sample-image pool.
+ * The cover-image pool.
  *
  * This repository ships no dedicated editorial photography, so the magazine
  * reuses the project's own images (`public/images/`) rather than adding a dozen
  * new files. Every entry is a local path, so no record can ever point at a
  * missing URL; a record may also point at any other local image directly.
+ *
+ * Every one of the twelve articles has its own cover now, and each cover
+ * shows what its article is about — the kitchens piece shows the studio's
+ * finished kitchen, the substrate piece shows the same kitchen raw, the
+ * colours piece shows the trowel-marked texture up close, and the floors
+ * piece shows the dark living-room floor. No cover is shared between two
+ * articles, and no cover shows a place its article never mentions.
  *
  * To replace a cover: change the `src` here (affects every article using it) or
  * in the single record in `records.ts` (affects that article only). The alt text
@@ -59,6 +66,31 @@ export const ARTICLE_IMAGES = {
        original villa still rather than a file the page has stopped copying. */
     src: "/images/hero-villa.png",
     alt: "ویلایی با سطوح ساده و پنجرههای بزرگ",
+  },
+  kitchen: {
+    /* The studio's finished kitchen — the same pair as the About section's
+       before/after. Used by the kitchens and countertops article. */
+    src: "/images/after.png",
+    alt: "آشپزخانه‌ی روشن با جزیره‌ی مرکزی و سطوح یکدست میکروسمنت",
+  },
+  livingRoom: {
+    /* The dark living room, a floor and a wall in one frame. Used by the
+       floors and walls article. */
+    src: "/images/www/surface-floor-03.jpg",
+    alt: "نشیمن با کف تیره، دیوار چوبی و پنجره‌های بزرگ",
+  },
+  rawKitchen: {
+    /* The same kitchen, raw — bare concrete walls and island, open carcases.
+       Used by the substrate-preparation article: it is, literally, a
+       substrate waiting for its first layer. */
+    src: "/images/befor.png",
+    alt: "آشپزخانه پیش از اجرا؛ بستر بتنی خام و جزیره‌ی ناتمام",
+  },
+  sandFinish: {
+    /* The trowel-marked microcement texture, up close. Used by the colours,
+       textures and patina article. */
+    src: "/images/www/finish-sand.jpg",
+    alt: "نمای نزدیک از بافت میکروسمنت با رد ماله",
   },
 } satisfies Record<string, ArticleImage>;
 

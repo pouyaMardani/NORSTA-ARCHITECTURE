@@ -108,7 +108,7 @@ export const ARTICLES: ArticleDTO[] = [
     author: ARTICLE_CONFIG.defaultAuthor,
     publishedAt: "2024-11-18",
     readingTime: 6,
-    coverImage: ARTICLE_IMAGES.archDetail,
+    coverImage: ARTICLE_IMAGES.villa,
     seoTitle: "مزایا و محدودیت‌های میکروسمنت",
     seoDescription:
       "مزایا و محدودیت‌های میکروسمنت در یک نگاه: سطح یکپارچه، ضخامت کم و آزادی فرم در برابر حساسیت به بستر، وابستگی به سیلر و هزینه‌ی آماده‌سازی.",
@@ -267,7 +267,7 @@ export const ARTICLES: ArticleDTO[] = [
     author: ARTICLE_CONFIG.defaultAuthor,
     publishedAt: "2025-03-04",
     readingTime: 5,
-    coverImage: ARTICLE_IMAGES.teaPavilion,
+    coverImage: ARTICLE_IMAGES.kitchen,
     seoTitle: "میکروسمنت در آشپزخانه و روی کانتر",
     seoDescription:
       "میکروسمنت روی کانتر و دیوار آشپزخانه: رفتار در برابر گرما، لکه و برش، انتخاب سیلر، جزئیات سینک و لبه‌ها و محدودیت‌هایی که پیش از تصمیم باید بدانید.",
@@ -318,7 +318,7 @@ export const ARTICLES: ArticleDTO[] = [
     author: ARTICLE_CONFIG.defaultAuthor,
     publishedAt: "2024-10-22",
     readingTime: 5,
-    coverImage: ARTICLE_IMAGES.teaPavilionDetail,
+    coverImage: ARTICLE_IMAGES.livingRoom,
     seoTitle: "میکروسمنت روی کف و دیوار؛ تفاوت‌ها و نکته‌ها",
     seoDescription:
       "اجرای میکروسمنت روی کف و دیوار: تفاوت سایش، درزهای حرکتی، بازسازی روی کاشی و سرامیک موجود، پله‌ها و آنچه روی هر بستر باید بررسی شود.",
@@ -373,7 +373,7 @@ export const ARTICLES: ArticleDTO[] = [
     author: ARTICLE_CONFIG.defaultAuthor,
     publishedAt: "2024-09-16",
     readingTime: 6,
-    coverImage: ARTICLE_IMAGES.stairs,
+    coverImage: ARTICLE_IMAGES.rawKitchen,
     seoTitle: "آماده‌سازی سطح و الزامات بستر برای میکروسمنت",
     seoDescription:
       "آماده‌سازی بستر پیش از اجرای میکروسمنت: بررسی رطوبت، پایداری و تراز، تمیزکاری، انتخاب پرایمر و شرایط دمایی که کیفیت نهایی را تعیین می‌کنند.",
@@ -424,7 +424,7 @@ export const ARTICLES: ArticleDTO[] = [
     author: ARTICLE_CONFIG.defaultAuthor,
     publishedAt: "2025-01-28",
     readingTime: 6,
-    coverImage: ARTICLE_IMAGES.headquarters,
+    coverImage: ARTICLE_IMAGES.teaPavilionDetail,
     seoTitle: "مراحل اجرای میکروسمنت از آماده‌سازی تا سیلر",
     seoDescription:
       "مراحل اجرای حرفه‌ای میکروسمنت: بازدید و برنامه‌ریزی، آماده‌سازی و پرایمر، لایه‌ی پایه، لایه‌های میانی، پرداخت، سیلر و محافظت سطح؛ با نکته‌های کارگاهی.",
@@ -538,7 +538,7 @@ export const ARTICLES: ArticleDTO[] = [
     publishedAt: "2025-02-25",
     readingTime: 6,
     featured: true,
-    coverImage: ARTICLE_IMAGES.courtyard,
+    coverImage: ARTICLE_IMAGES.sandFinish,
     seoTitle: "رنگ، بافت و پرداخت‌های پتینه در میکروسمنت",
     seoDescription:
       "انتخاب رنگ و بافت میکروسمنت و پرداخت‌های پتینه: لکه‌گذاری، سطح مات یا براق، تناژهای سنگی و نکته‌های انتخاب نمونه با توجه به نور و متریال‌های مجاور.",
@@ -656,7 +656,7 @@ export const ARTICLES: ArticleDTO[] = [
     author: ARTICLE_CONFIG.defaultAuthor,
     publishedAt: "2025-03-18",
     readingTime: 6,
-    coverImage: ARTICLE_IMAGES.villa,
+    coverImage: ARTICLE_IMAGES.headquarters,
     seoTitle: "عوامل مؤثر بر قیمت و هزینه‌ی میکروسمنت",
     seoDescription:
       "چرا قیمت متری میکروسمنت کافی نیست؟ آماده‌سازی بستر، نوع سیستم و تعداد لایه، سیلر، جزئیات، دسترسی و مدت اجرا؛ همراه با چک‌لیست درخواست برآورد.",
