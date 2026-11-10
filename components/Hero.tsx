@@ -57,7 +57,7 @@ export default function Hero() {
       </noscript>
 
       <div className="scroll-cue">
-        <a href="#applications">
+        <a href="#results">
           <span>Scroll</span>
           <i />
         </a>

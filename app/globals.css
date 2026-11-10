@@ -11,7 +11,6 @@
 :root{
   --bg:#f3e9de;          /* warm ivory matched to hero image top */
   --bg-2:#ede2d3;
-  --bg-3:#d9cbb6;          /* muted warm stone — the Applications cards, clearly darker than the ground but a stone, not a tan */
   --ink:#1d1c18;
   --ink-soft:#3a3833;
   --muted:#8a857a;
@@ -5811,74 +5810,243 @@ html:has(body.mv-open){overflow:hidden}
   .process-col-desc-wrap{transition:none}
 }
 
-/* ============== APPLICATIONS ============== */
+/* ============== RESULTS ============== */
 /*
- * The applications — where microcement goes — rebuilt as a calm,
- * compositor-only stack. No scroll JavaScript: the old stack drove each
- * card's tilt, scale, brightness and halo from a rAF sync, which read layout
- * on every frame and composited 3D transforms, a filter and a 90px-blur glow
- * over five full-viewport cards — the lag this rebuild removes. The stack is
- * pure CSS now (`position: sticky` pins each card while the next slides over
- * it), and the only motion is the site's one-time `[data-reveal]` entrance.
- * Ground is the lighter ivory (`--bg`) and the cards are a muted warm stone
- * (`--bg-3`) — clearly darker than the ground, but a stone, not a tan, so
- * the warm photographs sit on it rather than fight it.
+ * The results — Framo's `ag2-results` ("Results, not reports.") section,
+ * rebuilt for Norsta with the studio's own projects. The design is the
+ * reference's, exactly: a white section with a dot grid, a two-column head
+ * (a light title with a lime marker band on the strong line, a lead and a
+ * dark pill button), a pinned horizontal reel of rounded case cards, a lime
+ * "more" card, and a floating HUD (prev/next, a lime progress rail and a
+ * 01 / 07 counter).
+ *
+ * Colours are the reference's own (a cool white/green, not the site's warm
+ * ivory): section #ffffff, cards #eef4f2, ink #0b2420, soft #4d6662, hair
+ * #d9e4e1, rail #e8efed, lime #8ee26b, dark button #04221f, on-lime
+ * #232323. Type is the site's own Vazirmatn (the reference's Inter/Urbanist
+ * carry no Persian), in the reference's weights and sizes: a light display
+ * title, a bold figure.
+ *
+ * The reel is a pinned scroll on desktop (a tall section with a sticky
+ * viewport; the track is translated as the page scrolls, scrubbed 1:1 by
+ * the component). Below 768px the pin is destroyed and the reel becomes a
+ * native swipe row with scroll-snap, the HUD hidden. The section is RTL,
+ * so the track translates to the right (positive X) and the dots sit at
+ * the top-left, above the aside.
  */
-.applications{position:relative;padding:160px clamp(20px,2.5vw,36px) 160px;background:var(--bg)}
-.app-head{
-  display:flex;align-items:flex-end;justify-content:space-between;gap:48px;
-  margin-bottom:96px;
+.results{position:relative;overflow:clip;background:#fff;padding:clamp(5rem,10vw,8rem) 0 0}
+.results-dots{
+  position:absolute;top:0;left:0;width:min(34rem,60%);height:26rem;pointer-events:none;
+  background-image:radial-gradient(circle,#06302b 1.25px,transparent 1.75px);
+  background-size:14px 14px;opacity:.22;
+  -webkit-mask-image:linear-gradient(to right bottom,#000,transparent 62%);
+  mask-image:linear-gradient(to right bottom,#000,transparent 62%);
 }
-.app-title{
-  font-size:var(--fs-subdisplay);font-weight:600;line-height:var(--lh-heading);
-  color:var(--ink);margin-top:18px;
+.results-head{
+  max-width:1280px;margin:0 auto;padding-inline:40px;
+  display:grid;gap:28px;align-items:end;
 }
-.app-lede{
-  max-width:520px;padding-bottom:8px;
-  font-size:clamp(18px,1.6vw,22px);font-weight:600;line-height:1.6;
-  color:var(--ink-soft);text-align:end;
+@media (min-width:1024px){
+  .results-head{grid-template-columns:minmax(0,1fr) minmax(0,26rem);column-gap:64px}
 }
-.app-stack{display:flex;flex-direction:column;gap:16px;padding-bottom:30vh}
-.app-item{position:sticky;top:0}
-.app-card{
-  display:grid;grid-template-columns:5fr 7fr;gap:48px;align-items:stretch;
-  /* Full height: each box fills the viewport as it arrives, so the stack
-     reads as a deck of full screens rather than a run of short cards. */
-  min-height:100svh;padding:48px;background:var(--bg-3);border:1px solid var(--hair);
-  /* A quiet, static shadow: the overlap of the stack reads through the
-     card's own edge and a soft drop, with no blur to composite per frame. */
-  box-shadow:0 24px 48px -32px rgba(29,28,24,.35);
+.results-title{
+  font-family:var(--fa);font-weight:300;
+  font-size:clamp(2.25rem,1.3rem + 3.3vw,4.75rem);line-height:1.02;letter-spacing:-.02em;
+  color:#0b2420;max-width:17ch;text-wrap:balance;
 }
-/* The photograph fills the card's full height, as the reference's does. */
-.app-media{position:relative;height:100%;overflow:hidden}
-.app-content{min-width:0;display:flex;flex-direction:column;justify-content:center}
-.app-num{
-  font-family:var(--fa);font-size:34px;color:var(--muted);font-weight:300;
-  margin-bottom:18px;
+.results-marker{
+  font-weight:600;letter-spacing:-.02em;white-space:nowrap;
+  background:linear-gradient(#8ee26b,#8ee26b);
+  background-size:100% .34em;background-repeat:no-repeat;background-position:left 0 bottom .1em;
+  padding-inline:.04em;margin-inline:-.04em;
 }
-.app-card-title{
-  font-size:clamp(26px,2.4vw,34px);font-weight:600;line-height:1.2;
-  letter-spacing:-.01em;color:var(--ink);margin-bottom:14px;
+.results-aside{display:grid;gap:20px;max-width:26rem}
+@media (min-width:1024px){.results-aside{padding-bottom:8px}}
+.results-lead{
+  font-size:clamp(1.0625rem,.98rem + .3vw,1.25rem);font-weight:400;line-height:1.6;letter-spacing:-.01em;
+  color:#4d6662;
 }
-.app-tag{
-  font-size:var(--fs-ui);font-weight:600;color:var(--ink-soft);
-  padding-bottom:16px;margin-bottom:20px;border-bottom:1px solid var(--hair);
+.results-btn{
+  display:inline-flex;align-items:center;gap:16px;
+  background:#04221f;color:#fff;border:1px solid #04221f;border-radius:9999px;
+  padding-block:6px;padding-inline-start:26px;padding-inline-end:6px;
+  font-size:14px;font-weight:600;line-height:1.6;text-decoration:none;
 }
-.app-desc{
-  font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-soft);
-  text-align:justify;text-justify:inter-word;
+.results-btn-chip{
+  display:grid;place-items:center;width:36px;height:36px;flex:none;
+  background:rgba(255,255,255,.25);border-radius:9999px;color:#fff;
 }
-@media (max-width:680px){
-  .applications{padding:96px clamp(20px,2.5vw,36px) 120px}
-  .app-head{flex-direction:column;align-items:flex-start;gap:24px;margin-bottom:48px}
-  .app-lede{text-align:start}
-  .app-stack{gap:16px}
-  .app-card{grid-template-columns:1fr;gap:24px;min-height:100svh;padding:24px}
-  .app-media{order:-1;height:auto;aspect-ratio:16/10;min-height:180px}
-  .app-num{margin-bottom:12px}
+.results-btn-chip svg{width:16px;height:16px}
+.results-reel{margin-top:clamp(1.5rem,.5rem + 3vw,3rem)}
+.results-viewport{position:relative}
+.results-track{
+  display:flex;gap:20px;
+  padding-inline:max(20px,calc((100% - 1280px)/2 + 40px));
+}
+.results-card{
+  display:flex;flex-direction:column;flex:none;
+  width:84vw;background:#eef4f2;color:#0b2420;border-radius:36px;padding:10px;overflow:hidden;
+  text-decoration:none;
+}
+@media (min-width:640px){.results-card{width:26rem}}
+@media (min-width:1024px){.results-card{width:28rem}}
+.results-shot{
+  position:relative;flex:1 1 auto;min-height:7.5rem;aspect-ratio:16/10;
+  border-radius:26px;overflow:hidden;background:#eef4f2;
+}
+.results-tags{
+  position:absolute;bottom:12px;inset-inline-start:12px;display:flex;gap:6px;
+  list-style:none;margin:0;padding:0;
+}
+.results-tags li{
+  background:rgba(4,34,30,.38);color:#fff;
+  font-size:13px;font-weight:600;line-height:1.2;letter-spacing:-.01em;
+  padding:5px 12px;border-radius:9999px;
+  backdrop-filter:blur(12px) saturate(1.4);
+  -webkit-backdrop-filter:blur(12px) saturate(1.4);
+}
+.results-body{
+  display:flex;flex-direction:column;flex:none;
+  padding:24px 20px 18px;container-type:inline-size;
+}
+.results-client{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;align-items:center;
+}
+.results-client h3{
+  font-size:20px;font-weight:600;line-height:1.2;letter-spacing:-.015em;color:#0b2420;
+}
+.results-client h3 + span{
+  font-size:15px;font-weight:400;line-height:1.6;color:#4d6662;
+}
+.results-arrow{
+  display:grid;place-items:center;width:44px;height:44px;flex:none;
+  background:#fff;border-radius:9999px;color:#0b2420;
+}
+.results-arrow svg{width:18px;height:18px}
+.results-result{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+  margin-top:clamp(1.25rem,6cqi,2rem);
+}
+.results-figure{
+  font-family:var(--fa);font-weight:700;
+  font-size:min(5.5rem,21cqi);line-height:.92;letter-spacing:-.04em;
+  color:#0b2420;font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.results-spark{
+  width:min(6rem,24cqi);height:auto;flex:none;margin-bottom:6px;
+  fill:none;stroke:#0b2420;stroke-width:2.25;stroke-linecap:round;stroke-linejoin:round;
+}
+.results-spark-halo{fill:#8ee26b;fill-opacity:.4;stroke:none}
+.results-spark-dot{fill:#8ee26b;stroke:none}
+.results-label{
+  font-size:16px;font-weight:400;line-height:1.4;letter-spacing:-.01em;color:#4d6662;
+  margin-top:10px;
+}
+.results-subs{
+  display:grid;grid-template-columns:1fr 1fr;
+  margin-top:20px;padding-top:16px;border-top:1px solid #d9e4e1;
+}
+.results-subs > div{display:flex;flex-direction:column-reverse;gap:2px}
+.results-subs dt{font-size:15px;font-weight:400;line-height:1.6;color:#4d6662}
+.results-subs dd{
+  font-family:var(--fa);font-size:22px;font-weight:700;line-height:1.15;color:#0b2420;margin:0;
+}
+.results-subs > div + div{
+  border-inline-start:1px solid #d9e4e1;padding-inline-start:20px;
+}
+.results-more{
+  position:relative;overflow:hidden;flex:none;
+  display:flex;flex-direction:column;
+  width:72vw;background:#8ee26b;color:#232323;border-radius:36px;
+  padding:clamp(1.5rem,1rem + 2vw,2.25rem);text-decoration:none;
+}
+@media (min-width:640px){.results-more{width:22rem}}
+@media (min-width:1024px){.results-more{width:24rem}}
+.results-more-dots{
+  position:absolute;bottom:0;left:0;width:100%;height:70%;pointer-events:none;
+  background-image:radial-gradient(circle,#232323 1.25px,transparent 1.75px);
+  background-size:14px 14px;opacity:.22;
+  -webkit-mask-image:linear-gradient(to right top,#000,transparent 70%);
+  mask-image:linear-gradient(to right top,#000,transparent 70%);
+}
+.results-more-eyebrow{
+  font-size:13px;font-weight:600;color:#232323;
+}
+.results-more-big{
+  font-weight:300;font-size:clamp(2.25rem,1.6rem + 2vw,3.25rem);line-height:1.02;letter-spacing:-.02em;
+  color:#232323;margin-top:20px;text-wrap:balance;
+}
+.results-more-big strong{font-weight:600}
+.results-more-clients{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
+.results-more-clients > span{
+  padding:6px 14px;border-radius:9999px;
+  font-size:15px;font-weight:500;line-height:1.2;color:#232323;
+  box-shadow:inset 0 0 0 1px rgba(35,35,35,.22);
+}
+.results-more-foot{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:20px;
+  margin-top:auto;padding-top:24px;
+  font-size:16px;font-weight:400;line-height:1.45;color:#232323;
+}
+.results-more-foot > span:first-child{max-width:12rem}
+.results-more-disc{
+  display:grid;place-items:center;flex:none;
+  width:clamp(4.5rem,3.5rem + 3vw,6rem);aspect-ratio:1;
+  background:#232323;color:#8ee26b;border-radius:9999px;
+  transition:transform .4s cubic-bezier(.22,1,.36,1);
+}
+.results-more-disc svg{width:32px;height:32px}
+.results-more:hover .results-more-disc{transform:rotate(-45deg)}
+.results-hud{display:none}
+@media (min-width:768px){
+  .results-viewport{
+    position:sticky;top:0;height:100svh;overflow:hidden;
+    display:flex;align-items:center;
+  }
+  .results-track{will-change:transform}
+  .results-reel.is-pinned .results-hud{
+    position:absolute;inset-inline-start:max(20px,calc((100% - 1280px)/2 + 40px));bottom:28px;
+    display:flex;align-items:center;gap:14px;
+    background:rgba(255,255,255,.86);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border:1px solid #e8efed;border-radius:9999px;
+    padding-block:8px;padding-inline-start:8px;padding-inline-end:20px;
+  }
+}
+.results-nav-btn{
+  display:inline-grid;place-items:center;width:40px;height:40px;flex:none;
+  background:#fff;border:1px solid #d9e4e1;border-radius:999px;color:#0b2420;cursor:pointer;
+}
+.results-nav-btn svg{width:16px;height:16px}
+.results-nav-btn:disabled{opacity:.4;cursor:default}
+.results-rail{
+  width:clamp(8rem,18vw,16rem);height:2px;background:#e8efed;border-radius:9999px;
+  position:relative;overflow:hidden;flex:none;
+}
+.results-rail > span{
+  display:block;width:100%;height:100%;background:#8ee26b;border-radius:9999px;
+  transform:scaleX(0);transform-origin:right;
+}
+.results-counter{
+  font-size:14px;font-weight:500;color:#0b2420;
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.results-counter-sep{color:#4d6662}
+@media (max-width:767px){
+  .results-head{padding-inline:20px}
+  .results-viewport{
+    overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  }
+  .results-viewport::-webkit-scrollbar{display:none}
+  .results-card,.results-more{scroll-snap-align:start}
+  .results-hud{display:none}
 }
 @media (prefers-reduced-motion: reduce){
-  .app-item{position:static}
-  .app-stack{padding-bottom:0}
-  .app-card{box-shadow:none}
+  .results-viewport{
+    position:relative;height:auto;overflow-x:auto;overflow-y:hidden;
+    scroll-snap-type:x mandatory;display:block;
+  }
+  .results-card,.results-more{scroll-snap-align:start}
+  .results-hud{display:none}
 }

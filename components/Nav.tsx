@@ -48,7 +48,7 @@ const LINKS = [
   { href: "#products", label: "محصولات" },
   { href: "#work", label: "پروژه‌ها" },
   { href: "#about", label: "درباره ما" },
-  { href: "#applications", label: "کاربردها" },
+  { href: "#results", label: "نتایج" },
   { href: "#top", label: "خانه" },
 ] as const;
 

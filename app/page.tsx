@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 
 import About from "@/components/About";
 import AcademyPromo from "@/components/AcademyPromo";
-import Applications from "@/components/Applications";
 import Articles from "@/components/Articles";
 import Contact from "@/components/Contact";
 import Craftsman from "@/components/Craftsman";
@@ -15,6 +14,7 @@ import MicrocementSamples from "@/components/MicrocementSamples";
 import Nav from "@/components/Nav";
 import ParallaxBand from "@/components/ParallaxBand";
 import Process from "@/components/Process";
+import Results from "@/components/Results";
 import SectionDivider from "@/components/SectionDivider";
 import SectionNav from "@/components/SectionNav";
 import SiteInteractions from "@/components/SiteInteractions";
@@ -86,11 +86,11 @@ export default function Page() {
             as a stripe of the wrong colour where two dark sections meet. See
             `components/SectionDivider.tsx`. */}
         <SectionDivider bg="var(--bg)" />
-        {/* The process sits directly under the hero, before the applications. */}
+        {/* The process sits directly under the hero, before the results. */}
         <Process />
         <SectionDivider bg="var(--bg-2)" />
-        <Applications />
-        <SectionDivider bg="var(--bg)" />
+        <Results />
+        <SectionDivider bg="#fff" />
         <About />
         {/* The full-bleed parallax band stands in for the divider here: the
             villa photograph holds still while the page scrolls, then Work

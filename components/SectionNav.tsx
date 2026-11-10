@@ -27,7 +27,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const SECTIONS = [
   { id: "top", label: "خانه" },
   { id: "process", label: "روند کار" },
-  { id: "applications", label: "کاربردها" },
+  { id: "results", label: "نتایج" },
   { id: "about", label: "درباره ما" },
   { id: "work", label: "پروژه‌ها" },
   { id: "products", label: "محصولات" },
