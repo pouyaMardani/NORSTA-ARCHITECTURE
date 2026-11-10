@@ -8,7 +8,7 @@
  * Each plate is a 1200×630 JPEG at 200 KB or less — the size a social crawler
  * expects, cut from a photograph the site already ships, so no new binary ever
  * has to be committed: `package.json` runs this from `prebuild`, next to
- * `make-favicon.mjs`, and the deploy regenerates the plates the same way it
+ * `make-brand-mark.mjs`, and the deploy regenerates the plates the same way it
  * regenerates the favicon rasters. The metadata that points at them lives in
  * the section layouts (`app/page.tsx`, `app/articles/layout.tsx` and
  * `app/academy/layout.tsx`).

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -154,7 +155,16 @@ export default function Nav() {
       data-menu-open={open ? "true" : undefined}
     >
       <a href={isHome ? "#top" : "/#top"} className="brand" onClick={() => setOpen(false)}>
-        NORSTA HOME
+        <Image
+          src="/images/logo-n.svg"
+          alt=""
+          aria-hidden="true"
+          width={30}
+          height={30}
+          priority
+          className="brand-mark"
+        />
+        <span>NORSTA HOME</span>
       </a>
 
       <button

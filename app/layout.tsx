@@ -60,19 +60,20 @@ export const metadata: Metadata = {
   title: SITE_TITLE,
   description: SITE_TAGLINE,
 
-  /* The mark: a carved `N` on a warm-stone plaque — the studio's own two
-     colours as one full-bleed square tile, a charcoal monogram whose spine is
-     a single curved wall. Cut by `scripts/make-favicon.mjs` (run it after
-     touching the geometry there), served from `public/`, and inherited by
-     every route through this root layout.
+  /* The mark: a three-dimensional `N` in dark stone on a warm-stone tile —
+     the studio's own two colours as one full-bleed square, the charcoal
+     letter rendered as a solid bevelled block rather than a flat drawing.
+     Cut by `scripts/make-brand-mark.mjs` from the raster source in
+     `scripts/brand-mark.png.b64` (run it after touching the source), served
+     from `public/`, and inherited by every route through this root layout.
 
      Order matters only as a tie-break, so the two vectors come last and win:
-     `/favicon.svg` for light chrome, `/favicon-dark.svg` — the same drawing
-     inverted, a charcoal plaque — behind a `prefers-color-scheme: dark` media
+     `/favicon.svg` for light chrome, `/favicon-dark.svg` — the same mark
+     inverted, a charcoal tile — behind a `prefers-color-scheme: dark` media
      query. The PNGs and the ICO are the exact-pixel and legacy fallbacks, and
-     Safari, which ignores SVG favicons, gets the stone plaque from
-     `/favicon.ico` — the charcoal monogram on it reads on a light tab, and the
-     stone tile itself reads on a dark one. */
+     Safari, which ignores SVG favicons, gets the stone tile from
+     `/favicon.ico` — the charcoal letter on it reads on a light tab, and the
+     tile itself reads on a dark one. */
   /* ── The absolute address, and the share card's own defaults ──────────────
      `metadataBase` is what turns every relative URL in this metadata into the
      absolute one a crawler needs: the canonical link, the Open Graph image and
