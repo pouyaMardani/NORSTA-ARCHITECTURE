@@ -5888,15 +5888,25 @@ html:has(body.mv-open){overflow:hidden}
 .results-label{
   font-size:16px;font-weight:400;line-height:1.4;letter-spacing:-.01em;color:#4d6662;
   margin-top:10px;
+  /* Two lines, everywhere: the first card's copy ran to a third line, which
+     made its body taller and squeezed its photograph shorter than the rest.
+     The full description still lives on the project page itself. */
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  line-clamp:2;overflow:hidden;
 }
 .results-subs{
   display:grid;grid-template-columns:1fr 1fr;
   margin-top:20px;padding-top:16px;border-top:1px solid #d9e4e1;
 }
-.results-subs > div{display:flex;flex-direction:column-reverse;gap:2px}
+.results-subs > div{display:flex;flex-direction:column-reverse;gap:2px;min-width:0}
 .results-subs dt{font-size:15px;font-weight:400;line-height:1.6;color:#4d6662}
 .results-subs dd{
   font-family:var(--fa);font-size:22px;font-weight:700;line-height:1.15;color:#0b2420;margin:0;
+  /* One line, everywhere: on a narrow card a long place name wrapped to a
+     second line, which made that card's body taller and its photograph
+     shorter than the rest. The full place name still lives on the project
+     page itself. */
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .results-subs > div + div{
   border-inline-start:1px solid #d9e4e1;padding-inline-start:20px;
