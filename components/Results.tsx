@@ -314,6 +314,7 @@ export default function Results() {
                   key={project.slug}
                   href={`/projects/${project.slug}`}
                   className="results-card"
+                  data-cursor="مشاهده"
                   aria-label={`${project.title} — ${project.location ?? ""}`}
                 >
                   <div className="results-shot">

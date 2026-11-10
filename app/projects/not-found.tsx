@@ -27,7 +27,7 @@ export default function ProjectNotFound() {
         پروژه در این گالری منتشر شده است.
       </p>
 
-      <Link className="pj-missing-link" href="/#work">
+      <Link className="pj-missing-link" href="/#results">
         {PROJECT_CONFIG.labels.notFoundAction}
       </Link>
     </div>

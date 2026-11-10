@@ -102,10 +102,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         </div>
 
         <div className="pj-hero-inner">
-          {/* Back to the gallery itself, not to the top of the home page:
-              `/#work` lands the reader exactly on the Recent Projects section
-              they came from. */}
-          <Link className="pj-back" href="/#work">
+          {/* Back to the results reel itself, not to the top of the home
+              page: `/#results` lands the reader exactly on the projects
+              showcase they came from. */}
+          <Link className="pj-back" href="/#results">
             <span className="pj-back-arrow" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
                 <path d="M4 12h16" />

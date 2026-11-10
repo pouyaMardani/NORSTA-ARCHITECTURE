@@ -46,7 +46,6 @@ const LINKS = [
   { href: "#academy", label: "آموزش میکروسمنت" },
   { href: "#journal", label: "مجله" },
   { href: "#products", label: "محصولات" },
-  { href: "#work", label: "پروژه‌ها" },
   { href: "#about", label: "درباره ما" },
   { href: "#results", label: "نتایج" },
   { href: "#top", label: "خانه" },
@@ -55,10 +54,10 @@ const LINKS = [
 /** One link as the header renders it. */
 type NavLink = { href: string; label: string };
 
-/** A section of the home page (`#work`) as opposed to a route of its own. */
+/** A section of the home page (`#results`) as opposed to a route of its own. */
 const isAnchor = (href: string) => href.startsWith("#");
 
-/** On the home page the ten labels are the page's own anchors. */
+/** On the home page the nine labels are the page's own anchors. */
 const NAV_LINKS: NavLink[] = LINKS.map((link) => ({
   href: link.href,
   label: link.label,

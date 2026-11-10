@@ -29,7 +29,6 @@ const SECTIONS = [
   { id: "process", label: "روند کار" },
   { id: "results", label: "نتایج" },
   { id: "about", label: "درباره ما" },
-  { id: "work", label: "پروژه‌ها" },
   { id: "products", label: "محصولات" },
   { id: "materials", label: "نمونه‌ها" },
   { id: "journal", label: "مجله" },

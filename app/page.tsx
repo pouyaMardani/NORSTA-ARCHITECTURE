@@ -18,7 +18,6 @@ import Results from "@/components/Results";
 import SectionDivider from "@/components/SectionDivider";
 import SectionNav from "@/components/SectionNav";
 import SiteInteractions from "@/components/SiteInteractions";
-import Work from "@/components/Work";
 import { SITE_LOCALE, SITE_NAME } from "@/lib/site";
 
 /**
@@ -93,11 +92,10 @@ export default function Page() {
         <SectionDivider bg="#fff" />
         <About />
         {/* The full-bleed parallax band stands in for the divider here: the
-            villa photograph holds still while the page scrolls, then Work
-            slides over it — the joint between the story and the projects. */}
+            villa photograph holds still while the page scrolls, then the
+            materials showcase slides over it — the joint between the story
+            and the catalogue. */}
         <ParallaxBand />
-        <Work />
-        <SectionDivider bg="var(--bg)" />
         <MaterialsShowcase />
         <SectionDivider bg="var(--bg)" />
         <MicrocementSamples />
