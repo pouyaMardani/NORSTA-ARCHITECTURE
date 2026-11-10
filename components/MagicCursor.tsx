@@ -177,7 +177,12 @@ export default function MagicCursor() {
       window.setTimeout(() => ball.classList.remove("is-clicked"), 300);
     };
 
-    const onLeaveDocument = () => cursor.classList.remove("is-on");
+    const onLeaveDocument = () => {
+      // Reset `shown`, or `show()` stays a no-op and the dot never comes
+      // back once the pointer has left the window and re-entered it.
+      shown = false;
+      cursor.classList.remove("is-on");
+    };
     const onEnterDocument = () => show();
 
     document.addEventListener("mousemove", onMouseMove);
