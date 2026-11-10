@@ -38,7 +38,7 @@ export default function Hero() {
         <video
           className="hero-video"
           src="/images/hero.mp4"
-          poster="/images/og/hero-poster.jpg"
+          poster="/images/og/wall.webp"
           autoPlay
           muted
           loop

@@ -1045,7 +1045,7 @@ a{color:inherit;text-decoration:none}
   position:relative;min-height:100svh;
   display:flex;align-items:center;justify-content:center;
   padding:120px var(--pad-x);
-  background-image:url(/images/og/band.jpg);
+  background-image:url(/images/og/wall.webp);
   background-size:cover;background-repeat:no-repeat;
   background-position:center var(--band-y,0px);
   background-attachment:fixed;
