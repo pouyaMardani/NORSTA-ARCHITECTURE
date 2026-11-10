@@ -187,13 +187,19 @@ export default function SiteInteractions() {
     }
 
     // ---------- Hero video reveal ----------
-    // The hero band is painted in the theme's ground colour and the video fades
-    // in on top of it (`globals.css`), so all that is needed here is the moment
-    // it can actually play. Two things this has to survive:
+    // The hero band is painted in the theme's ground colour and the media
+    // fades in on top of it (`globals.css`), so all that is needed here is
+    // the moment something can actually be shown. Two things this has to
+    // survive:
     //   · the video may already have loaded before this effect ran, in which
     //     case neither event fires again — hence the `readyState` check;
     //   · `is-ready` is added once and never removed, so nothing can hide the
     //     media again.
+    // The poster is the same villa the video pans across, so the reveal
+    // fires on whichever arrives first — the poster's load, or the video's
+    // first decoded frame. If the video never plays (a slow connection, a
+    // codec the browser cannot decode), the poster stays: the hero never
+    // sits imageless.
     const heroVideo = document.querySelector<HTMLVideoElement>(".hero-video");
     if (heroVideo) {
       const reveal = () => heroVideo.classList.add("is-ready");
@@ -206,6 +212,17 @@ export default function SiteInteractions() {
           heroVideo.removeEventListener("loadeddata", reveal);
           heroVideo.removeEventListener("canplay", reveal);
         });
+      }
+      // The poster is a plain image: preload it and reveal on its load, so
+      // the hero shows the villa even before — or instead of — the video. A
+      // failed poster is not a failure: the video events above are the
+      // fallback.
+      const posterSrc = heroVideo.getAttribute("poster");
+      if (posterSrc) {
+        const poster = new Image();
+        poster.onload = reveal;
+        poster.src = posterSrc;
+        if (poster.complete && poster.naturalWidth > 0) reveal();
       }
     }
 

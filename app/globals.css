@@ -283,9 +283,11 @@ a{color:inherit;text-decoration:none}
 .hero-image img{
   width:100%;height:100%;object-fit:cover;display:block;
 }
-/* The video fades in over that ground colour once it can actually play;
-   `is-ready` is added by `SiteInteractions`, which also covers the case where
-   the video finished loading before hydration had a chance to listen. */
+/* The media fades in over that ground colour once something can actually be
+   shown — the poster's load, or the video's first decoded frame, whichever
+   arrives first; `is-ready` is added by `SiteInteractions`, which also covers
+   the case where the video finished loading before hydration had a chance to
+   listen. If the video never plays, the poster stays. */
 .hero-video{opacity:0;transition:opacity .9s cubic-bezier(.22,.61,.36,1)}
 .hero-video.is-ready{opacity:1}
 

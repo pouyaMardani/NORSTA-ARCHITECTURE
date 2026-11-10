@@ -34,6 +34,16 @@
  *                      1200×630; a full-viewport background needs the width,
  *                      so the band gets its own size and a larger budget.
  *
+ * And the hero video's poster — the still the hero shows while the video
+ * loads, or if it never plays:
+ *
+ *   hero-poster.jpg — the same villa (`hero-villa.png`), cut to the video's
+ *                      own 1920×1080, for the `<video poster>` in
+ *                      (`components/Hero.tsx`). It is the same villa the
+ *                      video slowly pans across, so the moment the video
+ *                      starts the still hands over to the motion without a
+ *                      visible jump — never a second, unrelated picture.
+ *
  * Resilience: `sharp` is the image library Next.js itself ships for its
  * optimiser, so it is present in `node_modules` on a normal install — but if
  * it is ever absent (a deploy that skips optional dependencies), the script
@@ -79,6 +89,16 @@ const BAND = {
   alt: "ویلایی مدرن در غروب با استخر؛ کوهستان در پس‌زمینه",
   width: 2000,
   height: 1125,
+  maxBytes: 350 * 1024,
+};
+
+/** The hero video's poster: same villa, cut to the video's own 1920×1080. */
+const POSTER = {
+  name: "hero-poster.jpg",
+  src: "public/images/hero-villa.png",
+  alt: "ویلایی مدرن در غروب با استخر؛ کوهستان در پس‌زمینه",
+  width: 1920,
+  height: 1080,
   maxBytes: 350 * 1024,
 };
 
@@ -145,6 +165,11 @@ async function generate() {
   const bandKb = (band.bytes / 1024).toFixed(1);
   const bandOver = band.bytes > band.maxBytes ? "  ⚠ OVER BUDGET" : "";
   console.log(`  ${band.name}: ${bandKb} KB (quality ${band.quality})${bandOver}`);
+
+  const poster = await makePlate(sharp, POSTER);
+  const posterKb = (poster.bytes / 1024).toFixed(1);
+  const posterOver = poster.bytes > poster.maxBytes ? "  ⚠ OVER BUDGET" : "";
+  console.log(`  ${poster.name}: ${posterKb} KB (quality ${poster.quality})${posterOver}`);
 }
 
 async function verify() {
@@ -187,11 +212,28 @@ async function verify() {
     }
   }
 
+  const posterPath = join(OUT_DIR, POSTER.name);
+  if (!(await exists(posterPath))) {
+    failures.push(`${POSTER.name}: missing — run without --verify first`);
+  } else {
+    const { size } = await stat(posterPath);
+    if (size > POSTER.maxBytes) {
+      failures.push(`${POSTER.name}: ${(size / 1024).toFixed(1)} KB, over the ${(POSTER.maxBytes / 1024).toFixed(0)} KB budget`);
+    }
+    const meta = await sharp(posterPath).metadata();
+    if (meta.width !== POSTER.width || meta.height !== POSTER.height) {
+      failures.push(`${POSTER.name}: ${meta.width}×${meta.height}, expected ${POSTER.width}×${POSTER.height}`);
+    }
+    if (meta.format !== "jpeg") {
+      failures.push(`${POSTER.name}: ${meta.format}, expected jpeg`);
+    }
+  }
+
   if (failures.length) {
     for (const failure of failures) console.error(`  ✗ ${failure}`);
     process.exitCode = 1;
   } else {
-    console.log(`  ✓ all ${PLATES.length} share plates are 1200×630 JPEGs at 200 KB or less, and the band is ${BAND.width}×${BAND.height}`);
+    console.log(`  ✓ all ${PLATES.length} share plates are 1200×630 JPEGs at 200 KB or less, and the band and hero poster are ${BAND.width}×${BAND.height} / ${POSTER.width}×${POSTER.height}`);
   }
 }
 

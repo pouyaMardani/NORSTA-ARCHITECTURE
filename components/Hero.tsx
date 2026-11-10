@@ -29,13 +29,16 @@ export default function Hero() {
           the entrance stutter) and the wordmark/copy animate from CSS. See
           `globals.css` → "Above-the-fold entrance". */}
       <div className="hero-image">
-        {/* No `poster`: the band is already painted in the theme's own ground
-            colour (`globals.css`) and the video fades in over it once it can
-            play — `SiteInteractions` adds `is-ready` for that. A poster would
-            have shown a second, unrelated picture for a moment first. */}
+        {/* The poster is the same villa the video slowly pans across
+            (`hero-poster.jpg`, cut at build time from `hero-villa.png` by
+            `scripts/make-og-images.mjs`), so the hero shows the villa the
+            moment the page opens — while the video loads, and if it never
+            plays — and the still hands over to the motion without a visible
+            jump. Never a second, unrelated picture. */}
         <video
           className="hero-video"
           src="/images/hero.mp4"
+          poster="/images/og/hero-poster.jpg"
           autoPlay
           muted
           loop
