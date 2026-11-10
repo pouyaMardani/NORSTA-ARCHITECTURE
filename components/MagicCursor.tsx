@@ -26,6 +26,10 @@ import { useEffect, useRef, useState } from "react";
  *   · Over any other link or button the ball fades away, and a click on a
  *     link pulses it once.
  *   · The ball hides while the pointer is outside the document.
+ *   · The trail is gentle (0.15) at short range, but a fast flick would
+ *     leave it hundreds of pixels behind the pointer and read as gone — so
+ *     a wide gap closes fast (0.6) and the dot never trails far enough to
+ *     disappear.
  *
  * Reduced motion disables the whole thing: a trailing dot is motion, and
  * nothing here is needed for the page to work.
@@ -71,8 +75,15 @@ export default function MagicCursor() {
 
     const tick = () => {
       if (!magnetic) {
-        pos.x += (mouse.x - pos.x) * RATIO;
-        pos.y += (mouse.y - pos.y) * RATIO;
+        const dx = mouse.x - pos.x;
+        const dy = mouse.y - pos.y;
+        // A fast flick leaves the 0.15 trail hundreds of pixels behind the
+        // pointer, so the dot reads as gone. Close a wide gap fast (0.6)
+        // and keep the gentle trail only at short range.
+        const gap = Math.hypot(dx, dy);
+        const ratio = gap > 120 ? 0.6 : RATIO;
+        pos.x += dx * ratio;
+        pos.y += dy * ratio;
       }
       cursor.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0)`;
       raf = requestAnimationFrame(tick);
